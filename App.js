@@ -10,7 +10,10 @@ const Stack = createStackNavigator();
 const App = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator screenOptions={{
+          headerShown: false, // 기본 헤더를 숨김
+        }}
+        >
         <Stack.Screen
           name="BottomNavigation"
           component={BottomNavigation}
