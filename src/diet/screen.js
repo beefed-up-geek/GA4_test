@@ -1,4 +1,4 @@
-// /src/home/screen.js
+// /src/diet/screen.js
 
 import React from 'react';
 import { View, Text } from 'react-native';
@@ -11,7 +11,7 @@ const HomeScreen = () => {
       justifyContent: 'center',
       alignItems: 'center',
     }}>
-      <Text style={{ color: 'black' }}>나는 /src/home/screen.js 🎉</Text>
+      <Text style={{ color: 'black' }}>나는 /src/diet/screen.js 🎉</Text>
     </View>
   );
 };

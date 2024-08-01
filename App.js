@@ -1,35 +1,30 @@
 // /App.js
 
+import 'react-native-gesture-handler';
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import BottomNavigation from './src/components/bottom_navigation';
+import Header from './src/components/header';
+
+const Stack = createStackNavigator();
 
 const App = () => {
   return (
     <NavigationContainer>
-      <BottomNavigation />
+      <Stack.Navigator
+        screenOptions={{
+          header: () => <Header />,
+        }}
+      >
+        <Stack.Screen
+          name="BottomNavigation"
+          component={BottomNavigation}
+          options={{ headerShown: true }}
+        />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 };
 
 export default App;
-
-/*
-import React from 'react';
-import {Text, View} from 'react-native';
-
-const App = () => {
-  return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
-      <Text> 나는 /App.js 🎉</Text>
-    </View>
-  );
-};
-
-export default App;
-*/
