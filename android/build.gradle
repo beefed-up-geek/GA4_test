@@ -1,22 +1,31 @@
 buildscript {
     ext {
-        buildToolsVersion = "34.0.0"
-        minSdkVersion = 23
-        compileSdkVersion = 34
-        targetSdkVersion = 34
-        ndkVersion = "26.1.10909125"
-        kotlinVersion = "1.9.22"
+        kotlin_version = "1.9.22"
+        buildToolsVersion = "34.0.0" //31이상!
+        minSdkVersion = 23 // 23 이상!
+        compileSdkVersion = 34 //31이상!
+        targetSdkVersion = 34 //31이상!
+        ndkVersion = "20.1.5948944"
     }
     repositories {
         google()
         mavenCentral()
+        jcenter()
     }
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
-        classpath("com.android.tools.build:gradle")
+        classpath("com.android.tools.build:gradle:4.2.2")
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath("com.facebook.react:react-native-gradle-plugin")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
     }
 }
 
-apply plugin: "com.facebook.react.rootproject"
+allprojects {
+    repositories {
+        mavenLocal()
+        maven {
+            url("$rootDir/../node_modules/react-native/android")
+        }
+        google()
+        jcenter()
+    }
+}
