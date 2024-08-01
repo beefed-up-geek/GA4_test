@@ -10,13 +10,17 @@ import DietScreen from '../screen/diet';
 import AuthenticationScreen from '../screen/healthscreen/authentication';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Header from './header';
+import Kit_checkupScreen1 from '../screen/Kit_checkup/Kit1';
+import {Kit_checkupScreen2} from '../screen/Kit_checkup/Kit2';
+import {Kit_checkupScreen3} from '../screen/Kit_checkup/Kit3';
+import QRCodeScreen from '../screen/Kit_checkup/QRcode';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 const screenOptions = ({route}) => ({
   tabBarActiveTintColor: '#1677FF', // 하단바에서 버튼이 선택되었을 때 색
-  tabBarInactiveTintColor: 'gray', 
+  tabBarInactiveTintColor: 'gray',
   headerShown: false,
   tabBarIcon: ({focused, color, size}) => {
     let iconName;
@@ -64,6 +68,10 @@ const MedicineStack = () => (
 const KitStack = () => (
   <Stack.Navigator screenOptions={stackScreenOptions}>
     <Stack.Screen name="Kit" component={KitScreen} />
+    <Stack.Screen name="Kit_checkup1" component={Kit_checkupScreen1} />
+    <Stack.Screen name="Kit_checkup2" component={Kit_checkupScreen2} />
+    <Stack.Screen name="Kit_checkup3" component={Kit_checkupScreen3} />
+    <Stack.Screen name="QRcode" component={QRCodeScreen} />
   </Stack.Navigator>
 );
 
@@ -75,9 +83,7 @@ const DietStack = () => (
 
 const BottomNavigation = () => {
   return (
-    <Tab.Navigator
-      screenOptions={screenOptions}
-      >
+    <Tab.Navigator screenOptions={screenOptions}>
       <Tab.Screen
         name="Home_"
         component={HomeStack}

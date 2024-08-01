@@ -1,17 +1,21 @@
 // /src/kit/screen.js
 
 import React from 'react';
-import { View, Text } from 'react-native';
+import {View, Text, TouchableOpacity, Button} from 'react-native';
 
-const HomeScreen = () => {
+const HomeScreen = ({onPress, navigation}) => {
   return (
     <View
-    style={{
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-    }}>
-      <Text style={{ color: 'black' }}>나는 /src/kit/screen.js 🎉</Text>
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+      <Text style={{color: 'black'}}>나는 /src/kit/screen.js 🎉</Text>
+      <Button
+        title="go to kit checkup"
+        onPress={() => navigation.navigate('Kit_checkup1')}
+      />
     </View>
   );
 };
