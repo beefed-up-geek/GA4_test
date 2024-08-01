@@ -1,10 +1,11 @@
 // /src/health_screen/authentication2.js
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { View, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, Modal, TouchableWithoutFeedback, Alert } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import RadioGroup from 'react-native-radio-buttons-group';
 import CheckBox from 'react-native-checkbox';
+import { useNavigation } from '@react-navigation/native';
 import { privacy_usage_agreement, terms_of_service, thrid_part_info_conset } from './legal_conset_text.js';
 
 const Authentication2Screen = () => {
@@ -20,6 +21,7 @@ const Authentication2Screen = () => {
   const [modalText, setModalText] = useState('');
   const route = useRoute();
   const { selectedValue } = route.params;
+  const navigation = useNavigation();
 
   const radioButtons = useMemo(() => [
     { id: '1', label: 'SKT', value: 'SKT', labelStyle: { color: 'black' } },
@@ -48,10 +50,43 @@ const Authentication2Screen = () => {
     setModalVisible(true);
   };
 
+  const handleAuthentication = () => {
+    if (!name) {
+      Alert.alert('경고', '이름을 입력해주세요.');
+      return;
+    }
+    if (!birthdate) {
+      Alert.alert('경고', '생년월일을 입력해주세요.');
+      return;
+    }
+    if (!phoneNumber) {
+      Alert.alert('경고', '휴대폰번호를 입력해주세요.');
+      return;
+    }
+    if (!agreePrivacy) {
+      Alert.alert('경고', '개인정보이용동의(필수)를 체크해주세요.');
+      return;
+    }
+    if (!agreeTerms) {
+      Alert.alert('경고', '서비스이용약관동의(필수)를 체크해주세요.');
+      return;
+    }
+    if (!agreeThirdParty) {
+      Alert.alert('경고', '제3자정보제공동의(필수)를 체크해주세요.');
+      return;
+    }
+    if (selectedValue === 5 && !selectedId) {
+      Alert.alert('경고', '통신사를 선택해주세요.');
+      return;
+    }
+
+    navigation.navigate('Authentication3');
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-        <Text style={{ color: 'black', marginBottom: 20 }}>나는 /src/health_screen/authentication2.js 🎉</Text>
-        <Text style={{ color: 'black', marginBottom: 20 }}>개인정보 입력</Text>
+      <Text style={{ color: 'black', marginBottom: 20 }}>나는 /src/health_screen/authentication2.js 🎉</Text>
+      <Text style={{ color: 'black', marginBottom: 20 }}>개인정보 입력</Text>
       <View style={styles.inputContainer}>
         <View style={styles.inputRow}>
           <Text style={styles.label}>이름</Text>
@@ -136,6 +171,9 @@ const Authentication2Screen = () => {
             </TouchableOpacity>
           </View>
         </View>
+        <TouchableOpacity style={styles.authButton} onPress={handleAuthentication}>
+          <Text style={styles.authButtonText}>인증하기</Text>
+        </TouchableOpacity>
       </View>
 
       <Modal
@@ -242,6 +280,17 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   modalButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  authButton: {
+    marginTop: 20,
+    padding: 15,
+    backgroundColor: '#1677FF',
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  authButtonText: {
     color: 'white',
     fontWeight: 'bold',
   },

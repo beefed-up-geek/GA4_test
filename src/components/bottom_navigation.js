@@ -9,6 +9,7 @@ import KitScreen from '../screen/kit';
 import DietScreen from '../screen/diet';
 import Authentication1Screen from '../screen/healthscreen/authentication1';
 import Authentication2Screen from '../screen/healthscreen/authentication2';
+import Authentication3Screen from '../screen/healthscreen/authentication3';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Header from './header';
 
@@ -48,6 +49,7 @@ const HealthStack = () => (
     <Stack.Screen name="Health" component={HealthScreen} />
     <Stack.Screen name="Authentication1" component={Authentication1Screen} />
     <Stack.Screen name="Authentication2" component={Authentication2Screen} />
+    <Stack.Screen name="Authentication3" component={Authentication3Screen} />
   </Stack.Navigator>
 );
 
