@@ -12,7 +12,7 @@ const HealthScreen = () => {
       <Text style={{ color: 'black' }}>나는 /src/healthscreen/screen.js 🎉</Text>
       <Button
         title="Go to Authentication"
-        onPress={() => navigation.navigate('Authentication')}
+        onPress={() => navigation.navigate('Authentication1')}
       />
     </View>
   );
