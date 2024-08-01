@@ -21,8 +21,9 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   headerIcon: {
-    width: 30,
+    width: 60,
     height: 30,
+    resizeMode: 'contain'
   },
 });
 

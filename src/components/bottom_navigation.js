@@ -7,7 +7,7 @@ import MedicineScreen from '../medicine/screen';
 import KitScreen from '../kit/screen';
 import DietScreen from '../diet/screen';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-
+import Header from './header';
 const Tab = createBottomTabNavigator();
 
 const screenOptions = ({ route }) => ({
@@ -42,27 +42,27 @@ const BottomNavigation = () => {
       <Tab.Screen
         name="Home"
         component={HomeScreen}
-        options={{ tabBarLabel: '홈' }}
+        options={{ tabBarLabel: '홈', headerTitle: () => <Header /> }}
       />
       <Tab.Screen
         name="Health"
         component={HealthScreen}
-        options={{ tabBarLabel: '건강' }}
+        options={{ tabBarLabel: '건강', headerTitle: () => <Header />}}
       />
       <Tab.Screen
         name="Medicine"
         component={MedicineScreen}
-        options={{ tabBarLabel: '약' }}
+        options={{ tabBarLabel: '약', headerTitle: () => <Header /> }}
       />
       <Tab.Screen
         name="Kit"
         component={KitScreen}
-        options={{ tabBarLabel: '자가진단' }}
+        options={{ tabBarLabel: '자가진단', headerTitle: () => <Header /> }}
       />
       <Tab.Screen
         name="Diet"
         component={DietScreen}
-        options={{ tabBarLabel: '식단관리' }}
+        options={{ tabBarLabel: '식단관리', headerTitle: () => <Header /> }}
       />
     </Tab.Navigator>
   );
