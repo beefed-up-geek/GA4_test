@@ -15,8 +15,8 @@ const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 const screenOptions = ({route}) => ({
-  activeTintColor: 'tomato',
-  inactiveTintColor: 'gray',
+  tabBarActiveTintColor: '#1677FF', // 하단바에서 버튼이 선택되었을 때 색
+  tabBarInactiveTintColor: 'gray', 
   headerShown: false,
   tabBarIcon: ({focused, color, size}) => {
     let iconName;
