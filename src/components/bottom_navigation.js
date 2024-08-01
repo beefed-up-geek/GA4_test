@@ -1,33 +1,33 @@
 // /src/components/bottom_navigation.js
 import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStackNavigator } from '@react-navigation/stack';
-import HealthScreen from '../healthscreen/screen';
-import HomeScreen from '../home/screen';
-import MedicineScreen from '../medicine/screen';
-import KitScreen from '../kit/screen';
-import DietScreen from '../diet/screen';
-import AuthenticationScreen from '../healthscreen/authentication';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {createStackNavigator} from '@react-navigation/stack';
+import HealthScreen from '../screen/healthscreen';
+import HomeScreen from '../screen/home';
+import MedicineScreen from '../screen/medicine';
+import KitScreen from '../screen/kit';
+import DietScreen from '../screen/diet';
+import AuthenticationScreen from '../screen/healthscreen/authentication';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Header from './header';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-const screenOptions = ({ route }) => ({
+const screenOptions = ({route}) => ({
   headerShown: false,
-  tabBarIcon: ({ focused, color, size }) => {
+  tabBarIcon: ({focused, color, size}) => {
     let iconName;
 
-    if (route.name === 'Home') {
+    if (route.name === 'Home_') {
       iconName = focused ? 'home' : 'home';
-    } else if (route.name === 'Health') {
+    } else if (route.name === 'Health_') {
       iconName = focused ? 'heartbeat' : 'heartbeat';
-    } else if (route.name === 'Medicine') {
+    } else if (route.name === 'Medicine_') {
       iconName = focused ? 'capsules' : 'capsules';
-    } else if (route.name === 'Kit') {
+    } else if (route.name === 'Kit_') {
       iconName = focused ? 'vial' : 'vial';
-    } else if (route.name === 'Diet') {
+    } else if (route.name === 'Diet_') {
       iconName = focused ? 'utensils' : 'utensils';
     }
 
@@ -41,7 +41,7 @@ const stackScreenOptions = {
 };
 
 const HealthStack = () => (
-  <Stack.Navigator screenOptions={stackScreenOptions } >
+  <Stack.Navigator screenOptions={stackScreenOptions}>
     <Stack.Screen name="Health" component={HealthScreen} />
     <Stack.Screen name="Authentication" component={AuthenticationScreen} />
   </Stack.Navigator>
@@ -74,18 +74,36 @@ const DietStack = () => (
 const BottomNavigation = () => {
   return (
     <Tab.Navigator
-    
       screenOptions={screenOptions}
       tabBarOptions={{
         activeTintColor: 'tomato',
         inactiveTintColor: 'gray',
-      }}
-    >
-      <Tab.Screen name="Home" component={HomeStack} options={{ tabBarLabel: '홈' }} />
-      <Tab.Screen name="Health" component={HealthStack} options={{ tabBarLabel: '건강' }} />
-      <Tab.Screen name="Medicine" component={MedicineStack} options={{ tabBarLabel: '약' }} />
-      <Tab.Screen name="Kit" component={KitStack} options={{ tabBarLabel: '자가진단' }} />
-      <Tab.Screen name="Diet" component={DietStack} options={{ tabBarLabel: '식단관리' }} />
+      }}>
+      <Tab.Screen
+        name="Home_"
+        component={HomeStack}
+        options={{tabBarLabel: '홈'}}
+      />
+      <Tab.Screen
+        name="Health_"
+        component={HealthStack}
+        options={{tabBarLabel: '건강'}}
+      />
+      <Tab.Screen
+        name="Medicine_"
+        component={MedicineStack}
+        options={{tabBarLabel: '약'}}
+      />
+      <Tab.Screen
+        name="Kit_"
+        component={KitStack}
+        options={{tabBarLabel: '자가진단'}}
+      />
+      <Tab.Screen
+        name="Diet_"
+        component={DietStack}
+        options={{tabBarLabel: '식단관리'}}
+      />
     </Tab.Navigator>
   );
 };
