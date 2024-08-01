@@ -18,23 +18,3 @@ const MedicineScreen = () => {
 
 export default MedicineScreen;
 
-
-/*
-import React from 'react';
-import {Text, View} from 'react-native';
-
-const screen = () => {
-  return (
-    <View
-    style={{
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-    }}>
-      <Text>나는 /src/medicine/screen.js 🎉</Text>
-    </View>
-  );
-};
-
-export default screen;
-*/

@@ -1,4 +1,4 @@
-// /src/home/screen.js
+// /src/healthscreen/screen.js
 
 import React from 'react';
 import { View, Text } from 'react-native';
