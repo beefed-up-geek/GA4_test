@@ -7,7 +7,8 @@ import HomeScreen from '../screen/home';
 import MedicineScreen from '../screen/medicine';
 import KitScreen from '../screen/kit';
 import DietScreen from '../screen/diet';
-import AuthenticationScreen from '../screen/healthscreen/authentication';
+import Authentication1Screen from '../screen/healthscreen/authentication1';
+import Authentication2Screen from '../screen/healthscreen/authentication2';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Header from './header';
 
@@ -45,7 +46,8 @@ const stackScreenOptions = {
 const HealthStack = () => (
   <Stack.Navigator screenOptions={stackScreenOptions}>
     <Stack.Screen name="Health" component={HealthScreen} />
-    <Stack.Screen name="Authentication" component={AuthenticationScreen} />
+    <Stack.Screen name="Authentication1" component={Authentication1Screen} />
+    <Stack.Screen name="Authentication2" component={Authentication2Screen} />
   </Stack.Navigator>
 );
 
@@ -86,7 +88,7 @@ const BottomNavigation = () => {
       <Tab.Screen
         name="Health_"
         component={HealthStack}
-        options={{tabBarLabel: '건강'}}
+        options={{tabBarLabel: '건강검진 분석'}}
       />
       <Tab.Screen
         name="Medicine_"
@@ -96,7 +98,7 @@ const BottomNavigation = () => {
       <Tab.Screen
         name="Kit_"
         component={KitStack}
-        options={{tabBarLabel: '자가진단'}}
+        options={{tabBarLabel: '키트 검사'}}
       />
       <Tab.Screen
         name="Diet_"
