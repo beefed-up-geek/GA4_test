@@ -15,6 +15,8 @@ const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 const screenOptions = ({route}) => ({
+  activeTintColor: 'tomato',
+  inactiveTintColor: 'gray',
   headerShown: false,
   tabBarIcon: ({focused, color, size}) => {
     let iconName;
@@ -75,10 +77,7 @@ const BottomNavigation = () => {
   return (
     <Tab.Navigator
       screenOptions={screenOptions}
-      tabBarOptions={{
-        activeTintColor: 'tomato',
-        inactiveTintColor: 'gray',
-      }}>
+      >
       <Tab.Screen
         name="Home_"
         component={HomeStack}
