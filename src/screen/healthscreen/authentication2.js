@@ -1,4 +1,4 @@
-// /src/health_screen/authentication2.js
+// /src/screen/health_screen/authentication2.js
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, Modal, TouchableWithoutFeedback, Alert } from 'react-native';
@@ -85,7 +85,7 @@ const Authentication2Screen = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={{ color: 'black', marginBottom: 20 }}>나는 /src/health_screen/authentication2.js 🎉</Text>
+      <Text style={{ color: 'black', marginBottom: 20 }}>나는 /src/screen/health_screen/authentication2.js 🎉</Text>
       <Text style={{ color: 'black', marginBottom: 20 }}>개인정보 입력</Text>
       <View style={styles.inputContainer}>
         <View style={styles.inputRow}>

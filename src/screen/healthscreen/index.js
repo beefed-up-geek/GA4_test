@@ -1,4 +1,4 @@
-// /src/healthscreen/screen.js
+// /src/screen/healthscreen/screen.js
 
 import React from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
@@ -9,7 +9,7 @@ const HealthScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={{ color: 'black' }}>나는 /src/healthscreen/screen.js 🎉</Text>
+      <Text style={{ color: 'black' }}>나는 /src/screen/healthscreen/screen.js 🎉</Text>
       <Button
         title="Go to Authentication"
         onPress={() => navigation.navigate('Authentication1')}
