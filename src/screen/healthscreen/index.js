@@ -9,7 +9,7 @@ const HealthScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={{ color: 'black' }}>나는 /src/screen/healthscreen/screen.js 🎉</Text>
+      <Text style={{ color: 'black' }}>이 화면은 /src/screen/healthscreen/screen.js 🎉</Text>
       <Button
         title="Go to Authentication"
         onPress={() => navigation.navigate('Authentication1')}

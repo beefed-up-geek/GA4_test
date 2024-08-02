@@ -11,7 +11,7 @@ const HomeScreen = () => {
       justifyContent: 'center',
       alignItems: 'center',
     }}>
-      <Text style={{ color: 'black' }}>나는 /src/screen/diet/screen.js 🎉</Text>
+      <Text style={{ color: 'black' }}>이 화면은 /src/screen/diet/screen.js 🎉</Text>
     </View>
   );
 };

@@ -6,7 +6,7 @@ import FastImage from 'react-native-fast-image';
 const Authentication3Screen = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>나는 /src/screen/health_screen/authentication3.js 🎉</Text>
+      <Text style={styles.text}>이 화면은 /src/screen/health_screen/authentication3.js 🎉</Text>
       <Text style={styles.waitingText}>본인인증을 완료하고 인증완료를 눌러주세요!</Text>
       <Text style={styles.waitingText}>기다리는 중입니다!</Text>
       <FastImage 

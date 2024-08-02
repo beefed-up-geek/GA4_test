@@ -21,7 +21,7 @@ const Login2 = () => {
         <Text style={styles.welcomeText}>환영합니다!</Text>
       </View>
       <View style={styles.content}>
-      <Text style={{ color: 'black' }}>나는 /src/screen/login/login.js 🎉</Text>
+      <Text style={{ color: 'black' }}>이 화면은 /src/screen/login/login.js 🎉</Text>
         <TouchableOpacity style={[styles.loginButton, { backgroundColor: '#03C75A' }]} onPress={handleLogin}>
           <Image source={naverIcon} style={styles.icon} />
           <Text style={styles.buttonText}>네이버로 로그인</Text>

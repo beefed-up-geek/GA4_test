@@ -28,7 +28,7 @@ const Authentication1Screen = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={{ color: 'black', marginBottom: 20 }}>나는 /src/screen/health_screen/authentication1.js 🎉</Text>
+      <Text style={{ color: 'black', marginBottom: 20 }}>이 화면은 /src/screen/health_screen/authentication1.js 🎉</Text>
       <Text style={{ color: 'black', marginBottom: 20 }}> 건강 검진 내역을 불러오기 위해 본인인증이 필요합니다.</Text>
       <Text style={styles.methodText}>간편인증 방법</Text>
       <View style={styles.buttonContainer}>
