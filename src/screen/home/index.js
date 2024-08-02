@@ -11,7 +11,7 @@ const HomeScreen = () => {
       justifyContent: 'center',
       alignItems: 'center',
     }}>
-      <Text style={{ color: 'black' }}>나는 /src/home/index.js 🎉</Text>
+      <Text style={{ color: 'black' }}>나는 /src/screen/home/index.js 🎉</Text>
     </View>
   );
 };

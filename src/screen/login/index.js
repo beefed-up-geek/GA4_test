@@ -2,15 +2,15 @@
 import React, { useEffect } from 'react';
 import { View, Text, Image, StyleSheet, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import splashImage from '../../images/login/splash.png';
+import splashImage from '../../images/login/splash1.png';
 
 const Login1 = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    // 3초 후에 홈 화면으로 전환
+    // 3초 후에 두 번째 로그인 화면으로 전환
     const timer = setTimeout(() => {
-      navigation.replace('BottomNavigation');
+      navigation.replace('Login2');
     }, 3000);
 
     // 컴포넌트 언마운트 시 타이머 클리어
@@ -42,10 +42,9 @@ const styles = StyleSheet.create({
   descriptionText: {
     fontSize: 16,
     color: 'gray',
-    marginTop: 20,
   },
   loadingIndicator: {
-    marginTop: 20,
+    marginTop: 50,
   },
   footerText: {
     position: 'absolute',
