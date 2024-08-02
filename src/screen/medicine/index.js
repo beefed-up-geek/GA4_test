@@ -1,6 +1,6 @@
 // /src/screen/medicine/index.js
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Image, TextInput } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, Text, StyleSheet, FlatList, Image, TextInput} from 'react-native';
 
 // JSON 파일을 import
 const data = require('./data.json');
@@ -19,10 +19,10 @@ const MedicineScreen = () => {
     filterMedicines(searchQuery);
   }, [searchQuery, medicines]);
 
-  const filterMedicines = (query) => {
+  const filterMedicines = query => {
     if (query) {
-      const filteredData = medicines.filter((item) =>
-        item.name.toLowerCase().includes(query.toLowerCase())
+      const filteredData = medicines.filter(item =>
+        item.name.toLowerCase().includes(query.toLowerCase()),
       );
       setFilteredMedicines(filteredData);
     } else {
@@ -30,9 +30,9 @@ const MedicineScreen = () => {
     }
   };
 
-  const renderMedicineItem = ({ item }) => (
+  const renderMedicineItem = ({item}) => (
     <View style={styles.itemContainer}>
-      <Image source={{ uri: item.base64_image }} style={styles.image} />
+      <Image source={{uri: item.base64_image}} style={styles.image} />
       <View style={styles.textContainer}>
         <Text style={styles.name}>{item.name}</Text>
         <Text style={styles.effect}>{item.effect}</Text>
@@ -43,11 +43,18 @@ const MedicineScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.screenInfo}>이 화면은 /src/screen/home/index.js 🎉</Text>
+      <Text style={styles.screenInfo}>
+        이 화면은 /src/screen/home/index.js 🎉
+      </Text>
       <View style={styles.header}>
-        <Image source={require('../../images/medicine/spongebob.png')} style={styles.spongebob} />
+        <Image
+          source={require('../../images/medicine/spongebob.png')}
+          style={styles.spongebob}
+        />
         <View style={styles.bubble}>
-          <Text style={styles.bubbleText}>신장에 위험한 약물을 제가 알려드려요</Text>
+          <Text style={styles.bubbleText}>
+            신장에 위험한 약물을 제가 알려드려요
+          </Text>
         </View>
       </View>
       <TextInput
@@ -60,7 +67,7 @@ const MedicineScreen = () => {
       <FlatList
         data={filteredMedicines}
         renderItem={renderMedicineItem}
-        keyExtractor={(item) => item.name}
+        keyExtractor={item => item.name}
       />
     </View>
   );
