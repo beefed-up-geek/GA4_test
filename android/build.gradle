@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        kotlin_version = "1.9.22"
+        kotlinVersion = "1.9.22"
         buildToolsVersion = "34.0.0" //31이상!
         minSdkVersion = 23 // 23 이상!
         compileSdkVersion = 34 //31이상!
@@ -14,7 +14,7 @@ buildscript {
     }
     dependencies {
         classpath("com.android.tools.build:gradle:4.2.2")
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath("com.facebook.react:react-native-gradle-plugin")
     }
 }
