@@ -11,7 +11,7 @@ const HealthScreen = () => {
     <View style={styles.container}>
       <Text style={{ color: 'black' }}>이 화면은 /src/screen/healthscreen/screen.js 🎉</Text>
       <Button
-        title="Go to Authentication"
+        title="건강검진 결과 불러오기"
         onPress={() => navigation.navigate('Authentication1')}
       />
     </View>

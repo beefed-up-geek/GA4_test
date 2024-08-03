@@ -12,9 +12,9 @@ import Authentication2Screen from '../screen/healthscreen/authentication2';
 import Authentication3Screen from '../screen/healthscreen/authentication3';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Header from './header';
-import Kit_checkupScreen1 from '../screen/Kit_checkup/Kit1';
-import {Kit_checkupScreen2} from '../screen/Kit_checkup/Kit2';
-import {Kit_checkupScreen3} from '../screen/Kit_checkup/Kit3';
+import Kit_checkupScreen1 from '../screen/Kit_checkup';
+import {Kit_checkupScreen2} from '../screen/Kit_checkup/Kit_checkup2';
+import {Kit_checkupScreen3} from '../screen/Kit_checkup/Kit_checkup3';
 import QRCodeScreen from '../screen/Kit_checkup/QRcode';
 import LoginScreen from '../screen/medicine/Login';
 
