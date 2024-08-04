@@ -43,6 +43,7 @@ android {
         versionName "1.0"
         missingDimensionStrategy 'react-native-camera', 'general'
         missingDimensionStrategy 'react-native-camera', 'mlkit'
+        manifestPlaceholders = [appAuthRedirectScheme: "sanhak2"]
     }
     signingConfigs {
         debug {

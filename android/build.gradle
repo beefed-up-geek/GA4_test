@@ -1,6 +1,7 @@
 buildscript {
     ext {
         kotlinVersion = "1.9.22"
+        kotlin_version = "1.9.22" //지훈이와의 호환성
         buildToolsVersion = "34.0.0" //31이상!
         minSdkVersion = 23 // 23 이상!
         compileSdkVersion = 34 //31이상!
