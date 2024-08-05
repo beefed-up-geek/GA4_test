@@ -25,6 +25,7 @@ allprojects {
         mavenLocal()
         maven {
             url("$rootDir/../node_modules/react-native/android")
+            url("https://devrepo.kakao.com/nexus/content/groups/public/")
         }
         google()
         jcenter()
