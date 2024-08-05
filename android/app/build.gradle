@@ -25,7 +25,7 @@ react {
     // hermesFlags = ["-O", "-output-source-map"]
 }
 
-def enableProguardInReleaseBuilds = false
+def enableProguardInReleaseBuilds = true
 
 def jscFlavor = 'org.webkit:android-jsc:+'
 

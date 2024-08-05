@@ -1,11 +1,12 @@
 // /src/screen/login/login.js
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import splashImage from '../../images/login/splash2.png';
 import naverIcon from '../../images/login/naver.png';
 import kakaoIcon from '../../images/login/kakao.png';
 import googleIcon from '../../images/login/google.png';
+import {login, logout, unlink, me} from '@react-native-kakao/user';
 
 const Login2 = () => {
   const navigation = useNavigation();
@@ -21,20 +22,49 @@ const Login2 = () => {
         <Text style={styles.welcomeText}>환영합니다!</Text>
       </View>
       <View style={styles.content}>
-      <Text style={{ color: 'black' }}>나는 /src/screen/login/login.js 🎉</Text>
-        <TouchableOpacity style={[styles.loginButton, { backgroundColor: '#03C75A' }]} onPress={handleLogin}>
+        <Text style={{color: 'black'}}>나는 /src/screen/login/login.js 🎉</Text>
+        <TouchableOpacity
+          style={[styles.loginButton, {backgroundColor: '#03C75A'}]}
+          onPress={handleLogin}>
           <Image source={naverIcon} style={styles.icon} />
           <Text style={styles.buttonText}>네이버로 로그인</Text>
         </TouchableOpacity>
-        
-        <TouchableOpacity style={[styles.loginButton, { backgroundColor: '#FEE500' }]} onPress={handleLogin}>
+
+        <TouchableOpacity
+          style={[styles.loginButton, {backgroundColor: '#FEE500'}]}
+          onPress={() => {
+            login().then(() => {
+              me().then(console.log);
+              navigation.replace('BottomNavigation');
+            });
+          }}>
           <Image source={kakaoIcon} style={styles.icon} />
           <Text style={styles.buttonText}>카카오로 로그인</Text>
         </TouchableOpacity>
-        
-        <TouchableOpacity style={[styles.loginButton, { backgroundColor: '#FFFFFF', borderColor: '#DB4437', borderWidth: 1 }]} onPress={handleLogin}>
+
+        <TouchableOpacity
+          style={[styles.loginButton, {backgroundColor: '#FEE500'}]}
+          onPress={() => {
+            unlink().then(console.log).catch(console.error);
+          }}>
+          <Image source={kakaoIcon} style={styles.icon} />
+          <Text style={styles.buttonText}>카카오 로그아웃</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            styles.loginButton,
+            {
+              backgroundColor: '#FFFFFF',
+              borderColor: '#DB4437',
+              borderWidth: 1,
+            },
+          ]}
+          onPress={handleLogin}>
           <Image source={googleIcon} style={styles.icon} />
-          <Text style={[styles.buttonText, { color: '#DB4437' }]}>구글로 로그인</Text>
+          <Text style={[styles.buttonText, {color: '#DB4437'}]}>
+            구글로 로그인
+          </Text>
         </TouchableOpacity>
       </View>
     </View>

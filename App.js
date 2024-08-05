@@ -1,15 +1,19 @@
 // /App.js
 import 'react-native-gesture-handler';
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import React, {useEffect} from 'react';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
 import BottomNavigation from './src/components/bottom_navigation';
 import Login1 from './src/screen/login/index'; // 로그인 화면 임포트
 import Login2 from './src/screen/login/login'; // 두 번째 로그인 화면 임포트
+import {initializeKakaoSDK} from '@react-native-kakao/core';
 
 const Stack = createStackNavigator();
 
 const App = () => {
+  useEffect(() => {
+    initializeKakaoSDK('c617a7619c801efd0d87b94791f46d9b');
+  });
   return (
     <NavigationContainer>
       <Stack.Navigator
