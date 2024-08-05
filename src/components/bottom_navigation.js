@@ -17,6 +17,7 @@ import {Kit_checkupScreen2} from '../screen/Kit_checkup/Kit_checkup2';
 import {Kit_checkupScreen3} from '../screen/Kit_checkup/Kit_checkup3';
 import QRCodeScreen from '../screen/Kit_checkup/QRcode';
 import LoginScreen from '../screen/medicine/Login';
+import LoginScreen2 from '../screen/medicine/Login2';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -78,6 +79,7 @@ const KitStack = () => (
     <Stack.Screen name="Kit_checkup2" component={Kit_checkupScreen2} />
     <Stack.Screen name="Kit_checkup3" component={Kit_checkupScreen3} />
     <Stack.Screen name="QRcode" component={QRCodeScreen} />
+    <Stack.Screen name="Login2" component={LoginScreen2} />
   </Stack.Navigator>
 );
 
