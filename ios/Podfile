@@ -34,7 +34,7 @@ end
 target 'sanhak_2' do
   config = use_native_modules!
 
-  pod 'naveridlogin-sdk-ios'
+  pod 'naveridlogin-sdk-ios' 
 
   use_react_native!(
     :path => config[:reactNativePath],

@@ -17,7 +17,7 @@ import {Kit_checkupScreen2} from '../screen/Kit_checkup/Kit_checkup2';
 import {Kit_checkupScreen3} from '../screen/Kit_checkup/Kit_checkup3';
 import QRCodeScreen from '../screen/Kit_checkup/QRcode';
 import LoginScreen from '../screen/medicine/Login';
-import LoginScreen2 from '../screen/medicine/Login2';
+import LoginScreen2 from '../screen/medicine/Login2/temp2';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();

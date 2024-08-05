@@ -8,6 +8,14 @@ import naverIcon from '../../images/login/naver.png';
 import kakaoIcon from '../../images/login/kakao.png';
 import googleIcon from '../../images/login/google.png';
 import {login, logout, unlink, me} from '@react-native-kakao/user';
+import {
+  GoogleSignin,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
+import {GoogleAuthProvider, signInWithCredential} from 'firebase/auth';
+import {isErrorWithCode} from '@react-native-google-signin/google-signin';
+import {initializeApp} from 'firebase/app';
+import {getAuth} from 'firebase/auth';
 
 const Login2 = () => {
   const navigation = useNavigation();
@@ -22,24 +30,28 @@ const Login2 = () => {
       const {idToken} = await GoogleSignin.signIn();
       const googleCredentials = GoogleAuthProvider.credential(idToken);
       await signInWithCredential(googleCredentials);
+
+      // 현재 로그인된 사용자 정보 가져오기
+      const userInfo = await GoogleSignin.getCurrentUser();
+      console.log('User Info: ', userInfo);
     } catch (error) {
       console.log('got error: ', error.message);
-      if (isErrorWithCode(error)) {
+      if (error.code) {
         switch (error.code) {
           case statusCodes.SIGN_IN_CANCELLED:
-            // user cancelled the login flow
+            console.log('Google sign in was cancelled');
             break;
           case statusCodes.IN_PROGRESS:
-            // operation (eg. sign in) already in progress
+            console.log('Google sign in is in progress');
             break;
           case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
-            // play services not available or outdated
+            console.log('Google play services not available or outdated');
             break;
           default:
-          // some other error happened
+            console.log('Some other error happened: ', error.code);
         }
       } else {
-        // an error that's not related to google sign in occurred
+        console.log('Non-Google sign in error occurred: ', error);
       }
     }
   };
