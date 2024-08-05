@@ -9,8 +9,26 @@
 
 # Add any project specific keep options here:
 
+-keep public class com.navercorp.nid.** { *; }
 -keep class com.kakao.sdk.**.model.* { <fields>; }
 -keep class * extends com.google.gson.TypeAdapter
+
+# OkHttp 관련 Proguard 규칙
+-keepattributes Signature
+-keepattributes *Annotation*
+-keep class okhttp3.** { *; }
+-dontwarn okhttp3.**
+
+# Retrofit 관련 Proguard 규칙
+-keep class retrofit2.** { *; }
+-dontwarn retrofit2.**
+
+# Gson 관련 Proguard 규칙 (만약 사용 중이라면)
+-keep class com.google.gson.** { *; }
+-keep class * extends com.google.gson.TypeAdapter
+-keep class * extends com.google.gson.TypeAdapterFactory
+-keep class * extends com.google.gson.JsonSerializer
+-keep class * extends com.google.gson.JsonDeserializer
 
 # https://github.com/square/okhttp/pull/6792
 -dontwarn org.bouncycastle.jsse.**
