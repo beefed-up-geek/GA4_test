@@ -12,7 +12,7 @@ const Stack = createStackNavigator();
 
 const App = () => {
   useEffect(() => {
-    initializeKakaoSDK('c617a7619c801efd0d87b94791f46d9b');
+    initializeKakaoSDK('1f96718a8d259618eec427c10f31719c');
   });
   return (
     <NavigationContainer>

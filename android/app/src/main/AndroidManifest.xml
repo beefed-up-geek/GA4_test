@@ -28,5 +28,16 @@
                 <data android:scheme="${appAuthRedirectScheme}" android:host="callback" />
             </intent-filter>
         </activity>
+        <activity
+          android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
+          android:exported="true">
+          <intent-filter>
+              <action android:name="android.intent.action.VIEW" />
+              <category android:name="android.intent.category.DEFAULT" />
+              <category android:name="android.intent.category.BROWSABLE" />
+              <data android:host="oauth"
+                    android:scheme="kakao1f96718a8d259618eec427c10f31719c"/>
+          </intent-filter>
+      </activity>
     </application>
 </manifest>
