@@ -167,17 +167,22 @@ const Login2 = () => {
       }
     } catch (error) {
       console.log('got error: ', error.message);
-      if (isErrorWithCode(error)) {
+      if (error.code) {
         switch (error.code) {
           case statusCodes.SIGN_IN_CANCELLED:
+            console.log('Google sign in was cancelled');
             break;
           case statusCodes.IN_PROGRESS:
+            console.log('Google sign in is in progress');
             break;
           case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
+            console.log('Google play services not available or outdated');
             break;
           default:
+            console.log('Some other error happened: ', error.code);
         }
       } else {
+        console.log('Non-Google sign in error occurred: ', error);
       }
     }
   };
