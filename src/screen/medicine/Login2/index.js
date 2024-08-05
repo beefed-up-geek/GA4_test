@@ -49,69 +49,46 @@ const LoginScreen2 = () => {
     setFailureResponse(failureResponse);
   };
 
-  const logout = async () => {
-    try {
-      await NaverLogin.logout();
-      setSuccessResponse(undefined);
-      setFailureResponse(undefined);
-      setGetProfileRes(undefined);
-    } catch (e) {
-      console.error(e);
-    }
-  };
+export default function LoginScreen2() {
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState('');
 
-  const getProfile = async () => {
+  const handleGoogleLogin = async () => {
+    setLoading(true);
     try {
-      const profileResult = await NaverLogin.getProfile(success.accessToken);
-      setGetProfileRes(profileResult);
-    } catch (e) {
-      setGetProfileRes(undefined);
-    }
-  };
+      const response = await GoogleLogin();
+      const {idToken, user} = response;
+      console.log(user);
+      setUser(user);
 
-  const deleteToken = async () => {
-    try {
-      await NaverLogin.deleteToken();
-      setSuccessResponse(undefined);
-      setFailureResponse(undefined);
-      setGetProfileRes(undefined);
-    } catch (e) {
-      console.error(e);
+      //if (idToken) {
+      //  const resp = await authAPI.validateToken({
+      //    token: idToken,
+      //    email: user.email,
+      //  });
+      //  await handlePostLoginData(resp.data);
+      //}
+    } catch (apiError) {
+      setError(
+        apiError?.response?.data?.error?.message || 'Something went wrong',
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <SafeAreaView
-      style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
-      <ScrollView
-        style={{flex: 1}}
-        contentContainerStyle={{flexGrow: 1, padding: 24}}>
-        <Button title={'Login'} onPress={login} />
-        <Gap />
-        <Button title={'Logout'} onPress={logout} />
-        <Gap />
-        {success ? (
-          <>
-            <Button title="Get Profile" onPress={getProfile} />
-            <Gap />
-          </>
-        ) : null}
-        {success ? (
-          <View>
-            <Button title="Delete Token" onPress={deleteToken} />
-            <Gap />
-            <ResponseJsonText name={'Success'} json={success} />
-          </View>
-        ) : null}
-        <Gap />
-        {failure ? <ResponseJsonText name={'Failure'} json={failure} /> : null}
-        <Gap />
-        {getProfileRes ? (
-          <ResponseJsonText name={'GetProfile'} json={getProfileRes} />
-        ) : null}
-      </ScrollView>
-    </SafeAreaView>
+    <View style={{margin: 100}}>
+      <Pressable onPress={handleGoogleLogin}>
+        <Text>Continue with Google</Text>
+      </Pressable>
+      <Image
+        style={{height: 50, width: 50}}
+        resizeMode="cover"
+        source={{uri: user?.photo}}
+      />
+      <Text>{user?.name}</Text>
+    </View>
   );
-};
-
-export default LoginScreen2;
+}
