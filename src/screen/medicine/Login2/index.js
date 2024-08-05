@@ -1,71 +1,117 @@
-import React from 'react';
-import {Alert, SafeAreaView, StyleSheet, Button, Platform} from 'react-native';
-import {NaverLogin, getProfile} from '@react-native-seoul/naver-login';
+import React, {useEffect, useState} from 'react';
+import {Button, SafeAreaView, ScrollView, Text, View} from 'react-native';
+import NaverLogin from '@react-native-seoul/naver-login';
 
-const iosKeys = {
-  kConsumerKey: 'fujiEAut2m84ybqDQOoq',
-  kConsumerSecret: 'yXEW6CuruC',
-  kServiceAppName: 'HS바이오랩(iOS)',
-  kServiceAppUrlScheme: 'com.apple', // 실제 URL 스킴으로 변경
-};
+const Gap = () => <View style={{marginTop: 24}} />;
+const ResponseJsonText = ({json = {}, name}) => (
+  <View
+    style={{
+      padding: 12,
+      borderRadius: 16,
+      borderWidth: 1,
+      backgroundColor: '#242c3d',
+    }}>
+    <Text style={{fontSize: 20, fontWeight: 'bold', color: 'white'}}>
+      {name}
+    </Text>
+    <Text style={{color: 'white', fontSize: 13, lineHeight: 20}}>
+      {JSON.stringify(json, null, 4)}
+    </Text>
+  </View>
+);
 
-const androidKeys = {
-  kConsumerKey: 'fujiEAut2m84ybqDQOoq',
-  kConsumerSecret: 'yXEW6CuruC',
-  kServiceAppName: 'HS바이오랩(안드로이드)',
-};
+/** Fill your keys */
+const consumerKey = 'fujiEAut2m84ybqDQOoq';
+const consumerSecret = 'yXEW6CuruC';
+const appName = 'HS바이오랩';
 
-const initials = Platform.OS === 'ios' ? iosKeys : androidKeys;
+/** This key is setup in iOS. So don't touch it */
+const serviceUrlScheme = 'com.apple';
 
 const LoginScreen2 = () => {
-  console.log(NaverLogin); // NaverLogin 객체 출력
-  const [naverToken, setNaverToken] = React.useState(null);
+  useEffect(() => {
+    NaverLogin.initialize({
+      appName,
+      consumerKey,
+      consumerSecret,
+      serviceUrlSchemeIOS: serviceUrlScheme,
+      disableNaverAppAuthIOS: true,
+    });
+  }, []);
 
-  const naverLogin = async () => {
+  const [success, setSuccessResponse] = useState(undefined);
+  const [failure, setFailureResponse] = useState(undefined);
+  const [getProfileRes, setGetProfileRes] = useState(undefined);
+
+  const login = async () => {
+    const {failureResponse, successResponse} = await NaverLogin.login();
+    setSuccessResponse(successResponse);
+    setFailureResponse(failureResponse);
+  };
+
+  const logout = async () => {
     try {
-      const token = await NaverLogin.login(initials);
-      console.log(`Token fetched: ${token.accessToken}`);
-      setNaverToken(token);
-    } catch (err) {
-      console.error('Error during login', err);
+      await NaverLogin.logout();
+      setSuccessResponse(undefined);
+      setFailureResponse(undefined);
+      setGetProfileRes(undefined);
+    } catch (e) {
+      console.error(e);
     }
   };
 
-  const naverLogout = () => {
-    NaverLogin.logout();
-    setNaverToken(null);
+  const getProfile = async () => {
+    try {
+      const profileResult = await NaverLogin.getProfile(success.accessToken);
+      setGetProfileRes(profileResult);
+    } catch (e) {
+      setGetProfileRes(undefined);
+    }
   };
 
-  const getUserProfile = async () => {
+  const deleteToken = async () => {
     try {
-      const profileResult = await getProfile(naverToken.accessToken);
-      if (profileResult.resultcode === '024') {
-        Alert.alert('로그인 실패', profileResult.message);
-        return;
-      }
-      console.log('Profile result:', profileResult);
-    } catch (err) {
-      console.error('Error fetching profile', err);
+      await NaverLogin.deleteToken();
+      setSuccessResponse(undefined);
+      setFailureResponse(undefined);
+      setGetProfileRes(undefined);
+    } catch (e) {
+      console.error(e);
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Button title="네이버 아이디로 로그인하기" onPress={naverLogin} />
-      {!!naverToken && <Button title="로그아웃하기" onPress={naverLogout} />}
-      {!!naverToken && (
-        <Button title="회원정보 가져오기" onPress={getUserProfile} />
-      )}
+    <SafeAreaView
+      style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
+      <ScrollView
+        style={{flex: 1}}
+        contentContainerStyle={{flexGrow: 1, padding: 24}}>
+        <Button title={'Login'} onPress={login} />
+        <Gap />
+        <Button title={'Logout'} onPress={logout} />
+        <Gap />
+        {success ? (
+          <>
+            <Button title="Get Profile" onPress={getProfile} />
+            <Gap />
+          </>
+        ) : null}
+        {success ? (
+          <View>
+            <Button title="Delete Token" onPress={deleteToken} />
+            <Gap />
+            <ResponseJsonText name={'Success'} json={success} />
+          </View>
+        ) : null}
+        <Gap />
+        {failure ? <ResponseJsonText name={'Failure'} json={failure} /> : null}
+        <Gap />
+        {getProfileRes ? (
+          <ResponseJsonText name={'GetProfile'} json={getProfileRes} />
+        ) : null}
+      </ScrollView>
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-  },
-});
 
 export default LoginScreen2;

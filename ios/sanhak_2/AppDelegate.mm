@@ -20,7 +20,7 @@
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
   // 네이버 로그인 URL Scheme으로 시작하는지 확인
-  if ([url.scheme isEqualToString:@"your_apps_urlscheme"]) {
+  if ([url.scheme isEqualToString:@"{{com.apple}}"]) {
     return [[NaverThirdPartyLoginConnection getSharedInstance] application:application openURL:url options:options];
   }
 

@@ -11,26 +11,38 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import YoutubePlayer from 'react-native-youtube-iframe';
 
-export const Kit_checkupScreen2 = ({ navigation }) => {
+export const Kit_checkupScreen2 = ({navigation}) => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView
         scrollEnabled={true}
         contentInsetAdjustmentBehavior="automatic">
         <View style={styles.container}>
-          <Text style={{ color: 'black' }}>이 화면은 /src/screen/Kit_checkup/Kit_checkup2.js 🎉</Text>
-          <Text style={{ color: 'black' }}>다음 화면은  /src/screen/Kit_checkup/QRcode.js !</Text>
+          <Text style={{color: 'black'}}>
+            이 화면은 /src/screen/Kit_checkup/Kit_checkup2.js 🎉
+          </Text>
+          <Text style={{color: 'black'}}>
+            다음 화면은 /src/screen/Kit_checkup/QRcode.js !
+          </Text>
           <View style={styles.infoBox}>
             <View style={styles.infoIconContainer}>
-              <Icon name="info-circle" size={22} color="#000" style={styles.infoIcon} />
+              <Icon
+                name="info-circle"
+                size={22}
+                color="#000"
+                style={styles.infoIcon}
+              />
             </View>
             <Text style={styles.infoText}>
-              이 검사는 소변검사를 통해 신장기능에 이상이 있는지 확인하는 테스트입니다. 설명을 잘 읽고 설명에 따라 진행하시길 바랍니다.
+              이 검사는 소변검사를 통해 신장기능에 이상이 있는지 확인하는
+              테스트입니다. 설명을 잘 읽고 설명에 따라 진행하시길 바랍니다.
             </Text>
           </View>
           <View style={styles.videoContainer}>
-            <YoutubePlayer play={false} height={200} videoId={'fRbvMOwTp9Q'} />
-            <Text style={styles.videoText}>가이드 영상(안드로이드에서 에러있음)</Text>
+            <YoutubePlayer play={true} height={200} videoId={'fRbvMOwTp9Q'} />
+            <Text style={styles.videoText}>
+              가이드 영상(안드로이드에서 에러있음)
+            </Text>
           </View>
           <View style={styles.instructionsContainer}>
             <Text style={styles.instructionText}>
