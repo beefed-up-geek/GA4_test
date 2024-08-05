@@ -2,17 +2,17 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, Modal, TouchableWithoutFeedback, Alert } from 'react-native';
-import { useRoute } from '@react-navigation/native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 import RadioGroup from 'react-native-radio-buttons-group';
 import CheckBox from 'react-native-checkbox';
-import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 import { privacy_usage_agreement, terms_of_service, thrid_part_info_conset } from './legal_conset_text.js';
 
 const Authentication2Screen = () => {
   const [name, setName] = useState(''); // 이름
   const [birthdate, setBirthdate] = useState(''); // 생년월일
   const [phoneNumber, setPhoneNumber] = useState(''); // 전화번호
-  const [selectedId, setSelectedId] = useState(null); // 선택된 통신사 ID
+  const [selectedId, setSelectedId] = useState(1); // 선택된 통신사 ID
   const [agreePrivacy, setAgreePrivacy] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [agreeThirdParty, setAgreeThirdParty] = useState(false);
@@ -24,9 +24,9 @@ const Authentication2Screen = () => {
   const navigation = useNavigation();
 
   const radioButtons = useMemo(() => [
-    { id: '1', label: 'SKT', value: 'SKT', labelStyle: { color: 'black' } },
-    { id: '2', label: 'KT', value: 'KT', labelStyle: { color: 'black' } },
-    { id: '3', label: 'LG U+', value: 'LG U+', labelStyle: { color: 'black' } }
+    { id: '0', label: 'SKT', value: 'SKT', labelStyle: { color: 'black' } },
+    { id: '1', label: 'KT', value: 'KT', labelStyle: { color: 'black' } },
+    { id: '2', label: 'LG U+', value: 'LG U+', labelStyle: { color: 'black' } }
   ], []);
 
   useEffect(() => {
@@ -50,7 +50,7 @@ const Authentication2Screen = () => {
     setModalVisible(true);
   };
 
-  const handleAuthentication = () => {
+  const handleAuthentication = async () => {
     if (!name) {
       Alert.alert('경고', '이름을 입력해주세요.');
       return;
@@ -80,7 +80,35 @@ const Authentication2Screen = () => {
       return;
     }
 
-    navigation.navigate('Authentication3');
+    try {
+      const request_data = {
+        userName: name,
+        identity: birthdate,
+        phoneNo: phoneNumber,
+        telecom: selectedId,
+        loginTypeLevel: String(selectedValue),
+      };
+      console.log(request_data);
+      const response = await axios.post('https://70a5-203-252-33-2.ngrok-free.app/health_checkup/step1', request_data);
+
+      const { result, data } = response.data;
+      if (result.code === "CF-03002") {
+        navigation.navigate('Authentication3', {
+          jti: data.jti,
+          twoWayTimestamp: data.twoWayTimestamp,
+          name: name,
+          birthdate: birthdate,
+          phoneNo: phoneNumber,
+          telecom: selectedId,
+          loginTypeLevel:  String(selectedValue)
+        });
+      } else {
+        Alert.alert('잘못된 사용자 정보 입력');
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert('오류', '인증 요청 중 오류가 발생했습니다.');
+    }
   };
 
   return (
