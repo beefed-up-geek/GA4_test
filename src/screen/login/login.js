@@ -77,16 +77,16 @@ const Login2 = () => {
     try {
       const response = await GoogleLogin();
       const {idToken, user} = response;
-      console.log(user);
-      setUser(user);
+      if (user) {
+        const {id, name} = user; // 구글 사용자 정보 추출
+        await AsyncStorage.setItem('loginMethod', 'google');
+        await AsyncStorage.setItem('userId', id.toString());
+        await AsyncStorage.setItem('username', name);
 
-      //if (idToken) {
-      //  const resp = await authAPI.validateToken({
-      //    token: idToken,
-      //    email: user.email,
-      //  });
-      //  await handlePostLoginData(resp.data);
-      //}
+        navigation.replace('BottomNavigation'); // 로그인 후 화면 전환
+      }
+
+      setUser(user);
     } catch (apiError) {
       setError(
         apiError?.response?.data?.error?.message || 'Something went wrong',
@@ -147,8 +147,22 @@ const Login2 = () => {
     }
   };
 
-  const handleNaverLogin = () => {
-    navigation.navigate('BottomNavigation');
+  const handleNaverLogin = async () => {
+    try {
+      const {failureResponse, successResponse} = await NaverLogin.login();
+      if (successResponse) {
+        const {id, name} = successResponse.response; // 네이버 사용자 정보 추출
+        await AsyncStorage.setItem('loginMethod', 'naver');
+        await AsyncStorage.setItem('userId', id.toString());
+        await AsyncStorage.setItem('username', name);
+
+        navigation.replace('BottomNavigation'); // 로그인 후 화면 전환
+      } else if (failureResponse) {
+        console.error('Naver login failed:', failureResponse);
+      }
+    } catch (error) {
+      console.error('Naver login error:', error);
+    }
   };
 
   return (
@@ -163,7 +177,7 @@ const Login2 = () => {
           style={[styles.loginButton, {backgroundColor: '#03C75A'}]}
           onPress={async () => {
             await AsyncStorage.setItem('loginMethod', 'naver');
-            handleLogin();
+            handleNaverLogin();
           }}>
           <Image source={naverIcon} style={styles.icon} />
           <Text style={styles.buttonText}>네이버로 로그인</Text>
@@ -176,6 +190,8 @@ const Login2 = () => {
               me().then(async userInfo => {
                 await AsyncStorage.setItem('userId', userInfo.id.toString());
                 await AsyncStorage.setItem('loginMethod', 'kakao');
+                await AsyncStorage.setItem('username', nickname);
+
                 navigation.replace('BottomNavigation');
               });
             });
