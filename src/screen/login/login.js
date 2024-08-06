@@ -7,7 +7,7 @@ import splashImage from '../../images/login/splash2.png';
 import naverIcon from '../../images/login/naver.png';
 import kakaoIcon from '../../images/login/kakao.png';
 import googleIcon from '../../images/login/google.png';
-import {login, logout, unlink, me} from '@react-native-kakao/user';
+import {login, me} from '@react-native-kakao/user';
 import {
   GoogleSignin,
   statusCodes,
@@ -16,6 +16,50 @@ import {GoogleAuthProvider, signInWithCredential} from 'firebase/auth';
 import {isErrorWithCode} from '@react-native-google-signin/google-signin';
 import {initializeApp} from 'firebase/app';
 import {getAuth} from 'firebase/auth';
+import {Pressable} from 'react-native';
+import NaverLogin from '@react-native-seoul/naver-login';
+import {useEffect, useState} from 'react';
+
+const Gap = () => <View style={{marginTop: 24}} />;
+const ResponseJsonText = ({json = {}, name}) => (
+  <View
+    style={{
+      padding: 12,
+      borderRadius: 16,
+      borderWidth: 1,
+      backgroundColor: '#242c3d',
+    }}>
+    <Text style={{fontSize: 20, fontWeight: 'bold', color: 'white'}}>
+      {name}
+    </Text>
+    <Text style={{color: 'white', fontSize: 13, lineHeight: 20}}>
+      {JSON.stringify(json, null, 4)}
+    </Text>
+  </View>
+);
+
+const consumerKey = 'fujiEAut2m84ybqDQOoq';
+const consumerSecret = 'yXEW6CuruC';
+const appName = 'HS바이오랩';
+
+/** This key is setup in iOS. So don't touch it */
+const serviceUrlScheme = 'navertest';
+
+GoogleSignin.configure({
+  webClientId:
+    '553674684367-g30th1q22jbqjs30jgad63i95vdntcmu.apps.googleusercontent.com',
+  androidClientId:
+    '553674684367-emj97ff7kjitq1qbn03ok9hebps9ijsg.apps.googleusercontent.com',
+  iosClientId:
+    '553674684367-sr2m1jems5sai07qgq710dvhdoqm6npv.apps.googleusercontent.com',
+  scopes: ['profile', 'email'],
+});
+
+const GoogleLogin = async () => {
+  await GoogleSignin.hasPlayServices();
+  const userInfo = await GoogleSignin.signIn();
+  return userInfo;
+};
 
 const Login2 = () => {
   const navigation = useNavigation();
@@ -24,36 +68,87 @@ const Login2 = () => {
     navigation.replace('BottomNavigation');
   };
 
-  const signIn = async () => {
-    try {
-      await GoogleSignin.hasPlayServices();
-      const {idToken} = await GoogleSignin.signIn();
-      const googleCredentials = GoogleAuthProvider.credential(idToken);
-      await signInWithCredential(googleCredentials);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState('');
 
-      // 현재 로그인된 사용자 정보 가져오기
-      const userInfo = await GoogleSignin.getCurrentUser();
-      console.log('User Info: ', userInfo);
-    } catch (error) {
-      console.log('got error: ', error.message);
-      if (error.code) {
-        switch (error.code) {
-          case statusCodes.SIGN_IN_CANCELLED:
-            console.log('Google sign in was cancelled');
-            break;
-          case statusCodes.IN_PROGRESS:
-            console.log('Google sign in is in progress');
-            break;
-          case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
-            console.log('Google play services not available or outdated');
-            break;
-          default:
-            console.log('Some other error happened: ', error.code);
-        }
-      } else {
-        console.log('Non-Google sign in error occurred: ', error);
-      }
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    try {
+      const response = await GoogleLogin();
+      const {idToken, user} = response;
+      console.log(user);
+      setUser(user);
+
+      //if (idToken) {
+      //  const resp = await authAPI.validateToken({
+      //    token: idToken,
+      //    email: user.email,
+      //  });
+      //  await handlePostLoginData(resp.data);
+      //}
+    } catch (apiError) {
+      setError(
+        apiError?.response?.data?.error?.message || 'Something went wrong',
+      );
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    NaverLogin.initialize({
+      appName,
+      consumerKey,
+      consumerSecret,
+      serviceUrlSchemeIOS: serviceUrlScheme,
+      disableNaverAppAuthIOS: true,
+    });
+  }, []);
+
+  const [success, setSuccessResponse] = useState();
+  const [failure, setFailureResponse] = useState();
+  const [getProfileRes, setGetProfileRes] = useState();
+
+  const login = async () => {
+    const {failureResponse, successResponse} = await NaverLogin.login();
+    setSuccessResponse(successResponse);
+    setFailureResponse(failureResponse);
+  };
+
+  const logout = async () => {
+    try {
+      await NaverLogin.logout();
+      setSuccessResponse(undefined);
+      setFailureResponse(undefined);
+      setGetProfileRes(undefined);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const getProfile = async () => {
+    try {
+      const profileResult = await NaverLogin.getProfile(success.accessToken);
+      setGetProfileRes(profileResult);
+    } catch (e) {
+      setGetProfileRes(undefined);
+    }
+  };
+
+  const deleteToken = async () => {
+    try {
+      await NaverLogin.deleteToken();
+      setSuccessResponse(undefined);
+      setFailureResponse(undefined);
+      setGetProfileRes(undefined);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleNaverLogin = () => {
+    navigation.navigate('BottomNavigation');
   };
 
   return (
@@ -90,15 +185,6 @@ const Login2 = () => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.loginButton, {backgroundColor: '#FEE500'}]}
-          onPress={() => {
-            unlink().then(console.log).catch(console.error);
-          }}>
-          <Image source={kakaoIcon} style={styles.icon} />
-          <Text style={styles.buttonText}>카카오 로그아웃</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
           style={[
             styles.loginButton,
             {
@@ -109,7 +195,7 @@ const Login2 = () => {
           ]}
           onPress={async () => {
             await AsyncStorage.setItem('loginMethod', 'google');
-            signIn();
+            handleGoogleLogin();
           }}>
           <Image source={googleIcon} style={styles.icon} />
           <Text style={[styles.buttonText, {color: '#DB4437'}]}>

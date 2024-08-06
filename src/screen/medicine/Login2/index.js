@@ -1,13 +1,6 @@
-import React, {useEffect, useState} from 'react';
-import {
-  Platform,
-  Button,
-  SafeAreaView,
-  ScrollView,
-  Text,
-  View,
-} from 'react-native';
+import {Button, SafeAreaView, ScrollView, Text, View} from 'react-native';
 import NaverLogin from '@react-native-seoul/naver-login';
+import React, {useEffect, useState} from 'react';
 
 const Gap = () => <View style={{marginTop: 24}} />;
 const ResponseJsonText = ({json = {}, name}) => (
@@ -28,18 +21,14 @@ const ResponseJsonText = ({json = {}, name}) => (
 );
 
 /** Fill your keys */
-const consumerKey =
-  Platform.OS === 'ios' ? 'fujiEAut2m84ybqDQOoq' : 'fujiEAut2m84ybqDQOoq';
-const consumerSecret = Platform.OS === 'ios' ? 'yXEW6CuruC' : 'yXEW6CuruC';
-const appName = Platform.OS === 'ios' ? 'HS바이오랩' : 'HS바이오랩';
-const serviceUrlScheme =
-  Platform.OS === 'ios' ? 'com.apple' : 'com.android.scheme';
+const consumerKey = 'fujiEAut2m84ybqDQOoq';
+const consumerSecret = 'yXEW6CuruC';
+const appName = 'HS바이오랩';
+
+/** This key is setup in iOS. So don't touch it */
+const serviceUrlScheme = 'navertest';
 
 const LoginScreen2 = () => {
-  const [success, setSuccessResponse] = useState(undefined);
-  const [failure, setFailureResponse] = useState(undefined);
-  const [getProfileRes, setGetProfileRes] = useState(undefined);
-
   useEffect(() => {
     NaverLogin.initialize({
       appName,
@@ -50,13 +39,12 @@ const LoginScreen2 = () => {
     });
   }, []);
 
+  const [success, setSuccessResponse] = useState();
+  const [failure, setFailureResponse] = useState();
+  const [getProfileRes, setGetProfileRes] = useState();
+
   const login = async () => {
-    const {failureResponse, successResponse} = await NaverLogin.login({
-      appName,
-      consumerKey,
-      consumerSecret,
-      serviceUrlScheme,
-    });
+    const {failureResponse, successResponse} = await NaverLogin.login();
     setSuccessResponse(successResponse);
     setFailureResponse(failureResponse);
   };
