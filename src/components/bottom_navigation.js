@@ -56,8 +56,6 @@ const KitStack = () => (
     <Stack.Screen name="Kit_checkup2" component={Kit_checkupScreen2} />
     <Stack.Screen name="Kit_checkup3" component={Kit_checkupScreen3} />
     <Stack.Screen name="QRcode" component={QRCodeScreen} />
-    <Stack.Screen name="Login2" component={LoginScreen2} />
-    <Stack.Screen name="Login" component={LoginScreen} />
   </Stack.Navigator>
 );
 
