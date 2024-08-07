@@ -17,7 +17,7 @@ import {Kit_checkupScreen3} from '../screen/Kit_checkup/Kit_checkup3';
 import QRCodeScreen from '../screen/Kit_checkup/QRcode';
 import LoginScreen from '../screen/medicine/Login';
 import LoginScreen2 from '../screen/medicine/Login2';
-import TabButton from './TapButton'; //하단 바 디자인
+import TabButton from './bottomtab_design'; //하단 바 디자인
 
 const Stack = createStackNavigator();
 
