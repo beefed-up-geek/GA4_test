@@ -26,7 +26,7 @@ const consumerSecret = 'yXEW6CuruC';
 const appName = 'HS바이오랩';
 
 /** This key is setup in iOS. So don't touch it */
-const serviceUrlScheme = 'navertest';
+const serviceUrlScheme = 'com.apple';
 
 const LoginScreen2 = () => {
   useEffect(() => {
