@@ -11,18 +11,21 @@ const Login1 = () => {
   useEffect(() => {
     const checkLoginMethod = async () => {
       const loginMethod = await AsyncStorage.getItem('loginMethod');
+      const userInfo = await AsyncStorage.getItem('userInfo');
+
       if (loginMethod) {
-        // loginMethod가 존재하면 바로 BottomNavigation으로 이동
         const timer = setTimeout(() => {
-          navigation.replace('BottomNavigation');
+          if (userInfo) {
+            navigation.replace('BottomNavigation');
+          } else {
+            navigation.replace('GetUserInfo');
+          }
         }, 3000);
       } else {
-        // loginMethod가 존재하지 않으면 3초 후에 Login2로 이동
         const timer = setTimeout(() => {
           navigation.replace('Login2');
         }, 3000);
 
-        // 컴포넌트 언마운트 시 타이머 클리어
         return () => clearTimeout(timer);
       }
     };
