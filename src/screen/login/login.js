@@ -1,49 +1,32 @@
 // /src/screen/login/login.js
-import React from 'react';
-import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+  ScrollView,
+  Button,
+} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import splashImage from '../../images/login/splash2.png';
 import naverIcon from '../../images/login/naver.png';
 import kakaoIcon from '../../images/login/kakao.png';
 import googleIcon from '../../images/login/google.png';
-import {login, me} from '@react-native-kakao/user';
+import {login as kakaoLogin, me} from '@react-native-kakao/user';
 import {
   GoogleSignin,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
-import {GoogleAuthProvider, signInWithCredential} from 'firebase/auth';
-import {isErrorWithCode} from '@react-native-google-signin/google-signin';
-import {initializeApp} from 'firebase/app';
-import {getAuth} from 'firebase/auth';
-import {Pressable} from 'react-native';
 import NaverLogin from '@react-native-seoul/naver-login';
-import {useEffect, useState} from 'react';
-
-const Gap = () => <View style={{marginTop: 24}} />;
-const ResponseJsonText = ({json = {}, name}) => (
-  <View
-    style={{
-      padding: 12,
-      borderRadius: 16,
-      borderWidth: 1,
-      backgroundColor: '#242c3d',
-    }}>
-    <Text style={{fontSize: 20, fontWeight: 'bold', color: 'white'}}>
-      {name}
-    </Text>
-    <Text style={{color: 'white', fontSize: 13, lineHeight: 20}}>
-      {JSON.stringify(json, null, 4)}
-    </Text>
-  </View>
-);
 
 const consumerKey = 'fujiEAut2m84ybqDQOoq';
 const consumerSecret = 'yXEW6CuruC';
 const appName = 'HS바이오랩';
-
-/** This key is setup in iOS. So don't touch it */
-const serviceUrlScheme = 'navertest';
+const serviceUrlScheme = 'com.apple';
 
 GoogleSignin.configure({
   webClientId:
@@ -55,51 +38,22 @@ GoogleSignin.configure({
   scopes: ['profile', 'email'],
 });
 
-const GoogleLogin = async () => {
-  await GoogleSignin.hasPlayServices();
-  const userInfo = await GoogleSignin.signIn();
-  return userInfo;
-};
+const Gap = () => <View style={{marginTop: 24}} />;
+const ResponseJsonText = ({json = {}, name}) => (
+  <View style={styles.responseContainer}>
+    <Text style={styles.responseTitle}>{name}</Text>
+    <Text style={styles.responseText}>{JSON.stringify(json, null, 4)}</Text>
+  </View>
+);
 
 const Login2 = () => {
   const navigation = useNavigation();
-
-  const handleLogin = async () => {
-    const userInfo = await AsyncStorage.getItem('userInfo');
-    if (userInfo) {
-      navigation.replace('BottomNavigation');
-    } else {
-      navigation.replace('GetUserInfo');
-    }
-  };
-
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState('');
-
-  const handleGoogleLogin = async () => {
-    setLoading(true);
-    try {
-      const response = await GoogleLogin();
-      const {idToken, user} = response;
-      if (user) {
-        const {id, name} = user; // 구글 사용자 정보 추출
-        await AsyncStorage.setItem('loginMethod', 'google');
-        await AsyncStorage.setItem('userId', id.toString());
-        await AsyncStorage.setItem('username', name);
-
-        navigation.replace('BottomNavigation'); // 로그인 후 화면 전환
-      }
-
-      setUser(user);
-    } catch (apiError) {
-      setError(
-        apiError?.response?.data?.error?.message || 'Something went wrong',
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [success, setSuccessResponse] = useState();
+  const [failure, setFailureResponse] = useState();
+  const [getProfileRes, setGetProfileRes] = useState();
 
   useEffect(() => {
     NaverLogin.initialize({
@@ -111,14 +65,84 @@ const Login2 = () => {
     });
   }, []);
 
-  const [success, setSuccessResponse] = useState();
-  const [failure, setFailureResponse] = useState();
-  const [getProfileRes, setGetProfileRes] = useState();
+  const handleLogin = () => {
+    navigation.replace('BottomNavigation');
+  };
 
-  const login = async () => {
-    const {failureResponse, successResponse} = await NaverLogin.login();
-    setSuccessResponse(successResponse);
-    setFailureResponse(failureResponse);
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    try {
+      const response = await GoogleSignin.signIn();
+      const {user} = response;
+      if (user) {
+        const {id, name} = user; // 구글 사용자 정보 추출
+        await AsyncStorage.setItem('loginMethod', 'google');
+        await AsyncStorage.setItem('userId', id.toString());
+        await AsyncStorage.setItem('username', name);
+
+        navigation.replace('BottomNavigation'); // 로그인 후 화면 전환
+      }
+      setUser(user);
+    } catch (apiError) {
+      setError(
+        apiError?.response?.data?.error?.message || 'Something went wrong',
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleNaverLogin = async () => {
+    try {
+      const {failureResponse, successResponse} = await NaverLogin.login();
+      if (successResponse) {
+        // Get the access token
+        const accessToken = successResponse.accessToken;
+
+        // Fetch user profile
+        const profileResult = await NaverLogin.getProfile(accessToken);
+        if (profileResult) {
+          const {id, name} = profileResult.response;
+          await AsyncStorage.setItem('loginMethod', 'naver');
+          await AsyncStorage.setItem('userId', id.toString());
+          await AsyncStorage.setItem('username', name);
+
+          navigation.replace('BottomNavigation');
+        } else {
+          console.error('Failed to fetch user profile.');
+        }
+      } else if (failureResponse) {
+        console.error('Naver login failed:', failureResponse);
+      }
+    } catch (error) {
+      console.error('Naver login error:', error);
+    }
+  };
+
+  const handleKakaoLogin = async () => {
+    try {
+      console.log('Starting Kakao login...');
+      await kakaoLogin();
+      console.log('Kakao login successful. Fetching user information...');
+
+      const userInfo = await me();
+      console.log('User information fetched:', userInfo);
+
+      if (userInfo && userInfo.id) {
+        await AsyncStorage.setItem('userId', userInfo.id.toString());
+        await AsyncStorage.setItem('loginMethod', 'kakao');
+        await AsyncStorage.setItem('username', userInfo.nickname);
+        console.log('User data stored in AsyncStorage');
+
+        navigation.replace('BottomNavigation');
+        console.log('Navigation to BottomNavigation');
+      } else {
+        throw new Error('User information is missing.');
+      }
+    } catch (error) {
+      console.error('Kakao login error:', error.message || error);
+      console.error('Error details:', error); // 추가적인 오류 정보 출력
+    }
   };
 
   const logout = async () => {
@@ -141,107 +165,86 @@ const Login2 = () => {
     }
   };
 
-  const deleteToken = async () => {
-    try {
-      await NaverLogin.deleteToken();
-      setSuccessResponse(undefined);
-      setFailureResponse(undefined);
-      setGetProfileRes(undefined);
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  const handleNaverLogin = async () => {
-    try {
-      const {failureResponse, successResponse} = await NaverLogin.login();
-      if (successResponse) {
-        const {id, name} = successResponse.response; // 네이버 사용자 정보 추출
-        await AsyncStorage.setItem('loginMethod', 'naver');
-        await AsyncStorage.setItem('userId', id.toString());
-        await AsyncStorage.setItem('username', name);
-
-        navigation.replace('BottomNavigation'); // 로그인 후 화면 전환
-      } else if (failureResponse) {
-        console.error('Naver login failed:', failureResponse);
-      }
-    } catch (error) {
-      console.log('got error: ', error.message);
-      if (error.code) {
-        switch (error.code) {
-          case statusCodes.SIGN_IN_CANCELLED:
-            console.log('Google sign in was cancelled');
-            break;
-          case statusCodes.IN_PROGRESS:
-            console.log('Google sign in is in progress');
-            break;
-          case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
-            console.log('Google play services not available or outdated');
-            break;
-          default:
-            console.log('Some other error happened: ', error.code);
-        }
-      } else {
-        console.log('Non-Google sign in error occurred: ', error);
-      }
-    }
-  };
-
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Image source={splashImage} style={styles.splashImage} />
-        <Text style={styles.welcomeText}>환영합니다!</Text>
-      </View>
-      <View style={styles.content}>
-        <Text style={{color: 'black'}}>나는 /src/screen/login/login.js 🎉</Text>
-        <TouchableOpacity
-          style={[styles.loginButton, {backgroundColor: '#03C75A'}]}
-          onPress={async () => {
-            await AsyncStorage.setItem('loginMethod', 'naver');
-            handleNaverLogin();
-          }}>
-          <Image source={naverIcon} style={styles.icon} />
-          <Text style={styles.buttonText}>네이버로 로그인</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.loginButton, {backgroundColor: '#FEE500'}]}
-          onPress={() => {
-            login().then(async () => {
-              me().then(async userInfo => {
-                await AsyncStorage.setItem('userId', userInfo.id.toString());
-                await AsyncStorage.setItem('loginMethod', 'kakao');
-                handleLogin();
-              });
-            });
-          }}>
-          <Image source={kakaoIcon} style={styles.icon} />
-          <Text style={styles.buttonText}>카카오로 로그인</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            styles.loginButton,
-            {
-              backgroundColor: '#FFFFFF',
-              borderColor: '#DB4437',
-              borderWidth: 1,
-            },
-          ]}
-          onPress={async () => {
-            await AsyncStorage.setItem('loginMethod', 'google');
-            handleGoogleLogin();
-          }}>
-          <Image source={googleIcon} style={styles.icon} />
-          <Text style={[styles.buttonText, {color: '#DB4437'}]}>
-            구글로 로그인
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollViewContent}>
+        <View style={styles.header}>
+          <Image source={splashImage} style={styles.splashImage} />
+          <Text style={styles.welcomeText}>환영합니다!</Text>
+        </View>
+        <View style={styles.content}>
+          <Text style={{color: 'black'}}>
+            나는 /src/screen/login/login.js 🎉
           </Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+          <TouchableOpacity
+            style={[styles.loginButton, {backgroundColor: '#03C75A'}]}
+            onPress={handleNaverLogin}>
+            <Image source={naverIcon} style={styles.icon} />
+            <Text style={styles.buttonText}>네이버로 로그인</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.loginButton, {backgroundColor: '#FEE500'}]}
+            onPress={handleKakaoLogin}>
+            <Image source={kakaoIcon} style={styles.icon} />
+            <Text style={styles.buttonText}>카카오로 로그인</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.loginButton,
+              {
+                backgroundColor: '#FFFFFF',
+                borderColor: '#DB4437',
+                borderWidth: 1,
+              },
+            ]}
+            onPress={handleGoogleLogin}>
+            <Image source={googleIcon} style={styles.icon} />
+            <Text style={[styles.buttonText, {color: '#DB4437'}]}>
+              구글로 로그인
+            </Text>
+          </TouchableOpacity>
+
+          <Gap />
+          <Button title={'Logout'} onPress={logout} />
+          <Gap />
+          {success && (
+            <>
+              <Button title="Get Profile" onPress={getProfile} />
+              <Gap />
+              <View>
+                <Button title="Delete Token" onPress={() => deleteToken()} />
+                <Gap />
+                <ResponseJsonText name={'Success'} json={success} />
+              </View>
+            </>
+          )}
+          <Gap />
+          {failure && <ResponseJsonText name={'Failure'} json={failure} />}
+          <Gap />
+          {getProfileRes && (
+            <ResponseJsonText name={'GetProfile'} json={getProfileRes} />
+          )}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    padding: 24,
+  },
   container: {
     flex: 1,
     backgroundColor: 'white',
@@ -288,6 +291,22 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     color: 'white',
+  },
+  responseContainer: {
+    padding: 12,
+    borderRadius: 16,
+    borderWidth: 1,
+    backgroundColor: '#242c3d',
+  },
+  responseTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  responseText: {
+    color: 'white',
+    fontSize: 13,
+    lineHeight: 20,
   },
 });
 

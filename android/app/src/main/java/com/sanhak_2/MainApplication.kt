@@ -10,8 +10,7 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
 import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.soloader.SoLoader
-import com.dooboolab.naverlogin.RNNaverLoginPackage // 추가
-
+import com.dooboolab.naverlogin.RNNaverLoginPackage;
 
 class MainApplication : Application(), ReactApplication {
 
