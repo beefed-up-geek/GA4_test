@@ -14,8 +14,8 @@ import Authentication2Screen from '../screen/healthscreen/authentication2';
 import Authentication3Screen from '../screen/healthscreen/authentication3';
 import Header from './header';
 import Kit_checkupScreen1 from '../screen/Kit_checkup';
-import {Kit_checkupScreen2} from '../screen/Kit_checkup/Kit_checkup2';
-import {Kit_checkupScreen3} from '../screen/Kit_checkup/Kit_checkup3';
+import Kit_checkupScreen2 from '../screen/Kit_checkup/Kit_checkup2';
+import Kit_checkupScreen3 from '../screen/Kit_checkup/Kit_checkup3';
 import QRCodeScreen from '../screen/Kit_checkup/QRcode';
 import TabDesign from './bottomtab_design'; //하단 바 디자인
 import GetUserInfo from '../screen/login/get_usr_info'; // 사용자 정보 입력 화면 임포트

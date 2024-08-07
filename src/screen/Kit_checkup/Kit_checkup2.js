@@ -1,154 +1,495 @@
-// /src/screen/Kit_checkup/Kit_checkup2.js
+/**
+ * Codia React Native App
+ * https://codia.ai
+ * https://github.com/facebook/react-native
+ *
+ * @format
+ */
 import React from 'react';
 import {
   View,
   Text,
+  ImageBackground,
   SafeAreaView,
   ScrollView,
-  TouchableOpacity,
   StyleSheet,
+  Dimensions,
+  TouchableOpacity,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome5';
-import YoutubePlayer from 'react-native-youtube-iframe';
+import LinearGradient from 'react-native-linear-gradient';
 
-export const Kit_checkupScreen2 = ({navigation}) => {
+const {width, height} = Dimensions.get('window');
+const scaleWidth = width / 390;
+const scaleHeight = height / 844;
+
+const Kit_checkupScreen2 = ({onPress, navigation}) => {
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView>
       <ScrollView
         scrollEnabled={true}
         contentInsetAdjustmentBehavior="automatic">
         <View style={styles.container}>
-          <Text style={{color: 'black'}}>
-            이 화면은 /src/screen/Kit_checkup/Kit_checkup2.js 🎉
-          </Text>
-          <Text style={{color: 'black'}}>
-            다음 화면은 /src/screen/Kit_checkup/QRcode.js !
-          </Text>
-          <View style={styles.infoBox}>
-            <View style={styles.infoIconContainer}>
-              <Icon
-                name="info-circle"
-                size={22}
-                color="#000"
-                style={styles.infoIcon}
+          <View style={styles.header}>
+            <ImageBackground
+              style={styles.headerIcon}
+              source={require('./assets/images/1f9e7f42-01c5-40ec-88d3-2a33f0b7f5aa.png')}
+              resizeMode="cover"
+            />
+            <Text style={styles.headerTitle} numberOfLines={1}>
+              소변 검사 가이드
+            </Text>
+            <View style={styles.headerRightIconContainer}>
+              <ImageBackground
+                style={styles.headerRightIcon}
+                source={require('./assets/images/719ef727-9a73-40d3-b526-193146ddccca.png')}
+                resizeMode="cover"
               />
             </View>
-            <Text style={styles.infoText}>
-              이 검사는 소변검사를 통해 신장기능에 이상이 있는지 확인하는
-              테스트입니다. 설명을 잘 읽고 설명에 따라 진행하시길 바랍니다.
-            </Text>
           </View>
-          <View style={styles.videoContainer}>
-            <YoutubePlayer play={true} height={200} videoId={'fRbvMOwTp9Q'} />
-            <Text style={styles.videoText}>
-              가이드 영상(안드로이드에서 에러있음)
-            </Text>
+          <View style={styles.banner}>
+            <View style={styles.bannerInner}>
+              <ImageBackground
+                style={styles.bannerBackgroundImage}
+                source={require('./assets/images/150b862e-e74e-485a-a1f8-73dce2fa73f4.png')}
+                resizeMode="cover"
+              />
+              <ImageBackground
+                style={styles.bannerForegroundImage}
+                source={require('./assets/images/0a9072ca-e17b-4750-ba0d-2659d1ab76d3.png')}
+                resizeMode="cover"
+              />
+              <Text style={styles.bannerText} numberOfLines={1}>
+                HS
+              </Text>
+            </View>
+            <View style={styles.progressBar}>
+              <View style={styles.progressBarIcon}>
+                <ImageBackground
+                  style={styles.progressBarIconImage}
+                  source={require('./assets/images/905cac4e-8da1-48c3-b6ab-6291d387aa69.png')}
+                />
+              </View>
+              <Text style={styles.progressBarText} numberOfLines={1}>
+                00:00
+              </Text>
+              <View style={styles.progressBarTrack} />
+              <Text style={styles.progressBarText} numberOfLines={1}>
+                -01:36
+              </Text>
+              <View style={styles.progressBarPlayIcon}>
+                <ImageBackground
+                  style={styles.progressBarPlayIconImage}
+                  source={require('./assets/images/babfae0e-3934-4e27-8cc0-b207c520f470.png')}
+                />
+              </View>
+            </View>
           </View>
-          <View style={styles.instructionsContainer}>
-            <Text style={styles.instructionText}>
-              검사 키트지에 소변을 묻혀주세요
-            </Text>
-            <Text style={styles.instructionText}>
-              소변을 가볍게 털고 60초동안 기다려주세요
-            </Text>
-            <Text style={styles.instructionText}>
-              너무 어두운 곳이나 빛이 반사되는 곳을 피해서 사진을 촬영해주세요
-            </Text>
+          <View style={styles.instructions}>
+            {Array.from({length: 6}).map((_, index) => (
+              <View key={index} style={styles.instruction}>
+                <View style={styles.instructionIconContainer}>
+                  <Text style={styles.instructionIconText}>{index + 1}</Text>
+                </View>
+                <Text style={styles.instructionText} numberOfLines={1}>
+                  {instructionTexts[index]}
+                </Text>
+              </View>
+            ))}
           </View>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => navigation.navigate('QRcode')}>
-              <Text style={styles.buttonText}>다음으로</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity onPress={() => navigation.navigate('QRcode')}>
+            <View style={styles.captureButton}>
+              <View style={styles.captureButtonTextContainer}>
+                <ImageBackground
+                  style={styles.captureButtonIcon}
+                  source={require('./assets/images/f8bca994-9ff5-46f4-96b3-d7420314c9b5.png')}
+                  resizeMode="cover"
+                />
+                <Text style={styles.captureButtonText} numberOfLines={1}>
+                  촬영하러 가기
+                </Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+          <View style={styles.spacer} />
+          <ImageBackground
+            style={styles.footerImage}
+            source={require('./assets/images/2a636030-9d1b-41dc-8565-8a5424694706.png')}
+            resizeMode="cover"
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#e3ebff',
-  },
-  container: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: '#e3ebff',
-    alignItems: 'center',
-    paddingVertical: 10,
-  },
-  infoBox: {
-    width: '90%',
-    backgroundColor: '#fcfeff',
-    borderRadius: 20,
-    padding: 16,
-    marginBottom: 20,
-    position: 'relative',
-  },
-  infoIconContainer: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-  },
-  infoText: {
-    fontFamily: 'Gowun Batang',
-    fontSize: 12,
-    fontWeight: '400',
-    color: '#000000',
-    marginBottom: 10,
-  },
-  videoContainer: {
-    width: '80%',
-    height: 300, // 적절한 높이 설정
-    backgroundColor: '#fcffff',
-    borderRadius: 20,
-    marginBottom: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden',
-  },
-  video: {
-    width: '100%',
-    height: '100%',
-  },
-  videoText: {
-    fontFamily: 'Inter',
-    fontSize: 8,
-    fontWeight: '400',
-    color: '#000000',
-  },
-  instructionsContainer: {
-    width: '90%',
-  },
-  instructionText: {
-    fontFamily: 'Gowun Batang',
-    fontSize: 12,
-    fontWeight: '400',
-    color: '#000000',
-    marginBottom: 20,
-  },
-  buttonContainer: {
-    width: '90%',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 20,
-  },
-  button: {
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    backgroundColor: 'rgba(120, 158, 255, 0.5)',
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  buttonText: {
-    fontFamily: 'Inter',
-    fontSize: 8,
-    fontWeight: '400',
-    color: '#000000',
-  },
-});
+const instructionTexts = [
+  '구성품 확인',
+  '소변컵에 채우기',
+  '검사 스틱에 소변 묻히기',
+  '스틱에 묻은 물기 제거하기',
+  '60초 기다리기',
+  '비색표에 스틱 올리기',
+];
 
 export default Kit_checkupScreen2;
+
+const styles = StyleSheet.create({
+  container: {
+    display: 'flex',
+    width: 390 * scaleWidth,
+    height: 844 * scaleHeight,
+    flexDirection: 'column',
+    alignItems: 'center',
+    flexWrap: 'nowrap',
+    backgroundColor: '#ffffff',
+    position: 'relative',
+    overflow: 'hidden',
+    marginTop: 0,
+    marginRight: 'auto',
+    marginBottom: 0,
+    marginLeft: 'auto',
+  },
+  header: {
+    display: 'flex',
+    height: 68 * scaleHeight,
+    paddingTop: 24 * scaleHeight,
+    paddingRight: 24 * scaleWidth,
+    paddingBottom: 24 * scaleHeight,
+    paddingLeft: 24 * scaleWidth,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    flexShrink: 0,
+    flexWrap: 'nowrap',
+    position: 'relative',
+  },
+  headerIcon: {
+    width: 20 * scaleWidth,
+    height: 20 * scaleWidth,
+    flexShrink: 0,
+    position: 'relative',
+    overflow: 'hidden',
+    zIndex: 1,
+  },
+  headerTitle: {
+    height: 16 * scaleHeight,
+    flexShrink: 0,
+    flexBasis: 'auto',
+    fontFamily: 'Pretendard Variable',
+    fontSize: 16 * scaleWidth,
+    fontWeight: '600',
+    lineHeight: 16 * scaleHeight,
+    color: '#000000',
+    position: 'relative',
+    textAlign: 'left',
+    zIndex: 2,
+  },
+  headerRightIconContainer: {
+    display: 'flex',
+    width: 20 * scaleWidth,
+    flexDirection: 'row',
+    gap: 8 * scaleWidth,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexShrink: 0,
+    flexWrap: 'nowrap',
+    position: 'relative',
+    zIndex: 3,
+  },
+  headerRightIcon: {
+    width: 20 * scaleWidth,
+    height: 20 * scaleWidth,
+    flexShrink: 0,
+    position: 'relative',
+    overflow: 'hidden',
+    zIndex: 4,
+  },
+  banner: {
+    display: 'flex',
+    height: 207 * scaleHeight,
+    paddingTop: 58 * scaleHeight,
+    paddingRight: 78 * scaleWidth,
+    paddingBottom: 58 * scaleHeight,
+    paddingLeft: 78 * scaleWidth,
+    gap: 10 * scaleHeight,
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    flexShrink: 0,
+    flexWrap: 'nowrap',
+    backgroundColor: '#e1e4ef',
+    position: 'relative',
+    overflow: 'hidden',
+    zIndex: 5,
+  },
+  bannerInner: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    flexShrink: 0,
+    flexWrap: 'nowrap',
+    position: 'relative',
+    zIndex: 6,
+  },
+  bannerBackgroundImage: {
+    width: 397 * scaleWidth,
+    height: 112 * scaleHeight,
+    flexShrink: 0,
+    position: 'absolute',
+    top: -13 * scaleHeight,
+    left: -85 * scaleWidth,
+    zIndex: 7,
+  },
+  bannerForegroundImage: {
+    width: 60 * scaleWidth,
+    height: 30 * scaleHeight,
+    flexShrink: 0,
+    position: 'relative',
+    zIndex: 8,
+  },
+  bannerText: {
+    display: 'flex',
+    width: 140.571 * scaleWidth,
+    height: 83.429 * scaleHeight,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    flexShrink: 0,
+    flexBasis: 'auto',
+    fontFamily: 'Bungee',
+    fontSize: 70 * scaleWidth,
+    fontWeight: '400',
+    lineHeight: 83.429 * scaleHeight,
+    color: '#ffffff',
+    position: 'relative',
+    textAlign: 'center',
+    zIndex: 9,
+  },
+  progressBar: {
+    display: 'flex',
+    width: 365 * scaleWidth,
+    height: 45 * scaleHeight,
+    paddingTop: 12 * scaleHeight,
+    paddingRight: 13 * scaleWidth,
+    paddingBottom: 12 * scaleHeight,
+    paddingLeft: 13 * scaleWidth,
+    flexDirection: 'row',
+    gap: 10 * scaleWidth,
+    alignItems: 'center',
+    flexShrink: 0,
+    flexWrap: 'nowrap',
+    backgroundColor: 'rgba(93, 93, 98, 0.32)',
+    borderTopLeftRadius: 13 * scaleWidth,
+    borderTopRightRadius: 13 * scaleWidth,
+    borderBottomRightRadius: 13 * scaleWidth,
+    borderBottomLeftRadius: 13 * scaleWidth,
+    position: 'relative',
+    zIndex: 10,
+  },
+  progressBarIcon: {
+    width: 20 * scaleWidth,
+    height: 20 * scaleHeight,
+    flexShrink: 0,
+    position: 'relative',
+    overflow: 'hidden',
+    zIndex: 11,
+  },
+  progressBarIconImage: {
+    width: 16.667 * scaleWidth,
+    height: 16.667 * scaleHeight,
+    position: 'relative',
+    zIndex: 12,
+    marginTop: 1.667 * scaleHeight,
+    marginRight: 0,
+    marginBottom: 0,
+    marginLeft: 1.667 * scaleWidth,
+  },
+  progressBarText: {
+    height: 17 * scaleHeight,
+    flexShrink: 0,
+    flexBasis: 'auto',
+    fontFamily: 'Pretendard Variable',
+    fontSize: 14 * scaleWidth,
+    fontWeight: '400',
+    lineHeight: 16.707 * scaleHeight,
+    color: '#ffffff',
+    position: 'relative',
+    textAlign: 'left',
+    zIndex: 13,
+  },
+  progressBarTrack: {
+    width: 173 * scaleWidth,
+    height: 8 * scaleHeight,
+    flexShrink: 0,
+    backgroundColor: 'rgba(126, 133, 150, 0.2)',
+    borderTopLeftRadius: 8 * scaleWidth,
+    borderTopRightRadius: 8 * scaleWidth,
+    borderBottomRightRadius: 8 * scaleWidth,
+    borderBottomLeftRadius: 8 * scaleWidth,
+    position: 'relative',
+    zIndex: 14,
+  },
+  progressBarPlayIcon: {
+    width: 28 * scaleWidth,
+    height: 28 * scaleHeight,
+    flexShrink: 0,
+    position: 'relative',
+    overflow: 'hidden',
+    zIndex: 16,
+  },
+  progressBarPlayIconImage: {
+    width: 19.25 * scaleWidth,
+    height: 19.25 * scaleHeight,
+    position: 'relative',
+    zIndex: 17,
+    marginTop: 4.375 * scaleHeight,
+    marginRight: 0,
+    marginBottom: 0,
+    marginLeft: 4.375 * scaleWidth,
+  },
+  instructions: {
+    display: 'flex',
+    paddingTop: 40 * scaleHeight,
+    paddingRight: 24 * scaleWidth,
+    paddingBottom: 40 * scaleHeight,
+    paddingLeft: 24 * scaleWidth,
+    gap: 20 * scaleHeight,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    alignSelf: 'stretch',
+    flexShrink: 0,
+    flexWrap: 'nowrap',
+    position: 'relative',
+    zIndex: 18,
+  },
+  instruction: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 12 * scaleWidth,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexShrink: 0,
+    flexWrap: 'nowrap',
+    position: 'relative',
+    zIndex: 19,
+  },
+  instructionIconContainer: {
+    display: 'flex',
+    width: 24 * scaleWidth,
+    height: 24 * scaleHeight,
+    paddingTop: 2 * scaleHeight,
+    paddingRight: 6 * scaleWidth,
+    paddingBottom: 2 * scaleHeight,
+    paddingLeft: 6 * scaleWidth,
+    gap: 10 * scaleWidth,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexShrink: 0,
+    flexWrap: 'nowrap',
+    backgroundColor: '#7595ff',
+    borderTopLeftRadius: 12 * scaleWidth,
+    borderTopRightRadius: 12 * scaleWidth,
+    borderBottomRightRadius: 12 * scaleWidth,
+    borderBottomLeftRadius: 12 * scaleWidth,
+    position: 'relative',
+    zIndex: 20,
+  },
+  instructionIconText: {
+    height: 20 * scaleHeight,
+    flexShrink: 0,
+    flexBasis: 'auto',
+    fontFamily: 'Pretendard Variable',
+    fontSize: 14 * scaleWidth,
+    fontWeight: '500',
+    lineHeight: 20 * scaleHeight,
+    color: '#ffffff',
+    position: 'relative',
+    textAlign: 'left',
+    zIndex: 21,
+  },
+  instructionText: {
+    height: 20 * scaleHeight,
+    flexShrink: 0,
+    flexBasis: 'auto',
+    fontFamily: 'Pretendard Variable',
+    fontSize: 14 * scaleWidth,
+    fontWeight: '500',
+    lineHeight: 20 * scaleHeight,
+    color: '#353535',
+    position: 'relative',
+    textAlign: 'left',
+    zIndex: 22,
+  },
+  captureButton: {
+    display: 'flex',
+    width: 211 * scaleWidth,
+    paddingTop: 12 * scaleHeight,
+    paddingRight: 50 * scaleWidth,
+    paddingBottom: 12 * scaleHeight,
+    paddingLeft: 50 * scaleWidth,
+    flexDirection: 'row',
+    gap: 10 * scaleWidth,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexShrink: 0,
+    flexWrap: 'nowrap',
+    backgroundColor: '#7595ff',
+    borderTopLeftRadius: 48 * scaleWidth,
+    borderTopRightRadius: 48 * scaleWidth,
+    borderBottomRightRadius: 48 * scaleWidth,
+    borderBottomLeftRadius: 48 * scaleWidth,
+    position: 'relative',
+    zIndex: 43,
+  },
+  captureButtonTextContainer: {
+    width: 111 * scaleWidth,
+    height: 18 * scaleHeight,
+    flexShrink: 0,
+    position: 'relative',
+    zIndex: 44,
+  },
+  captureButtonIcon: {
+    width: 18 * scaleWidth,
+    height: 18 * scaleHeight,
+    position: 'absolute',
+    top: 0,
+    left: 93 * scaleWidth,
+    overflow: 'hidden',
+    zIndex: 46,
+  },
+  captureButtonText: {
+    display: 'flex',
+    width: 84 * scaleWidth,
+    height: 12 * scaleHeight,
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontFamily: 'DM Sans',
+    fontSize: 14 * scaleWidth,
+    fontWeight: '700',
+    lineHeight: 15 * scaleHeight,
+    color: '#ffffff',
+    letterSpacing: 0.56 * scaleWidth,
+    position: 'absolute',
+    top: 3 * scaleHeight,
+    left: 0,
+    textAlign: 'center',
+    textTransform: 'uppercase',
+    zIndex: 45,
+  },
+  spacer: {
+    height: 110 * scaleHeight,
+    alignSelf: 'stretch',
+    flexShrink: 0,
+    backgroundColor: '#ffffff',
+    position: 'relative',
+    zIndex: 47,
+  },
+  footerImage: {
+    width: 148 * scaleWidth,
+    height: 5 * scaleHeight,
+    flexShrink: 0,
+    position: 'relative',
+    zIndex: 49,
+  },
+});
