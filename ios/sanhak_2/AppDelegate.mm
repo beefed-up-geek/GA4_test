@@ -2,6 +2,8 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 #import <NaverThirdPartyLogin/NaverThirdPartyLoginConnection.h>
+#import <React/RCTLinkingManager.h>
+#import <RNCKakaoUser/RNCKakaoUserUtil.h>
 
 @implementation AppDelegate
 
@@ -11,8 +13,6 @@
   self.moduleName = @"sanhak_2";
   self.initialProps = @{};
 
-  // 추가적으로 필요한 초기화 코드를 여기에 작성할 수 있습니다.
-
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
 
@@ -20,12 +20,16 @@
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
   // 네이버 로그인 URL Scheme으로 시작하는지 확인
-  if ([url.scheme isEqualToString:@"{{com.apple}}"]) {
+  if ([url.scheme isEqualToString:@"com.apple"]) {
     return [[NaverThirdPartyLoginConnection getSharedInstance] application:application openURL:url options:options];
+  }
+  // 카카오 로그인 URL Scheme 처리
+  if([RNCKakaoUserUtil isKakaoTalkLoginUrl:url]) {
+    return [RNCKakaoUserUtil handleOpenUrl:url];
   }
 
   // 기타 다른 URL 처리
-  return [super application:application openURL:url options:options];
+  return [super application:application openURL:url options:options] || [RCTLinkingManager application:application openURL:url options:options];
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
