@@ -7,12 +7,10 @@ import {
   ScrollView,
   Dimensions,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
 
 const {width, height} = Dimensions.get('window');
 
 export default function HomeScreen() {
-  const navigation = useNavigation();
   return (
     <SafeAreaView>
       <ScrollView
@@ -323,8 +321,7 @@ export default function HomeScreen() {
                   지금 검사하고 꾸준히 콩팥 건강을 관리해 보세요.
                 </Text>
               </View>
-              <TouchableOpacity
-                onPress={() => navigation.navigate('Kit_checkup1')}
+              <View
                 style={{
                   display: 'flex',
                   width: 282,
@@ -389,7 +386,7 @@ export default function HomeScreen() {
                     검사하러 가기&nbsp;
                   </Text>
                 </View>
-              </TouchableOpacity>
+              </View>
             </View>
           </View>
           <Text
