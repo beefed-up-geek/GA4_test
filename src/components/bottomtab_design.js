@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const tabDesign = ({label, iconName, isSelected, onPress}) => {
+const TabDesign = ({label, iconName, isSelected, onPress}) => {
   const [width] = useState(new Animated.Value(isSelected ? 120 : 50));
 
   useEffect(() => {
@@ -63,4 +63,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default tabDesign;
+export default TabDesign;
