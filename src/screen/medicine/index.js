@@ -1,9 +1,10 @@
 // /src/screen/medicine/index.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TextInput, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TextInput, Image, TouchableOpacity, Alert, Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import axios from 'axios';
 import { launchCamera } from 'react-native-image-picker';
+import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 const MedicineScreen = () => {
   const [medicines, setMedicines] = useState([]);
@@ -36,16 +37,37 @@ const MedicineScreen = () => {
     }
   };
 
-  const handleCameraPress = () => {
+  const requestCameraPermission = async () => {
+    const cameraPermission = Platform.OS === 'android' ? PERMISSIONS.ANDROID.CAMERA : PERMISSIONS.IOS.CAMERA;
+    const cameraStatus = await check(cameraPermission);
+
+    if (cameraStatus !== RESULTS.GRANTED) {
+      const cameraRequestResult = await request(cameraPermission);
+      if (cameraRequestResult !== RESULTS.GRANTED) {
+        Alert.alert('Permissions Error', 'Camera permission is not granted.');
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  const handleCameraPress = async () => {
+    const hasPermission = await requestCameraPermission();
+    if (!hasPermission) return;
+
     const options = {
       mediaType: 'photo',
       includeBase64: true,
+      cameraType: 'back', // Use the rear camera
     };
+
     launchCamera(options, (response) => {
       if (response.didCancel) {
         console.log('User cancelled image picker');
       } else if (response.errorCode) {
         console.log('ImagePicker Error: ', response.errorCode);
+        Alert.alert('Error', `ImagePicker Error: ${response.errorCode}`);
       } else if (response.assets && response.assets.length > 0) {
         const base64Image = response.assets[0].base64;
         console.log(base64Image);
