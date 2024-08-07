@@ -1,8 +1,9 @@
 // /src/screen/medicine/index.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TextInput, Image } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TextInput, Image, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import axios from 'axios';
+import { launchCamera } from 'react-native-image-picker';
 
 const MedicineScreen = () => {
   const [medicines, setMedicines] = useState([]);
@@ -33,6 +34,23 @@ const MedicineScreen = () => {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleCameraPress = () => {
+    const options = {
+      mediaType: 'photo',
+      includeBase64: true,
+    };
+    launchCamera(options, (response) => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.errorCode) {
+        console.log('ImagePicker Error: ', response.errorCode);
+      } else if (response.assets && response.assets.length > 0) {
+        const base64Image = response.assets[0].base64;
+        console.log(base64Image);
+      }
+    });
   };
 
   const renderMedicineItem = ({ item }) => (
@@ -71,7 +89,9 @@ const MedicineScreen = () => {
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
-        <Icon name="camera" size={20} color="#777" style={styles.cameraIcon} />
+        <TouchableOpacity onPress={handleCameraPress}>
+          <Icon name="camera" size={20} color="#777" style={styles.cameraIcon} />
+        </TouchableOpacity>
       </View>
       <Text style={styles.subheader}>자주 찾는 약</Text>
       <FlatList
