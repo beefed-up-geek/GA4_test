@@ -1,49 +1,26 @@
 // /src/components/bottom_navigation.js
-import React from 'react';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import React, {useState} from 'react';
+import {View, StyleSheet} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import HealthScreen from '../screen/healthscreen';
-import HomeScreen from '../screen/home';
+//import HomeScreen from '../screen/home';
+import HomeScreen from '../screen/home/hardcoding';
 import MedicineScreen from '../screen/medicine';
 import KitScreen from '../screen/kit';
 import DietScreen from '../screen/diet';
 import Authentication1Screen from '../screen/healthscreen/authentication1';
 import Authentication2Screen from '../screen/healthscreen/authentication2';
 import Authentication3Screen from '../screen/healthscreen/authentication3';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Header from './header';
 import Kit_checkupScreen1 from '../screen/Kit_checkup';
 import {Kit_checkupScreen2} from '../screen/Kit_checkup/Kit_checkup2';
 import {Kit_checkupScreen3} from '../screen/Kit_checkup/Kit_checkup3';
 import QRCodeScreen from '../screen/Kit_checkup/QRcode';
-import LoginScreen from '../screen/medicine/Login';
-import LoginScreen2 from '../screen/medicine/Login2';
+import TabDesign from './bottomtab_design'; //하단 바 디자인
+import GetUserInfo from '../screen/login/get_usr_info'; // 사용자 정보 입력 화면 임포트
 
-const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
-
-const screenOptions = ({route}) => ({
-  tabBarActiveTintColor: '#1677FF', // 하단바에서 버튼이 선택되었을 때 색
-  tabBarInactiveTintColor: 'gray',
-  headerShown: false,
-  tabBarIcon: ({focused, color, size}) => {
-    let iconName;
-
-    if (route.name === 'Home_') {
-      iconName = focused ? 'home' : 'home';
-    } else if (route.name === 'Health_') {
-      iconName = focused ? 'heartbeat' : 'heartbeat';
-    } else if (route.name === 'Medicine_') {
-      iconName = focused ? 'capsules' : 'capsules';
-    } else if (route.name === 'Kit_') {
-      iconName = focused ? 'vial' : 'vial';
-    } else if (route.name === 'Diet_') {
-      iconName = focused ? 'utensils' : 'utensils';
-    }
-
-    return <FontAwesome5 name={iconName} size={size} color={color} />;
-  },
-});
 
 const stackScreenOptions = {
   headerTitle: () => <Header />,
@@ -62,6 +39,7 @@ const HealthStack = () => (
 const HomeStack = () => (
   <Stack.Navigator screenOptions={stackScreenOptions}>
     <Stack.Screen name="Home" component={HomeScreen} />
+    <Stack.Screen name="GetUserInfo" component={GetUserInfo} />
   </Stack.Navigator>
 );
 
@@ -90,35 +68,84 @@ const DietStack = () => (
 );
 
 const BottomNavigation = () => {
+  const [selected, setSelected] = useState('Home');
+  const navigation = useNavigation();
+
   return (
-    <Tab.Navigator screenOptions={screenOptions}>
-      <Tab.Screen
-        name="Home_"
-        component={HomeStack}
-        options={{tabBarLabel: '홈'}}
-      />
-      <Tab.Screen
-        name="Health_"
-        component={HealthStack}
-        options={{tabBarLabel: '건강검진 분석'}}
-      />
-      <Tab.Screen
-        name="Medicine_"
-        component={MedicineStack}
-        options={{tabBarLabel: '약'}}
-      />
-      <Tab.Screen
-        name="Kit_"
-        component={KitStack}
-        options={{tabBarLabel: '키트 검사'}}
-      />
-      <Tab.Screen
-        name="Diet_"
-        component={DietStack}
-        options={{tabBarLabel: '식단관리'}}
-      />
-    </Tab.Navigator>
+    <View style={{flex: 1, backgroundColor: '#fff'}}>
+      <View style={{flex: 1}}>
+        {selected === 'Home' && <HomeStack />}
+        {selected === 'HealthCheck' && <HealthStack />}
+        {selected === 'KitResult' && <KitStack />}
+        {selected === 'RecommendDiet' && <DietStack />}
+        {selected === 'DrugSearch' && <MedicineStack />}
+      </View>
+      <View style={styles.floatingContainer}>
+        <View style={styles.container}>
+          <TabDesign
+            label="홈 화면"
+            iconName="home-outline"
+            isSelected={selected === 'Home'}
+            onPress={() => {
+              setSelected('Home');
+            }}
+          />
+          <TabDesign
+            label="키트 결과"
+            iconName="pencil-outline"
+            isSelected={selected === 'KitResult'}
+            onPress={() => {
+              setSelected('KitResult');
+            }}
+          />
+          <TabDesign
+            label="건강검진"
+            iconName="heart-outline"
+            isSelected={selected === 'HealthCheck'}
+            onPress={() => {
+              setSelected('HealthCheck');
+            }}
+          />
+          <TabDesign
+            label="추천 식단"
+            iconName="silverware-fork-knife"
+            isSelected={selected === 'RecommendDiet'}
+            onPress={() => {
+              setSelected('RecommendDiet');
+            }}
+          />
+          <TabDesign
+            label="약 검색"
+            iconName="pill"
+            isSelected={selected === 'DrugSearch'}
+            onPress={() => {
+              setSelected('DrugSearch');
+            }}
+          />
+        </View>
+      </View>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  floatingContainer: {
+    position: 'absolute',
+    bottom: 20,
+    left: '50%',
+    transform: [{translateX: -175}], // width의 절반만큼 왼쪽으로 이동
+    backgroundColor: 'transparent', // 배경색을 투명하게 설정
+  },
+  container: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    paddingVertical: 10,
+    width: 350,
+    borderRadius: 24,
+    elevation: 5, // 그림자 효과 추가
+  },
+});
 
 export default BottomNavigation;

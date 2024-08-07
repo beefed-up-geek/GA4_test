@@ -18,8 +18,6 @@ const HomeScreen = ({onPress, navigation}) => {
         title="키트 검사 시작하기"
         onPress={() => navigation.navigate('Kit_checkup1')}
       />
-      <Button title="log in" onPress={() => navigation.navigate('Login')} />
-      <Button title="log in" onPress={() => navigation.navigate('Login2')} />
     </View>
   );
 };

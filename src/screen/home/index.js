@@ -46,9 +46,9 @@ const HomeScreen = () => {
           <Text style={{color: 'black'}}>ID: {userId}</Text>
         </>
       ) : (
-        <>
-          <Text style={{color: 'black'}}>이 화면은 🎉</Text>
-        </>
+        <Text style={{color: 'black'}}>
+          이 화면은 /src/screen/home/index.js🎉
+        </Text>
       )}
     </View>
   );

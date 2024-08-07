@@ -64,8 +64,13 @@ const GoogleLogin = async () => {
 const Login2 = () => {
   const navigation = useNavigation();
 
-  const handleLogin = () => {
-    navigation.replace('BottomNavigation');
+  const handleLogin = async () => {
+    const userInfo = await AsyncStorage.getItem('userInfo');
+    if (userInfo) {
+      navigation.replace('BottomNavigation');
+    } else {
+      navigation.replace('GetUserInfo');
+    }
   };
 
   const [error, setError] = useState('');
@@ -161,7 +166,19 @@ const Login2 = () => {
         console.error('Naver login failed:', failureResponse);
       }
     } catch (error) {
-      console.error('Naver login error:', error);
+      console.log('got error: ', error.message);
+      if (isErrorWithCode(error)) {
+        switch (error.code) {
+          case statusCodes.SIGN_IN_CANCELLED:
+            break;
+          case statusCodes.IN_PROGRESS:
+            break;
+          case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
+            break;
+          default:
+        }
+      } else {
+      }
     }
   };
 
@@ -182,7 +199,6 @@ const Login2 = () => {
           <Image source={naverIcon} style={styles.icon} />
           <Text style={styles.buttonText}>네이버로 로그인</Text>
         </TouchableOpacity>
-
         <TouchableOpacity
           style={[styles.loginButton, {backgroundColor: '#FEE500'}]}
           onPress={() => {
@@ -190,16 +206,13 @@ const Login2 = () => {
               me().then(async userInfo => {
                 await AsyncStorage.setItem('userId', userInfo.id.toString());
                 await AsyncStorage.setItem('loginMethod', 'kakao');
-                await AsyncStorage.setItem('username', nickname);
-
-                navigation.replace('BottomNavigation');
+                handleLogin();
               });
             });
           }}>
           <Image source={kakaoIcon} style={styles.icon} />
           <Text style={styles.buttonText}>카카오로 로그인</Text>
         </TouchableOpacity>
-
         <TouchableOpacity
           style={[
             styles.loginButton,

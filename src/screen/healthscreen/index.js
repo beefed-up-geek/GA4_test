@@ -1,5 +1,4 @@
-// /src/screen/healthscreen/index.js
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import {
   View,
   Text,
@@ -27,6 +26,12 @@ const HealthScreen = () => {
   const [selectedBloodPressureData, setSelectedBloodPressureData] =
     useState(null);
 
+  const [isCollapsed1, setIsCollapsed1] = useState(true);
+  const [isCollapsed2, setIsCollapsed2] = useState(true);
+  const [isCollapsed3, setIsCollapsed3] = useState(true);
+  const [isCollapsed4, setIsCollapsed4] = useState(true);
+  const [isCollapsed5, setIsCollapsed5] = useState(true);
+
   const fetchData = async () => {
     const storedDate = await AsyncStorage.getItem('healthscreen_last_update');
     setLastUpdate(storedDate);
@@ -45,17 +50,21 @@ const HealthScreen = () => {
     }, []),
   );
 
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   const createDataSet = dataKey => {
     return healthData
       .map(item => parseFloat(item[dataKey]))
-      .filter(value => !isNaN(value)); // NaN 값을 필터링
+      .filter(value => !isNaN(value));
   };
 
   const getColor = data => {
-    if (data.length < 2) return `rgba(0, 0, 0, 1)`; // default color if not enough data points
+    if (data.length < 2) return 'rgba(0, 0, 0, 1)';
     return data[data.length - 1] > data[data.length - 2]
-      ? `rgba(240, 0, 4, 1)`
-      : `rgba(0, 76, 240, 1)`;
+      ? 'rgba(240, 0, 4, 1)'
+      : 'rgba(0, 76, 240, 1)';
   };
 
   const handleDataPointClick = (data, dataset, setSelectedData) => {
@@ -74,100 +83,170 @@ const HealthScreen = () => {
         const bp = item.resBloodPressure.split('/');
         return type === 'systolic' ? parseFloat(bp[0]) : parseFloat(bp[1]);
       })
-      .filter(value => !isNaN(value)); // NaN 값을 필터링
+      .filter(value => !isNaN(value));
   };
 
   const createLabels = () => {
     return healthData.map(item => item.resCheckupYear);
   };
 
-  const data1 = {
-    labels: createLabels(),
-    datasets: [
-      {
-        data: createDataSet('resSerumCreatinine'),
-        color: (opacity = 1) => getColor(createDataSet('resSerumCreatinine')), // Red color
-        strokeWidth: 2,
-      },
-    ],
-    legend: [],
+  const calculateChange = dataKey => {
+    const data = createDataSet(dataKey);
+    if (data.length < 2) return null;
+    return data[data.length - 1] - data[data.length - 2];
   };
 
-  const data2 = {
-    labels: createLabels(),
-    datasets: [
-      {
-        data: createDataSet('resGFR'),
-        color: (opacity = 1) => getColor(createDataSet('resGFR')), // Blue color
-        strokeWidth: 2,
+  const data1 = useMemo(
+    () => ({
+      labels: createLabels(),
+      datasets: [
+        {
+          data: createDataSet('resSerumCreatinine'),
+          color: (opacity = 1) => getColor(createDataSet('resSerumCreatinine')),
+          strokeWidth: 2,
+        },
+      ],
+      legend: [],
+    }),
+    [healthData],
+  );
+
+  const data2 = useMemo(
+    () => ({
+      labels: createLabels(),
+      datasets: [
+        {
+          data: createDataSet('resGFR'),
+          color: (opacity = 1) => getColor(createDataSet('resGFR')),
+          strokeWidth: 2,
+        },
+      ],
+      legend: [],
+    }),
+    [healthData],
+  );
+
+  const data3 = useMemo(
+    () => ({
+      labels: createLabels(),
+      datasets: [
+        {
+          data: createDataSet('resFastingBloodSuger'),
+          color: (opacity = 1) =>
+            getColor(createDataSet('resFastingBloodSuger')),
+          strokeWidth: 2,
+        },
+      ],
+      legend: [],
+    }),
+    [healthData],
+  );
+
+  const data4 = useMemo(
+    () => ({
+      labels: createLabels(),
+      datasets: [
+        {
+          data: createDataSet('resTotalCholesterol'),
+          color: (opacity = 1) =>
+            getColor(createDataSet('resTotalCholesterol')),
+          strokeWidth: 2,
+        },
+      ],
+      legend: [],
+    }),
+    [healthData],
+  );
+
+  const bloodPressureData = useMemo(
+    () => ({
+      labels: createLabels(),
+      datasets: [
+        {
+          data: createBloodPressureDataSet('systolic'),
+          color: (opacity = 1) =>
+            getColor(createBloodPressureDataSet('systolic')),
+          strokeWidth: 2,
+        },
+        {
+          data: createBloodPressureDataSet('diastolic'),
+          color: (opacity = 1) =>
+            getColor(createBloodPressureDataSet('systolic')),
+          strokeWidth: 2,
+        },
+      ],
+      legend: [],
+    }),
+    [healthData],
+  );
+
+  const chartConfigWithGradient = useMemo(
+    () => data => ({
+      backgroundGradientFrom: '#ffffff',
+      backgroundGradientTo: '#ffffff',
+      decimalPlaces: 1,
+      color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+      labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+      style: {
+        borderRadius: 16,
       },
-    ],
-    legend: [],
+      fillShadowGradient: getColor(data),
+      fillShadowGradientOpacity: 0.3,
+      propsForDots: {
+        r: '2',
+        strokeWidth: '',
+      },
+      propsForBackgroundLines: {
+        stroke: '#ffffff',
+        strokeDasharray: '',
+      },
+    }),
+    [healthData],
+  );
+
+  const toggleCollapse = (collapseSetter, dataSetter) => {
+    dataSetter(null); // 먼저 정보창을 없앱니다.
+    setTimeout(() => {
+      collapseSetter(prevState => !prevState); // 그 다음에 그래프를 접습니다.
+    }, 0); // 지연 없이 바로 실행합니다.
   };
 
-  const data3 = {
-    labels: createLabels(),
-    datasets: [
-      {
-        data: createDataSet('resFastingBloodSuger'),
-        color: (opacity = 1) => getColor(createDataSet('resFastingBloodSuger')), // Red color
-        strokeWidth: 2,
-      },
-    ],
-    legend: [],
+  const renderChangeIndicator = change => {
+    if (change === null) return null;
+
+    const isIncrease = change > 0;
+    const color = isIncrease ? 'rgba(240, 0, 4, 1)' : 'rgba(0, 76, 240, 1)';
+    const icon = isIncrease ? 'caret-up' : 'caret-down';
+
+    return (
+      <View style={styles.changeContainer}>
+        <FontAwesome5 name={icon} size={16} color={color} />
+        <Text style={[styles.changeText, {color}]}>
+          {Math.abs(change).toFixed(1)}
+        </Text>
+      </View>
+    );
   };
 
-  const data4 = {
-    labels: createLabels(),
-    datasets: [
-      {
-        data: createDataSet('resTotalCholesterol'),
-        color: (opacity = 1) => getColor(createDataSet('resTotalCholesterol')), // Red color
-        strokeWidth: 2,
-      },
-    ],
-    legend: [],
-  };
-
-  const bloodPressureData = {
-    labels: createLabels(),
-    datasets: [
-      {
-        data: createBloodPressureDataSet('systolic'),
-        color: (opacity = 1) =>
-          getColor(createBloodPressureDataSet('systolic')), // Red color
-        strokeWidth: 2,
-      },
-      {
-        data: createBloodPressureDataSet('diastolic'),
-        color: (opacity = 1) =>
-          getColor(createBloodPressureDataSet('systolic')), // Blue color
-        strokeWidth: 2,
-      },
-    ],
-    legend: [],
-  };
-
-  const chartConfigWithGradient = data => ({
-    backgroundGradientFrom: '#ffffff',
-    backgroundGradientTo: '#ffffff',
-    decimalPlaces: 1,
-    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-    style: {
-      borderRadius: 16,
-    },
-    fillShadowGradient: getColor(data),
-    fillShadowGradientOpacity: 0.3,
-    propsForDots: {
-      r: '2', // Hides the dots
-      strokeWidth: '',
-    },
-    propsForBackgroundLines: {
-      stroke: '#ffffff',
-      strokeDasharray: '', // Hide background lines
-    },
-  });
+  const ChartComponent = ({
+    data,
+    chartConfig,
+    handleDataPointClick,
+    isCollapsed,
+    change,
+  }) => (
+    <View style={{display: isCollapsed ? 'none' : 'flex'}}>
+      <LineChart
+        data={data}
+        width={screenWidth * 0.8}
+        height={160}
+        chartConfig={chartConfig}
+        bezier
+        onDataPointClick={handleDataPointClick}
+        style={styles.chart}
+      />
+    </View>
+  );
 
   return (
     <ScrollView style={styles.container}>
@@ -200,217 +279,230 @@ const HealthScreen = () => {
           </TouchableOpacity>
         </View>
       </View>
-
+      <Text style={styles.bigTitle}>신장 기능 검사</Text>
       {lastUpdate && healthData.length > 0 && (
         <>
           <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>신장 기능</Text>
-            <View style={styles.graphBox}>
+            <View style={styles.cardHeader}>
               <Text style={styles.graphTitle}>혈청 크레아티닌</Text>
-              <Text style={styles.analysisText}>
+              {renderChangeIndicator(calculateChange('resSerumCreatinine'))}
+              <TouchableOpacity
+                onPress={() =>
+                  toggleCollapse(setIsCollapsed1, setSelectedData1)
+                }
+                style={styles.collapseToggle}>
                 <FontAwesome5
-                  name="info-circle"
+                  name={isCollapsed1 ? 'chevron-down' : 'chevron-up'}
                   size={16}
-                  style={styles.iconStyle}
-                />{' '}
-                낮으면 신장 기능이 좋아요.
-              </Text>
-              <LineChart
-                data={data1}
-                width={screenWidth * 0.8}
-                height={160} // 줄여진 높이
-                chartConfig={chartConfigWithGradient(
+                  color="black"
+                />
+              </TouchableOpacity>
+            </View>
+            <ChartComponent
+              data={data1}
+              chartConfig={chartConfigWithGradient(
+                createDataSet('resSerumCreatinine'),
+              )}
+              handleDataPointClick={data =>
+                handleDataPointClick(
+                  data,
                   createDataSet('resSerumCreatinine'),
-                )}
-                bezier
-                onDataPointClick={data =>
-                  handleDataPointClick(
-                    data,
-                    createDataSet('resSerumCreatinine'),
-                    setSelectedData1,
-                  )
-                }
-                style={styles.chart}
-              />
-              {selectedData1 && selectedData1.year && (
-                <View
-                  style={[
-                    styles.dataPointInfo,
-                    {top: selectedData1.y + 40, left: selectedData1.x},
-                  ]}>
-                  <Text style={styles.dataPointInfoText}>
-                    {`${selectedData1.year} 년 \n ${selectedData1.value} mg/dL`}
-                  </Text>
-                </View>
-              )}
-            </View>
-            <View style={styles.graphBox}>
+                  setSelectedData1,
+                )
+              }
+              isCollapsed={isCollapsed1}
+              change={calculateChange('resSerumCreatinine')}
+            />
+            {selectedData1 && selectedData1.year && (
+              <View
+                style={[
+                  styles.dataPointInfo,
+                  {top: selectedData1.y + 40, left: selectedData1.x},
+                ]}>
+                <Text style={styles.dataPointInfoText}>
+                  {`${selectedData1.year} 년 \n ${selectedData1.value} mg/dL`}
+                </Text>
+              </View>
+            )}
+          </View>
+
+          <View style={styles.sectionContainer}>
+            <View style={styles.cardHeader}>
               <Text style={styles.graphTitle}>사구체여과율 (GFR)</Text>
-              <Text style={styles.analysisText}>
-                <FontAwesome5
-                  name="info-circle"
-                  size={16}
-                  style={styles.iconStyle}
-                />{' '}
-                높으면 신장 기능이 좋아요.
-              </Text>
-              <LineChart
-                data={data2}
-                width={screenWidth * 0.8}
-                height={160} // 줄여진 높이
-                chartConfig={chartConfigWithGradient(createDataSet('resGFR'))}
-                bezier
-                onDataPointClick={data =>
-                  handleDataPointClick(
-                    data,
-                    createDataSet('resGFR'),
-                    setSelectedData2,
-                  )
+              {renderChangeIndicator(calculateChange('resGFR'))}
+              <TouchableOpacity
+                onPress={() =>
+                  toggleCollapse(setIsCollapsed2, setSelectedData2)
                 }
-                style={styles.chart}
-              />
-              {selectedData2 && selectedData2.year && (
-                <View
-                  style={[
-                    styles.dataPointInfo,
-                    {top: selectedData2.y + 40, left: selectedData2.x - 60},
-                  ]}>
-                  <Text style={styles.dataPointInfoText}>
-                    {`${selectedData2.year} 년 \n${selectedData2.value} mL/min/1.73m^2`}
-                  </Text>
-                </View>
-              )}
+                style={styles.collapseToggle}>
+                <FontAwesome5
+                  name={isCollapsed2 ? 'chevron-down' : 'chevron-up'}
+                  size={16}
+                  color="black"
+                />
+              </TouchableOpacity>
             </View>
+            <ChartComponent
+              data={data2}
+              chartConfig={chartConfigWithGradient(createDataSet('resGFR'))}
+              handleDataPointClick={data =>
+                handleDataPointClick(
+                  data,
+                  createDataSet('resGFR'),
+                  setSelectedData2,
+                )
+              }
+              isCollapsed={isCollapsed2}
+              change={calculateChange('resGFR')}
+            />
+            {selectedData2 && selectedData2.year && (
+              <View
+                style={[
+                  styles.dataPointInfo,
+                  {top: selectedData2.y + 40, left: selectedData2.x - 60},
+                ]}>
+                <Text style={styles.dataPointInfoText}>
+                  {`${selectedData2.year} 년 \n${selectedData2.value} mL/min/1.73m^2`}
+                </Text>
+              </View>
+            )}
           </View>
-
+          <Text style={styles.bigTitle}>당뇨 검사</Text>
           <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>당뇨 검사</Text>
-            <View style={styles.graphBox}>
+            <View style={styles.cardHeader}>
               <Text style={styles.graphTitle}>공복 혈당</Text>
-              <Text style={styles.analysisText}>
+              {renderChangeIndicator(calculateChange('resFastingBloodSuger'))}
+              <TouchableOpacity
+                onPress={() =>
+                  toggleCollapse(setIsCollapsed3, setSelectedData3)
+                }
+                style={styles.collapseToggle}>
                 <FontAwesome5
-                  name="info-circle"
+                  name={isCollapsed3 ? 'chevron-down' : 'chevron-up'}
                   size={16}
-                  style={styles.iconStyle}
-                />{' '}
-                너무 낮으면 당뇨 위험이 높아요
-              </Text>
-              <LineChart
-                data={data3}
-                width={screenWidth * 0.8}
-                height={160} // 줄여진 높이
-                chartConfig={chartConfigWithGradient(
+                  color="black"
+                />
+              </TouchableOpacity>
+            </View>
+            <ChartComponent
+              data={data3}
+              chartConfig={chartConfigWithGradient(
+                createDataSet('resFastingBloodSuger'),
+              )}
+              handleDataPointClick={data =>
+                handleDataPointClick(
+                  data,
                   createDataSet('resFastingBloodSuger'),
-                )}
-                bezier
-                onDataPointClick={data =>
-                  handleDataPointClick(
-                    data,
-                    createDataSet('resFastingBloodSuger'),
-                    setSelectedData3,
-                  )
-                }
-                style={styles.chart}
-              />
-              {selectedData3 && selectedData3.year && (
-                <View
-                  style={[
-                    styles.dataPointInfo,
-                    {top: selectedData3.y + 40, left: selectedData3.x},
-                  ]}>
-                  <Text style={styles.dataPointInfoText}>
-                    {`${selectedData3.year}년 \n ${selectedData3.value} mg/dL`}
-                  </Text>
-                </View>
-              )}
-            </View>
-            <Text style={styles.sectionTitle}>이상 지질혈증 검사</Text>
-            <View style={styles.graphBox}>
-              <Text style={styles.graphTitle}>총콜레스테롤</Text>
-              <Text style={styles.analysisText}>
-                <FontAwesome5
-                  name="info-circle"
-                  size={16}
-                  style={styles.iconStyle}
-                />{' '}
-                높으면 고지혈증 위험이 높아요
-              </Text>
-              <LineChart
-                data={data4}
-                width={screenWidth * 0.8}
-                height={160} // 줄여진 높이
-                chartConfig={chartConfigWithGradient(
-                  createDataSet('resTotalCholesterol'),
-                )}
-                bezier
-                onDataPointClick={data =>
-                  handleDataPointClick(
-                    data,
-                    createDataSet('resTotalCholesterol'),
-                    setSelectedData4,
-                  )
-                }
-                style={styles.chart}
-              />
-              {selectedData4 && selectedData4.year && (
-                <View
-                  style={[
-                    styles.dataPointInfo,
-                    {top: selectedData4.y + 40, left: selectedData4.x},
-                  ]}>
-                  <Text style={styles.dataPointInfoText}>
-                    {`${selectedData4.year} 년 \n ${selectedData4.value} mg/dl`}
-                  </Text>
-                </View>
-              )}
-            </View>
+                  setSelectedData3,
+                )
+              }
+              isCollapsed={isCollapsed3}
+              change={calculateChange('resFastingBloodSuger')}
+            />
+            {selectedData3 && selectedData3.year && (
+              <View
+                style={[
+                  styles.dataPointInfo,
+                  {top: selectedData3.y + 40, left: selectedData3.x},
+                ]}>
+                <Text style={styles.dataPointInfoText}>
+                  {`${selectedData3.year}년 \n ${selectedData3.value} mg/dL`}
+                </Text>
+              </View>
+            )}
           </View>
-
+          <Text style={styles.bigTitle}>이상 지질혈증 검사</Text>
           <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>고혈압 검사</Text>
-            <View style={styles.graphBox}>
-              <Text style={styles.graphTitle}>혈압</Text>
-              <Text style={styles.analysisText}>
-                <FontAwesome5
-                  name="info-circle"
-                  size={16}
-                  style={styles.iconStyle}
-                />{' '}
-                높을수록 고혈압 위험이 높아요
-              </Text>
-              <LineChart
-                data={bloodPressureData}
-                width={screenWidth * 0.8}
-                height={160} // 줄여진 높이
-                chartConfig={chartConfigWithGradient(
-                  createBloodPressureDataSet('systolic'),
-                )}
-                bezier
-                onDataPointClick={data =>
-                  handleDataPointClick(
-                    data,
-                    createBloodPressureDataSet('systolic'),
-                    setSelectedBloodPressureData,
-                  )
+            <View style={styles.cardHeader}>
+              <Text style={styles.graphTitle}>총콜레스테롤</Text>
+              {renderChangeIndicator(calculateChange('resTotalCholesterol'))}
+              <TouchableOpacity
+                onPress={() =>
+                  toggleCollapse(setIsCollapsed4, setSelectedData4)
                 }
-                style={styles.chart}
-              />
-              {selectedBloodPressureData && selectedBloodPressureData.year && (
-                <View
-                  style={[
-                    styles.dataPointInfo,
-                    {
-                      top: selectedBloodPressureData.y + 40,
-                      left: selectedBloodPressureData.x,
-                    },
-                  ]}>
-                  <Text style={styles.dataPointInfoText}>
-                    {`${selectedBloodPressureData.year} 년 \n ${selectedBloodPressureData.value} mmHg`}
-                  </Text>
-                </View>
-              )}
+                style={styles.collapseToggle}>
+                <FontAwesome5
+                  name={isCollapsed4 ? 'chevron-down' : 'chevron-up'}
+                  size={16}
+                  color="black"
+                />
+              </TouchableOpacity>
             </View>
+            <ChartComponent
+              data={data4}
+              chartConfig={chartConfigWithGradient(
+                createDataSet('resTotalCholesterol'),
+              )}
+              handleDataPointClick={data =>
+                handleDataPointClick(
+                  data,
+                  createDataSet('resTotalCholesterol'),
+                  setSelectedData4,
+                )
+              }
+              isCollapsed={isCollapsed4}
+              change={calculateChange('resTotalCholesterol')}
+            />
+            {selectedData4 && selectedData4.year && (
+              <View
+                style={[
+                  styles.dataPointInfo,
+                  {top: selectedData4.y + 40, left: selectedData4.x},
+                ]}>
+                <Text style={styles.dataPointInfoText}>
+                  {`${selectedData4.year} 년 \n ${selectedData4.value} mg/dl`}
+                </Text>
+              </View>
+            )}
           </View>
+          <Text style={styles.bigTitle}>고혈압 검사</Text>
+          <View style={styles.sectionContainer}>
+            <View style={styles.cardHeader}>
+              <Text style={styles.graphTitle}>혈압</Text>
+              {renderChangeIndicator(calculateChange('resBloodPressure'))}
+              <TouchableOpacity
+                onPress={() =>
+                  toggleCollapse(setIsCollapsed5, setSelectedBloodPressureData)
+                }
+                style={styles.collapseToggle}>
+                <FontAwesome5
+                  name={isCollapsed5 ? 'chevron-down' : 'chevron-up'}
+                  size={16}
+                  color="black"
+                />
+              </TouchableOpacity>
+            </View>
+            <ChartComponent
+              data={bloodPressureData}
+              chartConfig={chartConfigWithGradient(
+                createBloodPressureDataSet('systolic'),
+              )}
+              handleDataPointClick={data =>
+                handleDataPointClick(
+                  data,
+                  createBloodPressureDataSet('systolic'),
+                  setSelectedBloodPressureData,
+                )
+              }
+              isCollapsed={isCollapsed5}
+              change={calculateChange('resBloodPressure')}
+            />
+            {selectedBloodPressureData && selectedBloodPressureData.year && (
+              <View
+                style={[
+                  styles.dataPointInfo,
+                  {
+                    top: selectedBloodPressureData.y + 40,
+                    left: selectedBloodPressureData.x,
+                  },
+                ]}>
+                <Text style={styles.dataPointInfoText}>
+                  {`${selectedBloodPressureData.year} 년 \n ${selectedBloodPressureData.value} mmHg`}
+                </Text>
+              </View>
+            )}
+          </View>
+          <View style={styles.whiteBox}></View>
         </>
       )}
     </ScrollView>
@@ -455,7 +547,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
-    marginBottom: 40,
+    marginBottom: 25,
   },
   box: {
     width: '100%',
@@ -469,6 +561,13 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1,
+  },
+  bigTitle: {
+    marginTop: 10,
+    marginLeft: 10,
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#5D5D62',
   },
   boxTitle: {
     fontSize: 18,
@@ -512,8 +611,19 @@ const styles = StyleSheet.create({
     transform: [{translateY: 15}],
   },
   sectionContainer: {
+    width: '95%',
     paddingHorizontal: 20,
-    marginTop: 20,
+    marginTop: 10,
+    marginLeft: '2.5%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 0,
+    shadowColor: '#666',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 5,
   },
   analysisText: {
     fontSize: 14,
@@ -541,7 +651,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: 'black',
-    marginBottom: 10,
   },
   chart: {
     borderRadius: 10,
@@ -550,7 +659,21 @@ const styles = StyleSheet.create({
     color: '#B5B5B5',
     marginRight: 5,
   },
-
+  changeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  changeText: {
+    fontSize: 16,
+    marginLeft: 5,
+  },
+  chartHeader: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingHorizontal: 10,
+    paddingTop: 10,
+  },
   dataPointInfo: {
     position: 'absolute',
     backgroundColor: 'white',
@@ -564,6 +687,22 @@ const styles = StyleSheet.create({
   },
   dataPointInfoText: {
     color: 'black',
+  },
+  collapseToggle: {
+    paddingVertical: 10,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  whiteBox: {
+    marginTop: 20,
+    width: 100, // 원하는 너비
+    height: 100, // 원하는 높이
+    backgroundColor: 'white',
+    borderColor: '#fff', // 선택 사항
+    borderWidth: 1, // 선택 사항
   },
 });
 
