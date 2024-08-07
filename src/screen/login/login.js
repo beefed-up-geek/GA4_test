@@ -61,7 +61,6 @@ const Login2 = () => {
           <Image source={naverIcon} style={styles.icon} />
           <Text style={styles.buttonText}>네이버로 로그인</Text>
         </TouchableOpacity>
-
         <TouchableOpacity
           style={[styles.loginButton, {backgroundColor: '#FEE500'}]}
           onPress={() => {
@@ -76,16 +75,6 @@ const Login2 = () => {
           <Image source={kakaoIcon} style={styles.icon} />
           <Text style={styles.buttonText}>카카오로 로그인</Text>
         </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.loginButton, {backgroundColor: '#FEE500'}]}
-          onPress={() => {
-            unlink().then(console.log).catch(console.error);
-          }}>
-          <Image source={kakaoIcon} style={styles.icon} />
-          <Text style={styles.buttonText}>카카오 로그아웃</Text>
-        </TouchableOpacity>
-
         <TouchableOpacity
           style={[
             styles.loginButton,
