@@ -1,10 +1,8 @@
-// /src/components/bottom_navigation.js
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, StyleSheet} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import HealthScreen from '../screen/healthscreen';
-//import HomeScreen from '../screen/home';
 import HomeScreen from '../screen/home/hardcoding';
 import MedicineScreen from '../screen/medicine';
 import KitScreen from '../screen/kit';
@@ -17,14 +15,14 @@ import Kit_checkupScreen1 from '../screen/Kit_checkup';
 import {Kit_checkupScreen2} from '../screen/Kit_checkup/Kit_checkup2';
 import {Kit_checkupScreen3} from '../screen/Kit_checkup/Kit_checkup3';
 import QRCodeScreen from '../screen/Kit_checkup/QRcode';
-import TabDesign from './bottomtab_design'; //하단 바 디자인
-import GetUserInfo from '../screen/login/get_usr_info'; // 사용자 정보 입력 화면 임포트
+import TabDesign from './bottomtab_design';
+import GetUserInfo from '../screen/login/get_usr_info';
 
 const Stack = createStackNavigator();
 
 const stackScreenOptions = {
   headerTitle: () => <Header />,
-  headerLeft: () => null, // 기본 타이틀 숨김
+  headerLeft: () => null,
 };
 
 const HealthStack = () => (
@@ -68,7 +66,7 @@ const DietStack = () => (
 const BottomNavigation = () => {
   const [selected, setSelected] = useState('Home');
   const navigation = useNavigation();
-
+  const route = useRoute();
   return (
     <View style={{flex: 1, backgroundColor: '#fff'}}>
       <View style={{flex: 1}}>
@@ -86,6 +84,7 @@ const BottomNavigation = () => {
             isSelected={selected === 'Home'}
             onPress={() => {
               setSelected('Home');
+              navigation.navigate('Home');
             }}
           />
           <TabDesign
@@ -94,6 +93,7 @@ const BottomNavigation = () => {
             isSelected={selected === 'KitResult'}
             onPress={() => {
               setSelected('KitResult');
+              navigation.navigate('KitResult');
             }}
           />
           <TabDesign
@@ -102,6 +102,7 @@ const BottomNavigation = () => {
             isSelected={selected === 'HealthCheck'}
             onPress={() => {
               setSelected('HealthCheck');
+              navigation.navigate('HealthCheck');
             }}
           />
           <TabDesign
@@ -110,6 +111,7 @@ const BottomNavigation = () => {
             isSelected={selected === 'RecommendDiet'}
             onPress={() => {
               setSelected('RecommendDiet');
+              navigation.navigate('RecommendDiet');
             }}
           />
           <TabDesign
@@ -118,6 +120,7 @@ const BottomNavigation = () => {
             isSelected={selected === 'DrugSearch'}
             onPress={() => {
               setSelected('DrugSearch');
+              navigation.navigate('DrugSearch');
             }}
           />
         </View>
@@ -131,8 +134,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     left: '50%',
-    transform: [{translateX: -175}], // width의 절반만큼 왼쪽으로 이동
-    backgroundColor: 'transparent', // 배경색을 투명하게 설정
+    transform: [{translateX: -175}],
+    backgroundColor: 'transparent',
   },
   container: {
     flexDirection: 'row',
@@ -142,7 +145,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     width: 350,
     borderRadius: 24,
-    elevation: 5, // 그림자 효과 추가
+    elevation: 5,
   },
 });
 
