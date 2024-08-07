@@ -90,9 +90,8 @@ const Authentication2Screen = () => {
       };
       console.log(request_data);
       const response = await axios.post('https://70a5-203-252-33-2.ngrok-free.app/health_checkup/step1', request_data);
-      console.log(1);
+
       const { result, data } = response.data;
-      console.log(result.code);
       if (result.code === "CF-03002") {
         navigation.navigate('Authentication3', {
           jti: data.jti,
@@ -103,9 +102,7 @@ const Authentication2Screen = () => {
           telecom: selectedId,
           loginTypeLevel:  String(selectedValue)
         });
-        console.log(2);
       } else {
-        console.log(3);
         Alert.alert('잘못된 사용자 정보 입력');
       }
     } catch (error) {

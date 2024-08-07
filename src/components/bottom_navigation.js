@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
 import {View, StyleSheet} from 'react-native';
-import {NavigationContainer, useNavigation} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import HealthScreen from '../screen/healthscreen';
+//import HomeScreen from '../screen/home';
 import HomeScreen from '../screen/home/hardcoding';
 import MedicineScreen from '../screen/medicine';
 import KitScreen from '../screen/kit';
@@ -35,12 +36,9 @@ const HealthStack = () => (
   </Stack.Navigator>
 );
 
-const HomeStack = ({setSelected}) => (
+const HomeStack = () => (
   <Stack.Navigator screenOptions={stackScreenOptions}>
-    <Stack.Screen name="Home">
-      {(props) => <HomeScreen {...props} setSelected={setSelected} />}
-    </Stack.Screen>
-    <Stack.Screen name="Kit" component={KitScreen} />
+    <Stack.Screen name="Home" component={HomeScreen} />
   </Stack.Navigator>
 );
 
@@ -53,6 +51,7 @@ const MedicineStack = () => (
 const KitStack = () => (
   <Stack.Navigator screenOptions={stackScreenOptions}>
     <Stack.Screen name="Kit" component={KitScreen} />
+    <Stack.Screen name="Kit_checkup1" component={Kit_checkupScreen1} />
     <Stack.Screen name="Kit_checkup2" component={Kit_checkupScreen2} />
     <Stack.Screen name="Kit_checkup3" component={Kit_checkupScreen3} />
     <Stack.Screen name="QRcode" component={QRCodeScreen} />
@@ -69,11 +68,12 @@ const DietStack = () => (
 
 const BottomNavigation = () => {
   const [selected, setSelected] = useState('Home');
+  const navigation = useNavigation();
 
   return (
     <View style={{flex: 1, backgroundColor: '#fff'}}>
       <View style={{flex: 1}}>
-        {selected === 'Home' && <HomeStack setSelected={setSelected} />}
+        {selected === 'Home' && <HomeStack />}
         {selected === 'HealthCheck' && <HealthStack />}
         {selected === 'KitResult' && <KitStack />}
         {selected === 'RecommendDiet' && <DietStack />}
