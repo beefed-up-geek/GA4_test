@@ -36,7 +36,7 @@ const HomeScreen = () => {
       ) : loginMethod === 'google' ? (
         <Text style={{color: 'black'}}>구글로 로그인했어요</Text>
       ) : (
-        <Text style={{color: 'black'}}>이 화면은 🎉</Text>
+        <Text style={{color: 'black'}}>이 화면은 /src/screen/home/index.js🎉</Text>
       )}
     </View>
   );

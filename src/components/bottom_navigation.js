@@ -17,6 +17,7 @@ import {Kit_checkupScreen2} from '../screen/Kit_checkup/Kit_checkup2';
 import {Kit_checkupScreen3} from '../screen/Kit_checkup/Kit_checkup3';
 import QRCodeScreen from '../screen/Kit_checkup/QRcode';
 import TabDesign from './bottomtab_design'; //하단 바 디자인
+import GetUserInfo from '../screen/login/get_usr_info'; // 사용자 정보 입력 화면 임포트
 
 const Stack = createStackNavigator();
 
@@ -37,6 +38,7 @@ const HealthStack = () => (
 const HomeStack = () => (
   <Stack.Navigator screenOptions={stackScreenOptions}>
     <Stack.Screen name="Home" component={HomeScreen} />
+    <Stack.Screen name="GetUserInfo" component={GetUserInfo} />
   </Stack.Navigator>
 );
 
