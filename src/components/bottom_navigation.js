@@ -1,10 +1,10 @@
+// /src/components/bottom_navigation.js
 import React, {useState} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import HealthScreen from '../screen/healthscreen';
-//import HomeScreen from '../screen/home';
-import HomeScreen from '../screen/home/hardcoding';
+import HomeScreen from '../screen/home';
 import MedicineScreen from '../screen/medicine';
 import KitScreen from '../screen/kit';
 import DietScreen from '../screen/diet';
@@ -16,9 +16,7 @@ import Kit_checkupScreen1 from '../screen/Kit_checkup';
 import {Kit_checkupScreen2} from '../screen/Kit_checkup/Kit_checkup2';
 import {Kit_checkupScreen3} from '../screen/Kit_checkup/Kit_checkup3';
 import QRCodeScreen from '../screen/Kit_checkup/QRcode';
-import LoginScreen from '../screen/medicine/Login';
-import LoginScreen2 from '../screen/medicine/Login2';
-import TabButton from './TapButton'; //하단 바 디자인
+import TabDesign from './bottomtab_design'; //하단 바 디자인
 
 const Stack = createStackNavigator();
 
@@ -55,8 +53,6 @@ const KitStack = () => (
     <Stack.Screen name="Kit_checkup2" component={Kit_checkupScreen2} />
     <Stack.Screen name="Kit_checkup3" component={Kit_checkupScreen3} />
     <Stack.Screen name="QRcode" component={QRCodeScreen} />
-    <Stack.Screen name="Login2" component={LoginScreen2} />
-    <Stack.Screen name="Login" component={LoginScreen} />
   </Stack.Navigator>
 );
 
@@ -81,7 +77,7 @@ const BottomNavigation = () => {
       </View>
       <View style={styles.floatingContainer}>
         <View style={styles.container}>
-          <TabButton
+          <TabDesign
             label="홈 화면"
             iconName="home-outline"
             isSelected={selected === 'Home'}
@@ -89,7 +85,7 @@ const BottomNavigation = () => {
               setSelected('Home');
             }}
           />
-          <TabButton
+          <TabDesign
             label="키트 결과"
             iconName="pencil-outline"
             isSelected={selected === 'KitResult'}
@@ -97,7 +93,7 @@ const BottomNavigation = () => {
               setSelected('KitResult');
             }}
           />
-          <TabButton
+          <TabDesign
             label="건강검진"
             iconName="heart-outline"
             isSelected={selected === 'HealthCheck'}
@@ -105,7 +101,7 @@ const BottomNavigation = () => {
               setSelected('HealthCheck');
             }}
           />
-          <TabButton
+          <TabDesign
             label="추천 식단"
             iconName="silverware-fork-knife"
             isSelected={selected === 'RecommendDiet'}
@@ -113,7 +109,7 @@ const BottomNavigation = () => {
               setSelected('RecommendDiet');
             }}
           />
-          <TabButton
+          <TabDesign
             label="약 검색"
             iconName="pill"
             isSelected={selected === 'DrugSearch'}

@@ -147,7 +147,7 @@ const HealthScreen = () => {
     fillShadowGradient: getColor(data),
     fillShadowGradientOpacity: 0.3,
     propsForDots: {
-      r: "2", // Hides the dots
+      r: "3", // Hides the dots
       strokeWidth: "",
     },
     propsForBackgroundLines: {
