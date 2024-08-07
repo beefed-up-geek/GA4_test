@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useMemo, useCallback} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import {
   View,
   Text,
@@ -88,6 +88,12 @@ const HealthScreen = () => {
 
   const createLabels = () => {
     return healthData.map(item => item.resCheckupYear);
+  };
+
+  const calculateChange = dataKey => {
+    const data = createDataSet(dataKey);
+    if (data.length < 2) return null;
+    return data[data.length - 1] - data[data.length - 2];
   };
 
   const data1 = useMemo(
@@ -198,11 +204,36 @@ const HealthScreen = () => {
     [healthData],
   );
 
+  const toggleCollapse = (collapseSetter, dataSetter) => {
+    dataSetter(null); // 먼저 정보창을 없앱니다.
+    setTimeout(() => {
+      collapseSetter(prevState => !prevState); // 그 다음에 그래프를 접습니다.
+    }, 0); // 지연 없이 바로 실행합니다.
+  };
+
+  const renderChangeIndicator = change => {
+    if (change === null) return null;
+
+    const isIncrease = change > 0;
+    const color = isIncrease ? 'rgba(240, 0, 4, 1)' : 'rgba(0, 76, 240, 1)';
+    const icon = isIncrease ? 'caret-up' : 'caret-down';
+
+    return (
+      <View style={[styles.changeContainer]}>
+        <FontAwesome5 name={icon} size={16} color={color} />
+        <Text style={[styles.changeText, {color}]}>
+          {Math.abs(change).toFixed(1)}
+        </Text>
+      </View>
+    );
+  };
+
   const ChartComponent = ({
     data,
     chartConfig,
     handleDataPointClick,
     isCollapsed,
+    change,
   }) => (
     <View style={{display: isCollapsed ? 'none' : 'flex'}}>
       <LineChart
@@ -252,11 +283,13 @@ const HealthScreen = () => {
       {lastUpdate && healthData.length > 0 && (
         <>
           <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>신장 기능</Text>
             <View style={styles.cardHeader}>
               <Text style={styles.graphTitle}>혈청 크레아티닌</Text>
+              {renderChangeIndicator(calculateChange('resSerumCreatinine'))}
               <TouchableOpacity
-                onPress={() => setIsCollapsed1(!isCollapsed1)}
+                onPress={() =>
+                  toggleCollapse(setIsCollapsed1, setSelectedData1)
+                }
                 style={styles.collapseToggle}>
                 <FontAwesome5
                   name={isCollapsed1 ? 'chevron-down' : 'chevron-up'}
@@ -278,6 +311,7 @@ const HealthScreen = () => {
                 )
               }
               isCollapsed={isCollapsed1}
+              change={calculateChange('resSerumCreatinine')}
             />
             {selectedData1 && selectedData1.year && (
               <View
@@ -295,8 +329,11 @@ const HealthScreen = () => {
           <View style={styles.sectionContainer}>
             <View style={styles.cardHeader}>
               <Text style={styles.graphTitle}>사구체여과율 (GFR)</Text>
+              {renderChangeIndicator(calculateChange('resGFR'))}
               <TouchableOpacity
-                onPress={() => setIsCollapsed2(!isCollapsed2)}
+                onPress={() =>
+                  toggleCollapse(setIsCollapsed2, setSelectedData2)
+                }
                 style={styles.collapseToggle}>
                 <FontAwesome5
                   name={isCollapsed2 ? 'chevron-down' : 'chevron-up'}
@@ -316,6 +353,7 @@ const HealthScreen = () => {
                 )
               }
               isCollapsed={isCollapsed2}
+              change={calculateChange('resGFR')}
             />
             {selectedData2 && selectedData2.year && (
               <View
@@ -331,11 +369,13 @@ const HealthScreen = () => {
           </View>
 
           <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>당뇨 검사</Text>
             <View style={styles.cardHeader}>
               <Text style={styles.graphTitle}>공복 혈당</Text>
+              {renderChangeIndicator(calculateChange('resFastingBloodSuger'))}
               <TouchableOpacity
-                onPress={() => setIsCollapsed3(!isCollapsed3)}
+                onPress={() =>
+                  toggleCollapse(setIsCollapsed3, setSelectedData3)
+                }
                 style={styles.collapseToggle}>
                 <FontAwesome5
                   name={isCollapsed3 ? 'chevron-down' : 'chevron-up'}
@@ -357,6 +397,7 @@ const HealthScreen = () => {
                 )
               }
               isCollapsed={isCollapsed3}
+              change={calculateChange('resFastingBloodSuger')}
             />
             {selectedData3 && selectedData3.year && (
               <View
@@ -372,11 +413,13 @@ const HealthScreen = () => {
           </View>
 
           <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>이상 지질혈증 검사</Text>
             <View style={styles.cardHeader}>
               <Text style={styles.graphTitle}>총콜레스테롤</Text>
+              {renderChangeIndicator(calculateChange('resTotalCholesterol'))}
               <TouchableOpacity
-                onPress={() => setIsCollapsed4(!isCollapsed4)}
+                onPress={() =>
+                  toggleCollapse(setIsCollapsed4, setSelectedData4)
+                }
                 style={styles.collapseToggle}>
                 <FontAwesome5
                   name={isCollapsed4 ? 'chevron-down' : 'chevron-up'}
@@ -398,6 +441,7 @@ const HealthScreen = () => {
                 )
               }
               isCollapsed={isCollapsed4}
+              change={calculateChange('resTotalCholesterol')}
             />
             {selectedData4 && selectedData4.year && (
               <View
@@ -413,11 +457,13 @@ const HealthScreen = () => {
           </View>
 
           <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>고혈압 검사</Text>
             <View style={styles.cardHeader}>
               <Text style={styles.graphTitle}>혈압</Text>
+              {renderChangeIndicator(calculateChange('resBloodPressure'))}
               <TouchableOpacity
-                onPress={() => setIsCollapsed5(!isCollapsed5)}
+                onPress={() =>
+                  toggleCollapse(setIsCollapsed5, setSelectedBloodPressureData)
+                }
                 style={styles.collapseToggle}>
                 <FontAwesome5
                   name={isCollapsed5 ? 'chevron-down' : 'chevron-up'}
@@ -439,6 +485,7 @@ const HealthScreen = () => {
                 )
               }
               isCollapsed={isCollapsed5}
+              change={calculateChange('resBloodPressure')}
             />
             {selectedBloodPressureData && selectedBloodPressureData.year && (
               <View
@@ -455,6 +502,7 @@ const HealthScreen = () => {
               </View>
             )}
           </View>
+          <View style={styles.whiteBox}></View>
         </>
       )}
     </ScrollView>
@@ -575,7 +623,21 @@ const styles = StyleSheet.create({
     color: '#B5B5B5',
     marginRight: 5,
   },
-
+  changeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 0,
+  },
+  changeText: {
+    fontSize: 16,
+    marginLeft: 5,
+  },
+  chartHeader: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingHorizontal: 10,
+    paddingTop: 10,
+  },
   dataPointInfo: {
     position: 'absolute',
     backgroundColor: 'white',
@@ -597,6 +659,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  whiteBox: {
+    marginTop: 20,
+    width: 100, // 원하는 너비
+    height: 100, // 원하는 높이
+    backgroundColor: 'white',
+    borderColor: '#fff', // 선택 사항
+    borderWidth: 1, // 선택 사항
   },
 });
 
