@@ -279,7 +279,7 @@ const HealthScreen = () => {
           </TouchableOpacity>
         </View>
       </View>
-
+      <Text style={styles.bigTitle}>신장 기능 검사</Text>
       {lastUpdate && healthData.length > 0 && (
         <>
           <View style={styles.sectionContainer}>
@@ -367,7 +367,7 @@ const HealthScreen = () => {
               </View>
             )}
           </View>
-
+          <Text style={styles.bigTitle}>당뇨 검사</Text>
           <View style={styles.sectionContainer}>
             <View style={styles.cardHeader}>
               <Text style={styles.graphTitle}>공복 혈당</Text>
@@ -411,7 +411,7 @@ const HealthScreen = () => {
               </View>
             )}
           </View>
-
+          <Text style={styles.bigTitle}>이상 지질혈증 검사</Text>
           <View style={styles.sectionContainer}>
             <View style={styles.cardHeader}>
               <Text style={styles.graphTitle}>총콜레스테롤</Text>
@@ -455,7 +455,7 @@ const HealthScreen = () => {
               </View>
             )}
           </View>
-
+          <Text style={styles.bigTitle}>고혈압 검사</Text>
           <View style={styles.sectionContainer}>
             <View style={styles.cardHeader}>
               <Text style={styles.graphTitle}>혈압</Text>
@@ -528,7 +528,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
-    marginBottom: 40,
+    marginBottom: 25,
   },
   box: {
     width: '100%',
@@ -542,6 +542,13 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1,
+  },
+  bigTitle: {
+    marginTop: 10,
+    marginLeft: 10,
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#5D5D62',
   },
   boxTitle: {
     fontSize: 18,
@@ -593,7 +600,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 15,
     marginBottom: 0,
-    shadowColor: '#333',
+    shadowColor: '#666',
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.8,
     shadowRadius: 2,
