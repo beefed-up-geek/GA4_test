@@ -12,8 +12,13 @@ import {login, logout, unlink, me} from '@react-native-kakao/user';
 const Login2 = () => {
   const navigation = useNavigation();
 
-  const handleLogin = () => {
-    navigation.replace('BottomNavigation');
+  const handleLogin = async () => {
+    const userInfo = await AsyncStorage.getItem('userInfo');
+    if (userInfo) {
+      navigation.replace('BottomNavigation');
+    } else {
+      navigation.replace('GetUserInfo');
+    }
   };
 
   const signIn = async () => {
@@ -27,19 +32,14 @@ const Login2 = () => {
       if (isErrorWithCode(error)) {
         switch (error.code) {
           case statusCodes.SIGN_IN_CANCELLED:
-            // user cancelled the login flow
             break;
           case statusCodes.IN_PROGRESS:
-            // operation (eg. sign in) already in progress
             break;
           case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
-            // play services not available or outdated
             break;
           default:
-          // some other error happened
         }
       } else {
-        // an error that's not related to google sign in occurred
       }
     }
   };
@@ -69,7 +69,7 @@ const Login2 = () => {
               me().then(async userInfo => {
                 await AsyncStorage.setItem('userId', userInfo.id.toString());
                 await AsyncStorage.setItem('loginMethod', 'kakao');
-                navigation.replace('BottomNavigation');
+                handleLogin();
               });
             });
           }}>
