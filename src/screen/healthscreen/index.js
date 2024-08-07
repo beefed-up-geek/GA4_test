@@ -219,7 +219,7 @@ const HealthScreen = () => {
     const icon = isIncrease ? 'caret-up' : 'caret-down';
 
     return (
-      <View style={[styles.changeContainer]}>
+      <View style={styles.changeContainer}>
         <FontAwesome5 name={icon} size={16} color={color} />
         <Text style={[styles.changeText, {color}]}>
           {Math.abs(change).toFixed(1)}
@@ -585,8 +585,19 @@ const styles = StyleSheet.create({
     transform: [{translateY: 15}],
   },
   sectionContainer: {
+    width: '95%',
     paddingHorizontal: 20,
-    marginTop: 20,
+    marginTop: 10,
+    marginLeft: '2.5%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 0,
+    shadowColor: '#333',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 5,
   },
   analysisText: {
     fontSize: 14,
@@ -614,7 +625,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: 'black',
-    marginBottom: 10,
   },
   chart: {
     borderRadius: 10,
@@ -626,7 +636,7 @@ const styles = StyleSheet.create({
   changeContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: 0,
+    marginRight: 10,
   },
   changeText: {
     fontSize: 16,
