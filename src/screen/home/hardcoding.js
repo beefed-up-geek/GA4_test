@@ -5,10 +5,14 @@ import {
   ImageBackground,
   SafeAreaView,
   ScrollView,
+  TouchableOpacity,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import {useNavigation} from '@react-navigation/native';
 
 export default function HomeScreen() {
+  const navigation = useNavigation();
+
   return (
     <SafeAreaView>
       <ScrollView
@@ -302,25 +306,6 @@ export default function HomeScreen() {
                     이에요.&nbsp;
                   </Text>
                 </Text>
-                <Text
-                  style={{
-                    width: 400,
-                    height: 17,
-                    alignSelf: 'stretch',
-                    flexShrink: 0,
-                    flexBasis: 'auto',
-                    fontFamily: 'Pretendard Variable',
-                    fontSize: 13,
-                    fontWeight: '500',
-                    lineHeight: 16.707,
-                    color: '#5d5d62',
-                    position: 'relative',
-                    textAlign: 'left',
-                    zIndex: 22,
-                  }}
-                  numberOfLines={1}>
-                  지금 검사하고 꾸준히 콩팥 건강을 관리해 보세요.
-                </Text>
               </View>
               <View
                 style={{
@@ -450,29 +435,31 @@ export default function HomeScreen() {
                       source={require('../../../assets/images/3d1d1d39-75c9-4cb8-9aa3-5a495f0be1a0.png')}
                       resizeMode="cover"
                     />
-                    <Text
-                      style={{
-                        display: 'flex',
-                        width: 100,
-                        height: 20,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        fontFamily: 'DM Sans',
-                        fontSize: 14,
-                        fontWeight: '700',
-                        lineHeight: 16,
-                        color: '#7595ff',
-                        letterSpacing: 0.56,
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        textAlign: 'center',
-                        textTransform: 'uppercase',
-                        zIndex: 18,
-                      }}
-                      numberOfLines={1}>
-                      검사하러 가기&nbsp;
-                    </Text>
+                    <TouchableOpacity onPress={navigation.navigate('Kit')}>
+                      <Text
+                        style={{
+                          display: 'flex',
+                          width: 100,
+                          height: 20,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          fontFamily: 'DM Sans',
+                          fontSize: 14,
+                          fontWeight: '700',
+                          lineHeight: 16,
+                          color: '#7595ff',
+                          letterSpacing: 0.56,
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          textAlign: 'center',
+                          textTransform: 'uppercase',
+                          zIndex: 18,
+                        }}
+                        numberOfLines={1}>
+                        검사하러 가기&nbsp;
+                      </Text>
+                    </TouchableOpacity>
                   </View>
                 </View>
               </View>
@@ -788,7 +775,6 @@ export default function HomeScreen() {
               marginBottom: 0,
               marginLeft: 121,
             }}
-            source={require('../../../assets/images/68d0722a-16e1-4d21-b41a-e72bbe4be945.png')}
             resizeMode="cover"
           />
         </View>

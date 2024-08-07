@@ -1,9 +1,10 @@
 // /src/screen/medicine/index.js
-import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, FlatList, Image, TextInput} from 'react-native';
-
-// JSON 파일을 import
-const data = require('./data.json');
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TextInput, Image, TouchableOpacity, Alert, Platform } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome5';
+import axios from 'axios';
+import { launchCamera } from 'react-native-image-picker';
+import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 const MedicineScreen = () => {
   const [medicines, setMedicines] = useState([]);
@@ -11,32 +12,87 @@ const MedicineScreen = () => {
   const [filteredMedicines, setFilteredMedicines] = useState([]);
 
   useEffect(() => {
-    setMedicines(data.medicines);
-    setFilteredMedicines(data.medicines);
+    fetchMedicines('');
   }, []);
 
   useEffect(() => {
-    filterMedicines(searchQuery);
-  }, [searchQuery, medicines]);
+    fetchMedicines(searchQuery);
+  }, [searchQuery]);
 
-  const filterMedicines = query => {
-    if (query) {
-      const filteredData = medicines.filter(item =>
-        item.name.toLowerCase().includes(query.toLowerCase()),
-      );
-      setFilteredMedicines(filteredData);
-    } else {
-      setFilteredMedicines(medicines);
+  const fetchMedicines = async (query) => {
+    try {
+      const response = await axios.post('https://722e-203-252-33-4.ngrok-free.app/medicine', {
+        keyword: query,
+      });
+      const results = response.data.results.map((item, index) => ({
+        id: `${item['품목기준코드 [ITEM_SEQ] ']}_${index}`, // Composite key
+        name: item['품목명'],
+        comp: item['표시성분'] ? item['표시성분'].join(', ') : null,
+        base64_image: item['base64_img'],
+      }));
+      setMedicines(results);
+      setFilteredMedicines(results);
+    } catch (error) {
+      console.error(error);
     }
   };
 
-  const renderMedicineItem = ({item}) => (
+  const requestCameraPermission = async () => {
+    const cameraPermission = Platform.OS === 'android' ? PERMISSIONS.ANDROID.CAMERA : PERMISSIONS.IOS.CAMERA;
+    const cameraStatus = await check(cameraPermission);
+
+    if (cameraStatus !== RESULTS.GRANTED) {
+      const cameraRequestResult = await request(cameraPermission);
+      if (cameraRequestResult !== RESULTS.GRANTED) {
+        Alert.alert('Permissions Error', 'Camera permission is not granted.');
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  const handleCameraPress = async () => {
+    const hasPermission = await requestCameraPermission();
+    if (!hasPermission) return;
+
+    const options = {
+      mediaType: 'photo',
+      includeBase64: true,
+      cameraType: 'back', // Use the rear camera
+    };
+
+    launchCamera(options, (response) => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.errorCode) {
+        console.log('ImagePicker Error: ', response.errorCode);
+        Alert.alert('Error', `ImagePicker Error: ${response.errorCode}`);
+      } else if (response.assets && response.assets.length > 0) {
+        const base64Image = response.assets[0].base64;
+        console.log(base64Image);
+      }
+    });
+  };
+
+  const renderMedicineItem = ({ item }) => (
     <View style={styles.itemContainer}>
-      <Image source={{uri: item.base64_image}} style={styles.image} />
+      {item.base64_image ? (
+        <Image source={{ uri: `data:image/png;base64,${item.base64_image}` }} style={styles.image} />
+      ) : (
+        <View style={styles.imagePlaceholder} />
+      )}
       <View style={styles.textContainer}>
         <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.effect}>{item.effect}</Text>
-        <Text style={styles.sideEffect}>{item.side_effect}</Text>
+        {item.comp && (
+          <View style={styles.tagContainer}>
+            {item.comp.split(', ').map((comp, index) => (
+              <View key={index} style={styles.tag}>
+                <Text style={styles.tagText}>{comp}</Text>
+              </View>
+            ))}
+          </View>
+        )}
       </View>
     </View>
   );
@@ -44,30 +100,26 @@ const MedicineScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.screenInfo}>
-        이 화면은 /src/screen/home/index.js 🎉
+        지금 먹고 있는 약이 신장에 나쁜 영향을 주는지 알려드려요!
       </Text>
-      <View style={styles.header}>
-        <Image
-          source={require('../../images/medicine/spongebob.png')}
-          style={styles.spongebob}
+      <View style={styles.searchContainer}>
+        <Icon name="search" size={16} color="#777" style={styles.searchIcon} />
+        <TextInput
+          style={styles.searchBar}
+          placeholder="약 이름을 검색해 주세요."
+          placeholderTextColor="#777"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
         />
-        <View style={styles.bubble}>
-          <Text style={styles.bubbleText}>
-            신장에 위험한 약물을 제가 알려드려요
-          </Text>
-        </View>
+        <TouchableOpacity onPress={handleCameraPress}>
+          <Icon name="camera" size={20} color="#777" style={styles.cameraIcon} />
+        </TouchableOpacity>
       </View>
-      <TextInput
-        style={styles.searchBar}
-        placeholder="검색어를 입력하세요..."
-        placeholderTextColor="#777"
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-      />
+      <Text style={styles.subheader}>자주 찾는 약</Text>
       <FlatList
         data={filteredMedicines}
         renderItem={renderMedicineItem}
-        keyExtractor={item => item.name}
+        keyExtractor={item => item.id} // Use the composite key as the key extractor
       />
     </View>
   );
@@ -79,43 +131,37 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#fff',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  screenInfo: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#000',
     marginBottom: 16,
   },
-  spongebob: {
-    resizeMode: 'contain',
-    width: 50,
-    height: 50,
-  },
-  bubble: {
-    marginLeft: 10,
-    backgroundColor: '#e6f7ff',
-    padding: 10,
-    borderRadius: 10,
-    borderWidth: 1,
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 25, // Make the search bar more rounded
+    marginBottom: 16,
+    paddingHorizontal: 10,
+    backgroundColor: '#f2f2f2', // Light gray background
   },
-  bubbleText: {
-    fontSize: 14,
-    color: 'black',
+  searchIcon: {
+    marginRight: 10,
   },
-  screenInfo: {
-    color: 'black',
-  },
-  title: {
-    color: 'black',
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 10,
+  cameraIcon: {
+    marginLeft: 10,
   },
   searchBar: {
+    flex: 1,
     height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
+    color: '#000',
+  },
+  subheader: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#000',
     marginBottom: 16,
   },
   itemContainer: {
@@ -123,11 +169,27 @@ const styles = StyleSheet.create({
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
+    marginBottom: 16,
   },
   image: {
     width: 50,
     height: 50,
     marginRight: 16,
+    borderRadius: 10,
+  },
+  imagePlaceholder: {
+    width: 50,
+    height: 50,
+    backgroundColor: '#eee',
+    marginRight: 16,
+    borderRadius: 10,
   },
   textContainer: {
     flex: 1,
@@ -138,13 +200,22 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  effect: {
-    fontSize: 16,
-    color: '#555',
+  tagContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 4,
   },
-  sideEffect: {
-    fontSize: 14,
+  tag: {
+    backgroundColor: '#ffcccc',
+    borderRadius: 15,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    marginRight: 4,
+    marginTop: 4,
+  },
+  tagText: {
     color: '#f00',
+    fontSize: 12,
   },
 });
 
