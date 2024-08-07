@@ -23,7 +23,7 @@ const Authentication3Screen = () => {
         jti: jti,
         twoWayTimestamp: twoWayTimestamp
       };
-      const response = await axios.post('https://70a5-203-252-33-2.ngrok-free.app/health_checkup/step2', request_data);
+      const response = await axios.post('https://722e-203-252-33-4.ngrok-free.app/health_checkup/step2', request_data);
       Alert.alert('성공', '인증이 완료되었습니다.');
       
       // 오늘 날짜를 AsyncStorage에 저장
