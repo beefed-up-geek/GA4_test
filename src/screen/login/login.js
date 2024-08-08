@@ -1,210 +1,312 @@
-// /src/screen/login/login.js
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, KeyboardAvoidingView, Platform } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+  ScrollView,
+  Button,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import splashImage from '../../images/login/splash2.png';
+import naverIcon from '../../images/login/naver.png';
+import kakaoIcon from '../../images/login/kakao.png';
+import googleIcon from '../../images/login/google.png';
+import { login as kakaoLogin, me } from '@react-native-kakao/user';
+import {
+  GoogleSignin,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
+import NaverLogin from '@react-native-seoul/naver-login';
 
-const GetUser_info = () => {
-  const [name, setName] = useState('');
-  const [nickname, setNickname] = useState('');
-  const [birthdate, setBirthdate] = useState('');
-  const [height, setHeight] = useState('');
-  const [weight, setWeight] = useState('');
-  const [gender, setGender] = useState('');
+const consumerKey = 'fujiEAut2m84ybqDQOoq';
+const consumerSecret = 'yXEW6CuruC';
+const appName = 'HS바이오랩';
+const serviceUrlScheme = 'com.apple';
 
+GoogleSignin.configure({
+  webClientId: '553674684367-g30th1q22jbqjs30jgad63i95vdntcmu.apps.googleusercontent.com',
+  androidClientId: '553674684367-emj97ff7kjitq1qbn03ok9hebps9ijsg.apps.googleusercontent.com',
+  iosClientId: '553674684367-sr2m1jems5sai07qgq710dvhdoqm6npv.apps.googleusercontent.com',
+  scopes: ['profile', 'email'],
+});
+
+const Gap = () => <View style={{ marginTop: 24 }} />;
+const ResponseJsonText = ({ json = {}, name }) => (
+  <View style={styles.responseContainer}>
+    <Text style={styles.responseTitle}>{name}</Text>
+    <Text style={styles.responseText}>{JSON.stringify(json, null, 4)}</Text>
+  </View>
+);
+
+const Login2 = () => {
   const navigation = useNavigation();
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState('');
+  const [success, setSuccessResponse] = useState();
+  const [failure, setFailureResponse] = useState();
+  const [getProfileRes, setGetProfileRes] = useState();
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const storedUserInfo = await AsyncStorage.getItem('userInfo');
-        if (storedUserInfo !== null) {
-          const userInfo = JSON.parse(storedUserInfo);
-          setName(userInfo.name || '');
-          setNickname(userInfo.nickname || '');
-        } else {
-          const userId = await AsyncStorage.getItem('userId');
-          const username = await AsyncStorage.getItem('username');
-          if (username !== null) {
-            setName(username);
-            setNickname(userId);
-          }
-        }
-      } catch (error) {
-        console.error('Failed to load user info', error);
-      }
-    };
-
-    fetchUserData();
+    NaverLogin.initialize({
+      appName,
+      consumerKey,
+      consumerSecret,
+      serviceUrlSchemeIOS: serviceUrlScheme,
+      disableNaverAppAuthIOS: true,
+    });
   }, []);
 
-  const handleSave = async () => {
-    if (!name || !nickname || !height || !weight) {
-      Alert.alert('모든 필드를 형식에 맞게 입력해주세요.');
-      return;
-    }
-    const userInfo = { name, nickname, birthdate, height, weight, gender };
-    try {
-      await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
-      Alert.alert('User info saved successfully!');
-      navigation.navigate('BottomNavigation');
-    } catch (error) {
-      Alert.alert('Failed to save user info');
+  const handlePostLoginNavigation = async () => {
+    const userInfo = await AsyncStorage.getItem('userInfo');
+    if (userInfo) {
+      navigation.replace('BottomNavigation');
+    } else {
+      navigation.replace('GetUserInfo');
     }
   };
-  console.log()
+
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    try {
+      const response = await GoogleSignin.signIn();
+      const { user } = response;
+      if (user) {
+        const { id, name } = user; // 구글 사용자 정보 추출
+        await AsyncStorage.setItem('loginMethod', 'google');
+        await AsyncStorage.setItem('userId', id.toString());
+        await AsyncStorage.setItem('username', name);
+
+        handlePostLoginNavigation(); // 로그인 후 화면 전환
+      }
+      setUser(user);
+    } catch (apiError) {
+      setError(apiError?.response?.data?.error?.message || 'Something went wrong');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleNaverLogin = async () => {
+    try {
+      const { failureResponse, successResponse } = await NaverLogin.login();
+      if (successResponse) {
+        // Get the access token
+        const accessToken = successResponse.accessToken;
+
+        // Fetch user profile
+        const profileResult = await NaverLogin.getProfile(accessToken);
+        if (profileResult) {
+          const { id, name } = profileResult.response;
+          await AsyncStorage.setItem('loginMethod', 'naver');
+          await AsyncStorage.setItem('userId', id.toString());
+          await AsyncStorage.setItem('username', name);
+
+          handlePostLoginNavigation();
+        } else {
+          console.error('Failed to fetch user profile.');
+        }
+      } else if (failureResponse) {
+        console.error('Naver login failed:', failureResponse);
+      }
+    } catch (error) {
+      console.error('Naver login error:', error);
+    }
+  };
+
+  const handleKakaoLogin = async () => {
+    try {
+      console.log('Starting Kakao login...');
+      await kakaoLogin();
+      console.log('Kakao login successful. Fetching user information...');
+
+      const userInfo = await me();
+      console.log('User information fetched:', userInfo);
+
+      if (userInfo && userInfo.id) {
+        await AsyncStorage.setItem('userId', userInfo.id.toString());
+        await AsyncStorage.setItem('loginMethod', 'kakao');
+        await AsyncStorage.setItem('username', userInfo.nickname);
+        console.log('User data stored in AsyncStorage');
+
+        handlePostLoginNavigation();
+        console.log('Navigation to BottomNavigation');
+      } else {
+        throw new Error('User information is missing.');
+      }
+    } catch (error) {
+      console.error('Kakao login error:', error.message || error);
+      console.error('Error details:', error); // 추가적인 오류 정보 출력
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await NaverLogin.logout();
+      setSuccessResponse(undefined);
+      setFailureResponse(undefined);
+      setGetProfileRes(undefined);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const getProfile = async () => {
+    try {
+      const profileResult = await NaverLogin.getProfile(success.accessToken);
+      setGetProfileRes(profileResult);
+    } catch (e) {
+      setGetProfileRes(undefined);
+    }
+  };
+
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <View style={styles.innerContainer}>
-        <Text style={styles.title}>더 정확한 건강 관리를 위해 기본 정보를 알려주세요</Text>
-
-        <Text style={styles.label}>성별</Text>
-        <View style={styles.genderContainer}>
-          <TouchableOpacity onPress={() => setGender('male')} style={styles.genderButton}>
-            <Image
-              source={require('../../images/login/male.png')}
-              style={[styles.genderImage, gender === 'female' && styles.desaturated]}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setGender('female')} style={styles.genderButton}>
-            <Image
-              source={require('../../images/login/female.png')}
-              style={[styles.genderImage, gender === 'male' && styles.desaturated]}
-            />
-          </TouchableOpacity>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollViewContent}>
+        <View style={styles.header}>
+          <Image source={splashImage} style={styles.splashImage} />
+          <Text style={styles.welcomeText}>환영합니다!</Text>
         </View>
+        <View style={styles.content}>
+          <Text style={{ color: 'black' }}>
+            나는 /src/screen/login/login.js 🎉
+          </Text>
+          <TouchableOpacity
+            style={[styles.loginButton, { backgroundColor: '#03C75A' }]}
+            onPress={handleNaverLogin}>
+            <Image source={naverIcon} style={styles.icon} />
+            <Text style={styles.buttonText}>네이버로 로그인</Text>
+          </TouchableOpacity>
 
-        <Text style={styles.label}>이름</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="홍길동"
-          placeholderTextColor="gray"
-          value={name}
-          onChangeText={setName}
-        />
+          <TouchableOpacity
+            style={[styles.loginButton, { backgroundColor: '#FEE500' }]}
+            onPress={handleKakaoLogin}>
+            <Image source={kakaoIcon} style={styles.icon} />
+            <Text style={styles.buttonText}>카카오로 로그인</Text>
+          </TouchableOpacity>
 
-        <Text style={styles.label}>닉네임</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="6자리 이내로 입력"
-          placeholderTextColor="gray"
-          value={nickname}
-          onChangeText={setNickname}
-        />
+          <TouchableOpacity
+            style={[
+              styles.loginButton,
+              {
+                backgroundColor: '#FFFFFF',
+                borderColor: '#DB4437',
+                borderWidth: 1,
+              },
+            ]}
+            onPress={handleGoogleLogin}>
+            <Image source={googleIcon} style={styles.icon} />
+            <Text style={[styles.buttonText, { color: '#DB4437' }]}>
+              구글로 로그인
+            </Text>
+          </TouchableOpacity>
 
-        <Text style={styles.label}>생년월일</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="YYYY / MM / DD"
-          placeholderTextColor="gray"
-          value={birthdate}
-          onChangeText={setBirthdate}
-        />
-
-        <View style={styles.row}>
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>키</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="0 cm"
-              placeholderTextColor="gray"
-              value={height}
-              onChangeText={setHeight}
-              keyboardType="numeric"
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>몸무게</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="0 kg"
-              placeholderTextColor="gray"
-              value={weight}
-              onChangeText={setWeight}
-              keyboardType="numeric"
-            />
-          </View>
+          <Gap />
+          <Button title={'Logout'} onPress={logout} />
+          <Gap />
+          {success && (
+            <>
+              <Button title="Get Profile" onPress={getProfile} />
+              <Gap />
+              <View>
+                <Button title="Delete Token" onPress={() => deleteToken()} />
+                <Gap />
+                <ResponseJsonText name={'Success'} json={success} />
+              </View>
+            </>
+          )}
+          <Gap />
+          {failure && <ResponseJsonText name={'Failure'} json={failure} />}
+          <Gap />
+          {getProfileRes && (
+            <ResponseJsonText name={'GetProfile'} json={getProfileRes} />
+          )}
         </View>
-
-        <TouchableOpacity onPress={handleSave} style={styles.button}>
-          <Text style={styles.buttonText}>다음</Text>
-        </TouchableOpacity>
-      </View>
-    </KeyboardAvoidingView>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    padding: 24,
+  },
   container: {
     flex: 1,
     backgroundColor: 'white',
   },
-  innerContainer: {
+  header: {
+    alignItems: 'flex-start',
+    position: 'absolute',
+    top: 50,
+    left: 0,
+    right: 0,
+    marginLeft: 40,
+  },
+  splashImage: {
+    width: 100,
+    height: 50,
+    resizeMode: 'contain',
+    marginBottom: 10,
+  },
+  welcomeText: {
+    fontSize: 24,
+    color: 'black',
+  },
+  content: {
     flex: 1,
-    padding: 20,
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 200,
   },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: 'black',
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 5,
-    color: 'black',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 15,
-    fontSize: 16,
-    color: 'black',
-  },
-  row: {
+  loginButton: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 250,
+    height: 50,
+    borderRadius: 25,
+    marginBottom: 20,
   },
-  inputGroup: {
-    flex: 1,
+  icon: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
     marginRight: 10,
   },
-  button: {
-    backgroundColor: '#1677FF',
-    padding: 15,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginTop: 20,
-  },
   buttonText: {
-    color: 'white',
     fontSize: 16,
+    color: 'white',
+  },
+  responseContainer: {
+    padding: 12,
+    borderRadius: 16,
+    borderWidth: 1,
+    backgroundColor: '#242c3d',
+  },
+  responseTitle: {
+    fontSize: 20,
     fontWeight: 'bold',
+    color: 'white',
   },
-  genderContainer: {
-    flexDirection: 'row',
-    marginBottom: 20,
-  },
-  genderButton: {
-    flex: 1,
-    alignItems: 'center',
-    padding: 10,
-  },
-  genderImage: {
-    width: 120,
-    height: 120,
-    resizeMode: 'contain',
-  },
-  desaturated: {
-    opacity: 0.5,
+  responseText: {
+    color: 'white',
+    fontSize: 13,
+    lineHeight: 20,
   },
 });
 
-export default GetUser_info;
+export default Login2;

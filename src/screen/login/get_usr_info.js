@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Dimensions, View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { Dimensions, View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import theme from '../../theme';
 
 const width_ratio = Dimensions.get('screen').width / 390;
@@ -75,9 +76,11 @@ const GetUser_info = () => {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    <KeyboardAwareScrollView
+      contentContainerStyle={styles.container}
+      enableOnAndroid={true}
+      extraScrollHeight={20}
+      scrollEnabled={true}
     >
       <View style={styles.innerContainer}>
         <Text style={styles.title}>더 정확한 건강 관리를 위해 {"\n"}기본 정보를 알려주세요</Text>
@@ -88,13 +91,13 @@ const GetUser_info = () => {
             <TouchableOpacity onPress={() => setGender('female')} style={styles.genderButton}>
               <Image
                 source={require('../../images/login/female.png')}
-                style={[styles.genderImage, gender === 'male' && styles.desaturated]}
+                style={[styles.genderImageFemale, gender === 'male' && styles.desaturated]}
               />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setGender('male')} style={styles.genderButton}>
               <Image
                 source={require('../../images/login/male.png')}
-                style={[styles.genderImage, gender === 'female' && styles.desaturated]}
+                style={[styles.genderImageMale, gender === 'female' && styles.desaturated]}
               />
             </TouchableOpacity>
           </View>
@@ -176,13 +179,13 @@ const GetUser_info = () => {
           <Text style={styles.buttonText}>다음</Text>
         </TouchableOpacity>
       </View>
-    </KeyboardAvoidingView>
+    </KeyboardAwareScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: 'white',
   },
   innerContainer: {
@@ -241,15 +244,15 @@ const styles = StyleSheet.create({
     marginHorizontal: -8,
   },
   button: {
-    backgroundColor: '#1677FF',
-    padding: 15,
-    borderRadius: 5,
+    backgroundColor: '#EBEFFE',
+    paddingVertical: 17,
+    borderRadius: 24,
     alignItems: 'center',
     marginTop: 20,
     width: '100%',
   },
   buttonText: {
-    color: 'white',
+    color: '#7596FF',
     fontSize: 16,
     ...theme.fonts.Bold,
   },
@@ -265,9 +268,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
   },
-  genderImage: {
-    width: 120,
-    height: 120,
+  genderImageFemale: {
+    marginLeft: 26, 
+    width: 109,
+    height: 117.63,
+    resizeMode: 'contain',
+  },
+  genderImageMale: {
+    marginTop: 17,
+    marginRight: 28,
+    width: 102,
+    height: 101,
     resizeMode: 'contain',
   },
   desaturated: {
