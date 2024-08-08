@@ -17,6 +17,7 @@ import Kit_checkupScreen3 from '../screen/Kit_checkup/Kit_checkup3';
 import QRCodeScreen from '../screen/Kit_checkup/QRcode';
 import TabDesign from './bottomtab_design';
 import GetUserInfo from '../screen/login/get_usr_info';
+import HospitalScreen from '../screen/hospital/search';
 
 const Stack = createStackNavigator();
 
@@ -57,9 +58,9 @@ const KitStack = () => (
   </Stack.Navigator>
 );
 
-const DietStack = () => (
+const HospitalStack = () => (
   <Stack.Navigator screenOptions={stackScreenOptions}>
-    <Stack.Screen name="Diet" component={DietScreen} />
+    <Stack.Screen name="Hospital" component={HospitalScreen} />
   </Stack.Navigator>
 );
 
@@ -67,20 +68,40 @@ const BottomNavigation = () => {
   const [selected, setSelected] = useState('Home');
   const navigation = useNavigation();
   const route = useRoute();
+
+  // 아이콘 경로 정의
+  const iconSources = {
+    home: require('../images/bottm_navigation/home.png'),
+    kit: require('../images/bottm_navigation/kit.png'),
+    health: require('../images/bottm_navigation/health.png'),
+    hospital: require('../images/bottm_navigation/hospital.png'),
+    drug: require('../images/bottm_navigation/drug.png'),
+  };
+
+  // 선택된 상태의 아이콘 경로 정의
+  const selectedIconSources = {
+    home: require('../images/bottm_navigation/homewhite.png'),
+    kit: require('../images/bottm_navigation/kitwhite.png'),
+    health: require('../images/bottm_navigation/healthwhite.png'),
+    hospital: require('../images/bottm_navigation/hospitalwhite.png'),
+    drug: require('../images/bottm_navigation/drugwhite.png'),
+  };
+
   return (
     <View style={{flex: 1, backgroundColor: '#fff'}}>
       <View style={{flex: 1}}>
         {selected === 'Home' && <HomeStack />}
         {selected === 'HealthCheck' && <HealthStack />}
         {selected === 'KitResult' && <KitStack />}
-        {selected === 'RecommendDiet' && <DietStack />}
+        {selected === 'HospitalSearch' && <HospitalStack />}
         {selected === 'DrugSearch' && <MedicineStack />}
       </View>
       <View style={styles.floatingContainer}>
         <View style={styles.container}>
           <TabDesign
             label="홈 화면"
-            iconName="home-outline"
+            iconSource={iconSources.home}
+            selectedIconSource={selectedIconSources.home}
             isSelected={selected === 'Home'}
             onPress={() => {
               setSelected('Home');
@@ -89,7 +110,8 @@ const BottomNavigation = () => {
           />
           <TabDesign
             label="키트 결과"
-            iconName="pencil-outline"
+            iconSource={iconSources.kit}
+            selectedIconSource={selectedIconSources.kit}
             isSelected={selected === 'KitResult'}
             onPress={() => {
               setSelected('KitResult');
@@ -98,7 +120,8 @@ const BottomNavigation = () => {
           />
           <TabDesign
             label="건강검진"
-            iconName="heart-outline"
+            iconSource={iconSources.health}
+            selectedIconSource={selectedIconSources.health}
             isSelected={selected === 'HealthCheck'}
             onPress={() => {
               setSelected('HealthCheck');
@@ -106,17 +129,19 @@ const BottomNavigation = () => {
             }}
           />
           <TabDesign
-            label="추천 식단"
-            iconName="silverware-fork-knife"
-            isSelected={selected === 'RecommendDiet'}
+            label="병원 찾기"
+            iconSource={iconSources.hospital}
+            selectedIconSource={selectedIconSources.hospital}
+            isSelected={selected === 'HospitalSearch'}
             onPress={() => {
-              setSelected('RecommendDiet');
-              navigation.navigate('RecommendDiet');
+              setSelected('HospitalSearch');
+              navigation.navigate('HospitalSearch');
             }}
           />
           <TabDesign
             label="약 검색"
-            iconName="pill"
+            iconSource={iconSources.drug}
+            selectedIconSource={selectedIconSources.drug}
             isSelected={selected === 'DrugSearch'}
             onPress={() => {
               setSelected('DrugSearch');
