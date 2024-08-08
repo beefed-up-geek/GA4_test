@@ -1,5 +1,3 @@
-//애니메이션 파일
-
 import React, {useState, useEffect} from 'react';
 import {
   TouchableOpacity,
@@ -7,10 +5,16 @@ import {
   StyleSheet,
   Animated,
   Easing,
+  Image,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const TabDesign = ({label, iconName, isSelected, onPress}) => {
+const TabDesign = ({
+  label,
+  iconSource,
+  selectedIconSource,
+  isSelected,
+  onPress,
+}) => {
   const [width] = useState(new Animated.Value(isSelected ? 120 : 50));
 
   useEffect(() => {
@@ -34,10 +38,12 @@ const TabDesign = ({label, iconName, isSelected, onPress}) => {
             borderColor: '#fff',
           },
         ]}>
-        <Icon
-          name={iconName}
-          size={24}
-          color={isSelected ? '#fff' : '#72777A'}
+        <Image
+          source={isSelected ? selectedIconSource : iconSource}
+          style={{
+            width: 24,
+            height: 24,
+          }}
         />
         {isSelected && <Text style={styles.label}>{label}</Text>}
       </Animated.View>
