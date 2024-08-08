@@ -1,8 +1,8 @@
-// /src/screen/login/get_usr_info.js
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const GetUser_info = () => {
   const [name, setName] = useState('');
@@ -13,6 +13,30 @@ const GetUser_info = () => {
   const [gender, setGender] = useState('');
 
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const storedUserInfo = await AsyncStorage.getItem('userInfo');
+        if (storedUserInfo !== null) {
+          const userInfo = JSON.parse(storedUserInfo);
+          setName(userInfo.name || '');
+          setNickname(userInfo.nickname || '');
+        } else {
+          const userId = await AsyncStorage.getItem('userId');
+          const username = await AsyncStorage.getItem('username');
+          if (username !== null) {
+            setName(username);
+            setNickname(username);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load user info', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleSave = async () => {
     if (!name || !nickname || !height || !weight) {
@@ -30,90 +54,101 @@ const GetUser_info = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>더 정확한 건강 관리를 위해 기본 정보를 알려주세요</Text>
+    <KeyboardAwareScrollView
+      contentContainerStyle={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      resetScrollToCoords={{ x: 0, y: 0 }}
+      scrollEnabled={true}
+    >
+      <View style={styles.innerContainer}>
+        <Text style={styles.title}>더 정확한 건강 관리를 위해 기본 정보를 알려주세요</Text>
 
-      <Text style={styles.label}>성별</Text>
-      <View style={styles.genderContainer}>
-        <TouchableOpacity onPress={() => setGender('male')} style={styles.genderButton}>
-          <Image
-            source={require('../../images/login/male.png')}
-            style={[styles.genderImage, gender === 'female' && styles.desaturated]}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => setGender('female')} style={styles.genderButton}>
-          <Image
-            source={require('../../images/login/female.png')}
-            style={[styles.genderImage, gender === 'male' && styles.desaturated]}
-          />
-        </TouchableOpacity>
-      </View>
-
-      <Text style={styles.label}>이름</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="홍길동"
-        placeholderTextColor="gray"
-        value={name}
-        onChangeText={setName}
-      />
-
-      <Text style={styles.label}>닉네임</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="6자리 이내로 입력"
-        placeholderTextColor="gray"
-        value={nickname}
-        onChangeText={setNickname}
-      />
-
-      <Text style={styles.label}>생년월일</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="YYYY / MM / DD"
-        placeholderTextColor="gray"
-        value={birthdate}
-        onChangeText={setBirthdate}
-      />
-
-      <View style={styles.row}>
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>키</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="0 cm"
-            placeholderTextColor="gray"
-            value={height}
-            onChangeText={setHeight}
-            keyboardType="numeric"
-          />
+        <Text style={styles.label}>성별</Text>
+        <View style={styles.genderContainer}>
+          <TouchableOpacity onPress={() => setGender('male')} style={styles.genderButton}>
+            <Image
+              source={require('../../images/login/male.png')}
+              style={[styles.genderImage, gender === 'female' && styles.desaturated]}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setGender('female')} style={styles.genderButton}>
+            <Image
+              source={require('../../images/login/female.png')}
+              style={[styles.genderImage, gender === 'male' && styles.desaturated]}
+            />
+          </TouchableOpacity>
         </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>몸무게</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="0 kg"
-            placeholderTextColor="gray"
-            value={weight}
-            onChangeText={setWeight}
-            keyboardType="numeric"
-          />
-        </View>
-      </View>
+        <Text style={styles.label}>이름</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="홍길동"
+          placeholderTextColor="gray"
+          value={name}
+          onChangeText={setName}
+        />
 
-      <TouchableOpacity onPress={handleSave} style={styles.button}>
-        <Text style={styles.buttonText}>다음</Text>
-      </TouchableOpacity>
-    </View>
+        <Text style={styles.label}>닉네임</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="6자리 이내로 입력"
+          placeholderTextColor="gray"
+          value={nickname}
+          onChangeText={setNickname}
+        />
+
+        <Text style={styles.label}>생년월일</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="YYYY / MM / DD"
+          placeholderTextColor="gray"
+          value={birthdate}
+          onChangeText={setBirthdate}
+        />
+
+        <View style={styles.row}>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>키</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="0 cm"
+              placeholderTextColor="gray"
+              value={height}
+              onChangeText={setHeight}
+              keyboardType="numeric"
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>몸무게</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="0 kg"
+              placeholderTextColor="gray"
+              value={weight}
+              onChangeText={setWeight}
+              keyboardType="numeric"
+            />
+          </View>
+        </View>
+
+        <TouchableOpacity onPress={handleSave} style={styles.button}>
+          <Text style={styles.buttonText}>다음</Text>
+        </TouchableOpacity>
+      </View>
+    </KeyboardAwareScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    flexGrow: 1,
+    backgroundColor: 'white',
+  },
+  innerContainer: {
     flex: 1,
     padding: 20,
-    backgroundColor: 'white',
+    justifyContent: 'space-between',
   },
   title: {
     fontSize: 18,

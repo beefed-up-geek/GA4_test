@@ -37,7 +37,6 @@ const HealthStack = () => (
 const HomeStack = () => (
   <Stack.Navigator screenOptions={stackScreenOptions}>
     <Stack.Screen name="Home" component={HomeScreen} />
-    <Stack.Screen name="GetUserInfo" component={GetUserInfo} />
   </Stack.Navigator>
 );
 

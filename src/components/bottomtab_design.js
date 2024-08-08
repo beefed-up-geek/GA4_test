@@ -53,7 +53,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
     borderRadius: 25,
     paddingHorizontal: 10,
-    height: 50,
     overflow: 'hidden', // 애니메이션이 부모 컨테이너를 넘어가지 않도록 설정
   },
   label: {
