@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Dimensions, View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, Platform } from 'react-native';
+import { Dimensions, View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, Platform, KeyboardAvoidingView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -15,6 +15,7 @@ const GetUser_info = () => {
   const [height, setHeight] = useState('');
   const [weight, setWeight] = useState('');
   const [gender, setGender] = useState('');
+  const [isFormValid, setIsFormValid] = useState(false);
 
   const navigation = useNavigation();
 
@@ -42,18 +43,80 @@ const GetUser_info = () => {
     fetchUserData();
   }, []);
 
+  useEffect(() => {
+    validateForm();
+  }, [name, nickname, birthdate, height, weight, gender]);
+
+  const validateForm = () => {
+    const currentYear = new Date().getFullYear();
+    const [year, month, day] = birthdate.split('/').map(Number);
+
+    if (
+      name &&
+      nickname &&
+      height &&
+      weight &&
+      gender &&
+      /^\d{4}\/\d{2}\/\d{2}$/.test(birthdate) &&
+      year >= currentYear - 150 &&
+      year <= currentYear &&
+      month >= 1 &&
+      month <= 12 &&
+      day >= 1 &&
+      day <= 31
+    ) {
+      setIsFormValid(true);
+    } else {
+      setIsFormValid(false);
+    }
+  };
+
   const handleSave = async () => {
-    if (!name || !nickname || !height || !weight) {
-      Alert.alert('모든 필드를 형식에 맞게 입력해주세요.');
+    const currentYear = new Date().getFullYear();
+    const [year, month, day] = birthdate.split('/').map(Number);
+    let errorMessage = '';
+
+    if (!name) {
+      errorMessage += '이름을 입력해주세요.\n';
+    }
+    if (!nickname) {
+      errorMessage += '닉네임을 입력해주세요.\n';
+    }
+    if (!height) {
+      errorMessage += '키를 입력해주세요.\n';
+    }
+    if (!weight) {
+      errorMessage += '체중을 입력해주세요.\n';
+    }
+    if (!gender) {
+      errorMessage += '성별을 선택해주세요.\n';
+    }
+    if (!/^\d{4}\/\d{2}\/\d{2}$/.test(birthdate)) {
+      errorMessage += '생년월일 형식이 잘못되었습니다.\n';
+    } else {
+      if (year < currentYear - 150 || year > currentYear) {
+        errorMessage += `생년월일의 연도는 ${currentYear - 150}년에서 ${currentYear}년 사이여야 합니다.\n`;
+      }
+      if (month < 1 || month > 12) {
+        errorMessage += '생년월일의 월은 01에서 12 사이여야 합니다.\n';
+      }
+      if (day < 1 || day > 31) {
+        errorMessage += '생년월일의 일은 01에서 31 사이여야 합니다.\n';
+      }
+    }
+
+    if (errorMessage) {
+      Alert.alert('입력 오류', errorMessage);
       return;
     }
+
     const userInfo = { name, nickname, birthdate, height, weight, gender };
     try {
       await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
-      Alert.alert('User info saved successfully!');
+      Alert.alert('사용자 정보를 성공적으로 저장했습니다!');
       navigation.navigate('BottomNavigation');
     } catch (error) {
-      Alert.alert('Failed to save user info');
+      Alert.alert('사용자 정보 저장 실패');
     }
   };
 
@@ -67,126 +130,152 @@ const GetUser_info = () => {
   };
 
   const handleWeightChange = (value) => {
-    const numValue = parseFloat(value.replace(/[^0-9.]/g, ''));
-    if (!isNaN(numValue)) {
-      setWeight(numValue > 300 ? '300.0' : numValue.toFixed(1));
-    } else {
-      setWeight('');
+    const regex = /^[0-9]{1,3}(\.[0-9]?)?$/;
+    if (regex.test(value) || value === '') {
+      const numValue = parseFloat(value);
+      if (!isNaN(numValue) && numValue <= 300) {
+        setWeight(value);
+      } else if (value === '') {
+        setWeight('');
+      }
     }
   };
 
+  const handleBirthdateChange = (value) => {
+    const cleaned = value.replace(/[^0-9]/g, '');
+    let formatted = cleaned;
+    if (cleaned.length > 4) {
+      formatted = cleaned.slice(0, 4) + '/' + cleaned.slice(4);
+    }
+    if (cleaned.length > 6) {
+      formatted = formatted.slice(0, 7) + '/' + cleaned.slice(6);
+    }
+    setBirthdate(formatted);
+  };
+
   return (
-    <KeyboardAwareScrollView
-      contentContainerStyle={styles.container}
-      enableOnAndroid={true}
-      extraScrollHeight={20}
-      scrollEnabled={true}
-    >
-      <View style={styles.innerContainer}>
-        <Text style={styles.title}>더 정확한 건강 관리를 위해 {"\n"}기본 정보를 알려주세요</Text>
+    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <KeyboardAwareScrollView
+        contentContainerStyle={styles.scrollContainer}
+        enableOnAndroid={true}
+        extraScrollHeight={20}
+        scrollEnabled={true}
+      >
+        <View style={styles.innerContainer}>
+          <Text style={styles.title}>더 정확한 건강 관리를 위해 {"\n"}기본 정보를 알려주세요</Text>
 
-        <View style={styles.genderWrapper}>
-          <Text style={styles.label}>성별</Text>
-          <View style={styles.genderContainer}>
-            <TouchableOpacity onPress={() => setGender('female')} style={styles.genderButton}>
-              <Image
-                source={require('../../images/login/female.png')}
-                style={[styles.genderImageFemale, gender === 'male' && styles.desaturated]}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setGender('male')} style={styles.genderButton}>
-              <Image
-                source={require('../../images/login/male.png')}
-                style={[styles.genderImageMale, gender === 'female' && styles.desaturated]}
-              />
-            </TouchableOpacity>
+          <View style={styles.genderWrapper}>
+            <Text style={styles.label}>성별</Text>
+            <View style={styles.genderContainer}>
+              <TouchableOpacity onPress={() => setGender('female')} style={styles.genderButton}>
+                <Image
+                  source={require('../../images/login/female.png')}
+                  style={[styles.genderImageFemale, gender === 'male' && styles.desaturated]}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setGender('male')} style={styles.genderButton}>
+                <Image
+                  source={require('../../images/login/male.png')}
+                  style={[styles.genderImageMale, gender === 'female' && styles.desaturated]}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
 
-        <View style={styles.row}>
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>이름</Text>
-            <TextInput
-              style={styles.input}
-              backgroundColor="#F1F1F1"
-              placeholder="홍길동"
-              placeholderTextColor="#828287"
-              value={name}
-              onChangeText={setName}
-            />
-          </View>
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>닉네임</Text>
-            <TextInput
-              style={styles.input}
-              backgroundColor="#F1F1F1"
-              placeholder="6자리 이내로 입력"
-              placeholderTextColor="#828287"
-              value={nickname}
-              onChangeText={setNickname}
-            />
-          </View>
-        </View>
-
-        <View style={styles.inputGroupFullWidth}>
-          <Text style={styles.label}>생년월일</Text>
-          <TextInput
-            style={styles.input}
-            backgroundColor="#F1F1F1"
-            placeholder="YYYY / MM / DD"
-            placeholderTextColor="#828287"
-            value={birthdate}
-            onChangeText={setBirthdate}
-          />
-        </View>
-
-        <View style={styles.row}>
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>키</Text>
-            <View style={styles.inputWithUnit}>
+          <View style={styles.row}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>이름</Text>
               <TextInput
                 style={styles.input}
                 backgroundColor="#F1F1F1"
-                placeholder="0"
+                placeholder="홍길동"
                 placeholderTextColor="#828287"
-                value={height}
-                onChangeText={handleHeightChange}
-                keyboardType="numeric"
-                maxLength={3}
+                value={name}
+                onChangeText={setName}
               />
-              <Text style={styles.unit}>cm</Text>
             </View>
-          </View>
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>체중</Text>
-            <View style={styles.inputWithUnit}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>닉네임</Text>
               <TextInput
                 style={styles.input}
                 backgroundColor="#F1F1F1"
-                placeholder="00.0"
+                placeholder="6자리 이내로 입력"
                 placeholderTextColor="#828287"
-                value={weight}
-                onChangeText={handleWeightChange}
-                keyboardType="numeric"
-                maxLength={5}
+                value={nickname}
+                onChangeText={setNickname}
               />
-              <Text style={styles.unit}>kg</Text>
+            </View>
+          </View>
+
+          <View style={styles.inputGroupFullWidth}>
+            <Text style={styles.label}>생년월일</Text>
+            <TextInput
+              style={styles.input}
+              backgroundColor="#F1F1F1"
+              placeholder="YYYY/MM/DD"
+              placeholderTextColor="#828287"
+              value={birthdate}
+              onChangeText={handleBirthdateChange}
+              keyboardType="numeric"
+              maxLength={10}
+            />
+          </View>
+
+          <View style={styles.row}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>키</Text>
+              <View style={styles.inputWithUnit}>
+                <TextInput
+                  style={styles.input}
+                  backgroundColor="#F1F1F1"
+                  placeholder="0"
+                  placeholderTextColor="#828287"
+                  value={height}
+                  onChangeText={handleHeightChange}
+                  keyboardType="numeric"
+                  maxLength={3}
+                />
+                <Text style={styles.unit}>cm</Text>
+              </View>
+            </View>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>체중</Text>
+              <View style={styles.inputWithUnit}>
+                <TextInput
+                  style={styles.input}
+                  backgroundColor="#F1F1F1"
+                  placeholder="00.0"
+                  placeholderTextColor="#828287"
+                  value={weight}
+                  onChangeText={handleWeightChange}
+                  keyboardType="numeric"
+                  maxLength={5}
+                />
+                <Text style={styles.unit}>kg</Text>
+              </View>
             </View>
           </View>
         </View>
+      </KeyboardAwareScrollView>
 
-        <TouchableOpacity onPress={handleSave} style={styles.button}>
-          <Text style={styles.buttonText}>다음</Text>
-        </TouchableOpacity>
-      </View>
-    </KeyboardAwareScrollView>
+      <TouchableOpacity
+        onPress={isFormValid ? handleSave : () => Alert.alert('입력 오류', '모든 필드를 형식에 맞게 입력해주세요.')}
+        style={[styles.button, isFormValid ? styles.buttonEnabled : styles.buttonDisabled]}
+      >
+        <Text style={[styles.buttonText, isFormValid ? styles.buttonTextEnabled : styles.buttonTextDisabled]}>다음</Text>
+      </TouchableOpacity>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
     backgroundColor: 'white',
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    paddingBottom: 100, // Ensure there's space for the button
   },
   innerContainer: {
     paddingTop: 80,
@@ -244,17 +333,30 @@ const styles = StyleSheet.create({
     marginHorizontal: -8,
   },
   button: {
-    backgroundColor: '#EBEFFE',
     paddingVertical: 17,
     borderRadius: 24,
     alignItems: 'center',
     marginTop: 20,
-    width: '100%',
+    width: '66.67%', // 화면 너비의 2/3
+    position: 'absolute',
+    bottom: 30, // 화면 하단에서 30px 위에 위치하도록 조정
+    alignSelf: 'center',
+  },
+  buttonEnabled: {
+    backgroundColor: '#EBEFFE',
+  },
+  buttonDisabled: {
+    backgroundColor: '#CCCCCC',
   },
   buttonText: {
-    color: '#7596FF',
     fontSize: 16,
     ...theme.fonts.Bold,
+  },
+  buttonTextEnabled: {
+    color: '#7596FF',
+  },
+  buttonTextDisabled: {
+    color: '#828287',
   },
   genderWrapper: {
     width: '100%',
