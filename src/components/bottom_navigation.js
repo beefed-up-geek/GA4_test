@@ -3,7 +3,7 @@ import {View, StyleSheet} from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import HealthScreen from '../screen/healthscreen';
-import HomeScreen from '../screen/home/hardcoding';
+import HomeScreen from '../screen/home';
 import MedicineScreen from '../screen/medicine';
 import KitScreen from '../screen/kit';
 import DietScreen from '../screen/diet';
@@ -18,7 +18,7 @@ import QRCodeScreen from '../screen/Kit_checkup/QRcode';
 import TabDesign from './bottomtab_design';
 import GetUserInfo from '../screen/login/get_usr_info';
 import CameraScreen from '../screen/Kit_checkup/Camera';
-import HospitalScreen from '../screen/hospital/search';
+import HospitalScreen from '../screen/hospital';
 
 const Stack = createStackNavigator();
 

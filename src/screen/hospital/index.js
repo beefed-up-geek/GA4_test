@@ -3,62 +3,65 @@ import {
   StyleSheet,
   Text,
   View,
-  TouchableOpacity,
-  ScrollView,
   TextInput,
+  ScrollView,
+  ActivityIndicator,
+  TouchableOpacity,
   PermissionsAndroid,
   Platform,
-  ActivityIndicator,
+  Image,
 } from 'react-native';
 import axios from 'axios';
 import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Geolocation from 'react-native-geolocation-service';
-import styles from './styles';
-import {useAPI} from '../../contexts/API/APIContext';
 
 export default function HospitalScreen({navigation}) {
-  const [hospitalData, setHospitalData] = useState([]);
-  const [nearbyHospitals, setNearbyHospitals] = useState([]);
-  const [nearbyGrade, setNearbyGrade] = useState('모든 병원');
-  const [currentGrade, setCurrentGrade] = useState('모든 병원');
   const [latitude, setLatitude] = useState(0);
   const [longitude, setLongitude] = useState(0);
   const [address, setAddress] = useState('');
-  const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(true);
-  const url = useAPI();
 
   const [openNearby, setOpenNearby] = useState(false);
+  const [valueNearby, setValueNearby] = useState('전체');
   const [itemsNearby, setItemsNearby] = useState([
-    {label: '모든 병원', value: '모든 병원'},
-    {label: '1등급', value: '1등급'},
-    {label: '2등급', value: '2등급'},
-    {label: '3등급', value: '3등급'},
-    {label: '4등급', value: '4등급'},
-    {label: '5등급', value: '5등급'},
+    {label: '전체', value: '전체'},
+    {label: '1등급', value: '1'},
+    {label: '2등급', value: '2'},
+    {label: '3등급', value: '3'},
+    {label: '4등급', value: '4'},
+    {label: '5등급', value: '5'},
   ]);
 
-  const [openCurrent, setOpenCurrent] = useState(false);
-  const [itemsCurrent, setItemsCurrent] = useState([
-    {label: '모든 병원', value: '모든 병원'},
-    {label: '1등급', value: '1등급'},
-    {label: '2등급', value: '2등급'},
-    {label: '3등급', value: '3등급'},
-    {label: '4등급', value: '4등급'},
-    {label: '5등급', value: '5등급'},
+  const [openDistance, setOpenDistance] = useState(false);
+  const [valueDistance, setValueDistance] = useState('5');
+  const [itemsDistance, setItemsDistance] = useState([
+    {label: '5km이내', value: '5'},
+    {label: '10km이내', value: '10'},
+    {label: '20km이내', value: '20'},
   ]);
+
+  const [openType, setOpenType] = useState(false);
+  const [valueType, setValueType] = useState('전체');
+  const [itemsType, setItemsType] = useState([
+    {label: '전체', value: '전체'},
+    {label: '일반 병원', value: '일반 병원'},
+    {label: '요양 병원', value: '요양 병원'},
+  ]);
+
+  const [hospitalData, setHospitalData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     requestLocationPermission();
   }, []);
 
   useEffect(() => {
-    if (latitude && longitude) {
-      fetchNearbyHospitals();
-      fetchAddress();
+    if (!loading) {
+      fetchHospitalData(searchQuery);
     }
-  }, [latitude, longitude]);
+  }, [searchQuery, valueNearby, valueDistance, valueType, loading]);
 
   const requestLocationPermission = async () => {
     try {
@@ -75,12 +78,14 @@ export default function HospitalScreen({navigation}) {
         );
         if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
           console.error('Location permission denied');
+          setLoading(false);
           return;
         }
       }
       getCurrentLocation();
     } catch (err) {
       console.warn(err);
+      setLoading(false);
     }
   };
 
@@ -100,39 +105,91 @@ export default function HospitalScreen({navigation}) {
     );
   };
 
-  const fetchNearbyHospitals = async () => {
+  const fetchHospitalData = async query => {
     try {
-      const response = await axios.get(
-        `${url}/hospital/?latitude=${latitude}&longitude=${longitude}&range=3`,
-      );
-      setNearbyHospitals(response.data);
-    } catch (error) {
-      console.error('Error fetching nearby hospitals:', error);
-    }
-  };
-
-  const fetchAddress = async () => {
-    try {
-      const response = await axios.get(
-        `https://dapi.kakao.com/v2/local/geo/coord2address.json?x=${longitude}&y=${latitude}&input_coord=WGS84`,
-        {
-          headers: {
-            Authorization: 'KakaoAK 915a6eb15cbe0b6d575de1418df95a38',
+      let response;
+      if (valueType === '일반 병원') {
+        response = await axios.post(
+          `https://d94e-203-252-33-1.ngrok-free.app/hospital/general`,
+          {
+            partial_name: query,
+            user_latitude: latitude,
+            user_longitude: longitude,
           },
-        },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        );
+      } else if (valueType === '요양 병원') {
+        response = await axios.post(
+          `https://d94e-203-252-33-1.ngrok-free.app/hospital/nursing`,
+          {
+            partial_name: query,
+            user_latitude: latitude,
+            user_longitude: longitude,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        );
+      } else {
+        const generalResponse = await axios.post(
+          `https://d94e-203-252-33-1.ngrok-free.app/hospital/general`,
+          {
+            partial_name: query,
+            user_latitude: latitude,
+            user_longitude: longitude,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        );
+        const nursingResponse = await axios.post(
+          `https://d94e-203-252-33-1.ngrok-free.app/hospital/nursing`,
+          {
+            partial_name: query,
+            user_latitude: latitude,
+            user_longitude: longitude,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        );
+        response = {
+          data: {
+            results: [
+              ...generalResponse.data.results,
+              ...nursingResponse.data.results,
+            ],
+          },
+        };
+      }
+
+      const filteredData = response.data.results.filter(
+        hospital => hospital.distance < parseInt(valueDistance),
       );
-      const address = response.data.documents[0].address.address_name;
-      setAddress(address);
+
+      setHospitalData(filteredData);
     } catch (error) {
-      console.error('Error fetching address:', error);
+      console.error('Error fetching hospital data:', error);
     }
   };
 
   const filterHospitalsByGrade = (hospitals, grade) => {
-    return grade === '모든 병원'
+    return grade === '전체'
       ? hospitals
-      : hospitals.filter(hospital => hospital.rating === parseInt(grade[0]));
+      : hospitals.filter(hospital => hospital.rating === parseInt(grade));
   };
+
+  const filteredHospitals = filterHospitalsByGrade(hospitalData, valueNearby);
 
   if (loading) {
     return (
@@ -145,72 +202,80 @@ export default function HospitalScreen({navigation}) {
   return (
     <View style={styles.container}>
       <View style={styles.searchSection}>
-        <TouchableOpacity
-          style={styles.searchInputContainer}
-          activeOpacity={1}
-          onPress={() => navigation.navigate('Search')}>
-          <View pointerEvents="none">
-            <TextInput
-              style={styles.input}
-              placeholder="가까운 병원 검색 하기"
-              placeholderTextColor="#777"
-              editable={false}
-            />
-          </View>
-        </TouchableOpacity>
-        {/* <TouchableOpacity
-          style={styles.mapButton}
-          onPress={() => navigation.navigate('Map')}>
-          <Text style={styles.mapButtonText}>지도로 찾기</Text>
-        </TouchableOpacity> */}
-      </View>
-      <View style={styles.addressContainer}>
-        <Icon name="location-on" size={20} color="#000" />
-        <Text style={styles.locationText}>{address}</Text>
+        <View style={styles.searchInputContainer}>
+          <Image
+            source={require('../../images/hospital/search.png')}
+            style={styles.searchIcon}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="병원 이름을 검색하세요"
+            placeholderTextColor="#8E9098"
+            onChangeText={text => setSearchQuery(text)}
+          />
+        </View>
       </View>
       <ScrollView style={styles.scrollView}>
         <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>내 주변 투석 병원</Text>
+          <View style={styles.sectionHeader1}>
             <View style={styles.pickerContainer}>
               <DropDownPicker
                 open={openNearby}
-                value={nearbyGrade}
+                value={valueNearby}
                 items={itemsNearby}
                 setOpen={setOpenNearby}
-                setValue={setNearbyGrade}
+                setValue={setValueNearby}
                 setItems={setItemsNearby}
                 containerStyle={styles.dropdownContainer}
                 style={styles.dropdown}
-                dropDownContainerStyle={styles.dropdownList}
+                dropDownContainerStyle={styles.dropdownList1}
                 textStyle={styles.dropdownText}
-                listItemContainerStyle={styles.listItemContainer}
-                listItemLabelStyle={styles.listItemLabel}
-                zIndex={3000}
-                zIndexInverse={1000}
+                dropDownDirection="BOTTOM"
+              />
+            </View>
+            <View style={styles.pickerContainer1}>
+              <DropDownPicker
+                open={openDistance}
+                value={valueDistance}
+                items={itemsDistance}
+                setOpen={setOpenDistance}
+                setValue={setValueDistance}
+                setItems={setItemsDistance}
+                containerStyle={styles.dropdownContainer}
+                style={styles.dropdown}
+                dropDownContainerStyle={styles.dropdownList1}
+                textStyle={styles.dropdownText}
+                dropDownDirection="BOTTOM"
+              />
+            </View>
+            <View style={styles.pickerContainer1}>
+              <DropDownPicker
+                open={openType}
+                value={valueType}
+                items={itemsType}
+                setOpen={setOpenType}
+                setValue={setValueType}
+                setItems={setItemsType}
+                containerStyle={styles.dropdownContainer}
+                style={styles.dropdown}
+                dropDownContainerStyle={styles.dropdownList1}
+                textStyle={styles.dropdownText}
+                dropDownDirection="BOTTOM"
               />
             </View>
           </View>
-          <View>
-            {nearbyHospitals.length === 0 ? (
-              <View style={styles.card}>
-                <Text style={styles.noHospitalText}>
-                  조건에 맞는 병원이 없습니다
-                </Text>
-              </View>
-            ) : filterHospitalsByGrade(nearbyHospitals, nearbyGrade).length ===
-              0 ? (
-              <View style={styles.card}>
-                <Text style={styles.noHospitalText}>
-                  조건에 맞는 병원이 없습니다
-                </Text>
+          <View style={styles.section}>
+            {filteredHospitals.length === 0 ? (
+              <View style={styles.noHospital}>
+                <Text style={styles.noHospitalText}>병원을 검색하세요!</Text>
               </View>
             ) : (
-              filterHospitalsByGrade(nearbyHospitals, nearbyGrade).map(
-                (hospital, index) => (
+              <>
+                {filteredHospitals.map((hospital, index) => (
                   <HospitalCard key={index} hospital={hospital} />
-                ),
-              )
+                ))}
+                <View style={styles.placeholder}></View>
+              </>
             )}
           </View>
         </View>
@@ -306,3 +371,126 @@ function HospitalCard({hospital}) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: '#fff',
+  },
+  searchSection: {
+    padding: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  searchInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  searchIcon: {
+    width: 24,
+    height: 24,
+    marginRight: 10,
+  },
+  input: {
+    flex: 1,
+    height: 40,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    fontSize: 16,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  section: {
+    flex: 1,
+    padding: 10,
+  },
+  sectionHeader1: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  pickerContainer: {
+    flex: 1,
+    marginRight: 10,
+  },
+  pickerContainer1: {
+    flex: 1,
+  },
+  dropdownContainer: {
+    height: 40,
+  },
+  dropdown: {
+    borderColor: '#ccc',
+    borderRadius: 10,
+  },
+  dropdownList1: {
+    borderColor: '#ccc',
+  },
+  dropdownText: {
+    fontSize: 16,
+  },
+  noHospital: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  noHospitalText: {
+    fontSize: 18,
+    color: '#888',
+  },
+  card1: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: {width: 0, height: 2},
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  grade: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 5,
+    borderWidth: 1,
+  },
+  favoriteButton: {
+    padding: 5,
+  },
+  starIcon: {
+    marginLeft: 5,
+  },
+  hospitalName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 10,
+    marginBottom: 5,
+  },
+  hospitalAddress: {
+    fontSize: 16,
+    color: '#888',
+    marginBottom: 5,
+  },
+  phone: {
+    fontSize: 14,
+    color: '#888',
+  },
+  placeholder: {
+    height: 80,
+  },
+});

@@ -103,7 +103,7 @@ export default function HomeScreen() {
                       left: '-7.14%',
                       zIndex: 5,
                     }}
-                    source={require('../../../assets/images/5907e107-e116-4905-ad2e-014543497774.png')}
+                    source={require('./assets/images/5907e107-e116-4905-ad2e-014543497774.png')}
                   />
                 </View>
               </View>
@@ -147,7 +147,7 @@ export default function HomeScreen() {
                   position: 'relative',
                   zIndex: 8,
                 }}
-                source={require('../../../assets/images/c639f0b24ead9f980841b9fe3365897ca9db9dc5.png')}
+                source={require('./assets/images/c639f0b24ead9f980841b9fe3365897ca9db9dc5.png')}
                 resizeMode="contain"
               />
             </View>
@@ -215,7 +215,7 @@ export default function HomeScreen() {
                       marginBottom: 0,
                       marginLeft: 1.5,
                     }}
-                    source={require('../../../assets/images/144896d3-699f-48ad-8876-0d940bc6a7bc.png')}
+                    source={require('./assets/images/144896d3-699f-48ad-8876-0d940bc6a7bc.png')}
                   />
                 </View>
                 <Text
@@ -363,7 +363,7 @@ export default function HomeScreen() {
                         overflow: 'hidden',
                         zIndex: 15,
                       }}
-                      source={require('../../../assets/images/28fea753-8155-4b2a-b5cb-6ae1483a3269.png')}
+                      source={require('./assets/images/28fea753-8155-4b2a-b5cb-6ae1483a3269.png')}
                       resizeMode="cover"
                     />
                     <Text
@@ -432,7 +432,7 @@ export default function HomeScreen() {
                         overflow: 'hidden',
                         zIndex: 19,
                       }}
-                      source={require('../../../assets/images/3d1d1d39-75c9-4cb8-9aa3-5a495f0be1a0.png')}
+                      source={require('./assets/images/3d1d1d39-75c9-4cb8-9aa3-5a495f0be1a0.png')}
                       resizeMode="cover"
                     />
                     <TouchableOpacity onPress={navigation.navigate('Kit')}>
@@ -527,7 +527,7 @@ export default function HomeScreen() {
                       left: 0,
                       zIndex: 31,
                     }}
-                    source={require('../../../assets/images/22649bce-82f4-420b-8c6c-646225dba2de.png')}
+                    source={require('./assets/images/22649bce-82f4-420b-8c6c-646225dba2de.png')}
                     resizeMode="cover"
                   />
                   <ImageBackground
@@ -539,7 +539,7 @@ export default function HomeScreen() {
                       left: 0,
                       zIndex: 32,
                     }}
-                    source={require('../../../assets/images/4d357b07-c091-41ef-8881-3974e6fb8e12.png')}
+                    source={require('./assets/images/4d357b07-c091-41ef-8881-3974e6fb8e12.png')}
                     resizeMode="cover"
                   />
                   <ImageBackground
@@ -551,7 +551,7 @@ export default function HomeScreen() {
                       left: 0,
                       zIndex: 33,
                     }}
-                    source={require('../../../assets/images/eb96029d-56c5-4f7f-b2f5-508a78cd2eb8.png')}
+                    source={require('./assets/images/eb96029d-56c5-4f7f-b2f5-508a78cd2eb8.png')}
                     resizeMode="cover"
                   />
                   <ImageBackground
@@ -563,7 +563,7 @@ export default function HomeScreen() {
                       left: 0,
                       zIndex: 34,
                     }}
-                    source={require('../../../assets/images/58f283df-7b68-4beb-81ff-e9209894919b.png')}
+                    source={require('./assets/images/58f283df-7b68-4beb-81ff-e9209894919b.png')}
                     resizeMode="cover"
                   />
                   <Text
@@ -655,7 +655,7 @@ export default function HomeScreen() {
                       left: 44.387,
                       zIndex: 39,
                     }}
-                    source={require('../../../assets/images/cb3eedfa-5996-443e-8080-b2aac072da71.png')}
+                    source={require('./assets/images/cb3eedfa-5996-443e-8080-b2aac072da71.png')}
                     resizeMode="cover"
                   />
                 </View>

@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, Platform } from 'react-native';
+import { Dimensions, View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import theme from '../../theme';
+
+const width_ratio = Dimensions.get('screen').width / 390;
+const height_ratio = Dimensions.get('screen').height / 844;
 
 const GetUser_info = () => {
   const [name, setName] = useState('');
@@ -27,7 +30,7 @@ const GetUser_info = () => {
           const username = await AsyncStorage.getItem('username');
           if (username !== null) {
             setName(username);
-            setNickname(username);
+            setNickname(userId);
           }
         }
       } catch (error) {
@@ -53,82 +56,119 @@ const GetUser_info = () => {
     }
   };
 
+  const handleHeightChange = (value) => {
+    const numValue = parseInt(value.replace(/[^0-9]/g, ''), 10);
+    if (!isNaN(numValue)) {
+      setHeight(numValue > 250 ? '250' : numValue.toString());
+    } else {
+      setHeight('');
+    }
+  };
+
+  const handleWeightChange = (value) => {
+    const numValue = parseFloat(value.replace(/[^0-9.]/g, ''));
+    if (!isNaN(numValue)) {
+      setWeight(numValue > 300 ? '300.0' : numValue.toFixed(1));
+    } else {
+      setWeight('');
+    }
+  };
+
   return (
-    <KeyboardAwareScrollView
-      contentContainerStyle={styles.container}
+    <KeyboardAvoidingView
+      style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      resetScrollToCoords={{ x: 0, y: 0 }}
-      scrollEnabled={true}
     >
       <View style={styles.innerContainer}>
-        <Text style={styles.title}>더 정확한 건강 관리를 위해 기본 정보를 알려주세요</Text>
+        <Text style={styles.title}>더 정확한 건강 관리를 위해 {"\n"}기본 정보를 알려주세요</Text>
 
-        <Text style={styles.label}>성별</Text>
-        <View style={styles.genderContainer}>
-          <TouchableOpacity onPress={() => setGender('male')} style={styles.genderButton}>
-            <Image
-              source={require('../../images/login/male.png')}
-              style={[styles.genderImage, gender === 'female' && styles.desaturated]}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setGender('female')} style={styles.genderButton}>
-            <Image
-              source={require('../../images/login/female.png')}
-              style={[styles.genderImage, gender === 'male' && styles.desaturated]}
-            />
-          </TouchableOpacity>
+        <View style={styles.genderWrapper}>
+          <Text style={styles.label}>성별</Text>
+          <View style={styles.genderContainer}>
+            <TouchableOpacity onPress={() => setGender('female')} style={styles.genderButton}>
+              <Image
+                source={require('../../images/login/female.png')}
+                style={[styles.genderImage, gender === 'male' && styles.desaturated]}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setGender('male')} style={styles.genderButton}>
+              <Image
+                source={require('../../images/login/male.png')}
+                style={[styles.genderImage, gender === 'female' && styles.desaturated]}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
 
-        <Text style={styles.label}>이름</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="홍길동"
-          placeholderTextColor="gray"
-          value={name}
-          onChangeText={setName}
-        />
+        <View style={styles.row}>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>이름</Text>
+            <TextInput
+              style={styles.input}
+              backgroundColor="#F1F1F1"
+              placeholder="홍길동"
+              placeholderTextColor="#828287"
+              value={name}
+              onChangeText={setName}
+            />
+          </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>닉네임</Text>
+            <TextInput
+              style={styles.input}
+              backgroundColor="#F1F1F1"
+              placeholder="6자리 이내로 입력"
+              placeholderTextColor="#828287"
+              value={nickname}
+              onChangeText={setNickname}
+            />
+          </View>
+        </View>
 
-        <Text style={styles.label}>닉네임</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="6자리 이내로 입력"
-          placeholderTextColor="gray"
-          value={nickname}
-          onChangeText={setNickname}
-        />
-
-        <Text style={styles.label}>생년월일</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="YYYY / MM / DD"
-          placeholderTextColor="gray"
-          value={birthdate}
-          onChangeText={setBirthdate}
-        />
+        <View style={styles.inputGroupFullWidth}>
+          <Text style={styles.label}>생년월일</Text>
+          <TextInput
+            style={styles.input}
+            backgroundColor="#F1F1F1"
+            placeholder="YYYY / MM / DD"
+            placeholderTextColor="#828287"
+            value={birthdate}
+            onChangeText={setBirthdate}
+          />
+        </View>
 
         <View style={styles.row}>
           <View style={styles.inputGroup}>
             <Text style={styles.label}>키</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="0 cm"
-              placeholderTextColor="gray"
-              value={height}
-              onChangeText={setHeight}
-              keyboardType="numeric"
-            />
+            <View style={styles.inputWithUnit}>
+              <TextInput
+                style={styles.input}
+                backgroundColor="#F1F1F1"
+                placeholder="0"
+                placeholderTextColor="#828287"
+                value={height}
+                onChangeText={handleHeightChange}
+                keyboardType="numeric"
+                maxLength={3}
+              />
+              <Text style={styles.unit}>cm</Text>
+            </View>
           </View>
-
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>몸무게</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="0 kg"
-              placeholderTextColor="gray"
-              value={weight}
-              onChangeText={setWeight}
-              keyboardType="numeric"
-            />
+            <Text style={styles.label}>체중</Text>
+            <View style={styles.inputWithUnit}>
+              <TextInput
+                style={styles.input}
+                backgroundColor="#F1F1F1"
+                placeholder="00.0"
+                placeholderTextColor="#828287"
+                value={weight}
+                onChangeText={handleWeightChange}
+                keyboardType="numeric"
+                maxLength={5}
+              />
+              <Text style={styles.unit}>kg</Text>
+            </View>
           </View>
         </View>
 
@@ -136,47 +176,69 @@ const GetUser_info = () => {
           <Text style={styles.buttonText}>다음</Text>
         </TouchableOpacity>
       </View>
-    </KeyboardAwareScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
     backgroundColor: 'white',
   },
   innerContainer: {
-    flex: 1,
-    padding: 20,
-    justifyContent: 'space-between',
+    paddingTop: 80,
+    paddingHorizontal: 24,
+    alignItems: 'center',
   },
   title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 20,
+    marginLeft: 4,
+    fontSize: 20,
+    ...theme.fonts.Bold,
+    marginBottom: 50,
     color: 'black',
+    alignSelf: 'flex-start',
+  },
+  inputWithUnit: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#F1F1F1',
+    borderRadius: 13,
+    paddingRight: 24,
+  },
+  inputGroup: {
+    flex: 1,
+    marginHorizontal: 8,
+    marginBottom: 24,
+  },
+  inputGroupFullWidth: {
+    width: '100%',
+    marginBottom: 24,
   },
   label: {
     fontSize: 16,
-    marginBottom: 5,
+    ...theme.fonts.Regular,
+    marginBottom: 12,
     color: 'black',
   },
   input: {
-    borderWidth: 1,
+    borderWidth: 0,
     borderColor: '#ccc',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 15,
+    borderRadius: 13,
+    paddingVertical: 17,
+    paddingHorizontal: 24,
     fontSize: 16,
+    ...theme.fonts.Regular,
     color: 'black',
+  },
+  unit: {
+    fontSize: 16,
+    color: '#828287',
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-  },
-  inputGroup: {
-    flex: 1,
-    marginRight: 10,
+    marginHorizontal: -8,
   },
   button: {
     backgroundColor: '#1677FF',
@@ -184,18 +246,22 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: 'center',
     marginTop: 20,
+    width: '100%',
   },
   buttonText: {
     color: 'white',
     fontSize: 16,
-    fontWeight: 'bold',
+    ...theme.fonts.Bold,
+  },
+  genderWrapper: {
+    width: '100%',
+    marginBottom: 24,
   },
   genderContainer: {
     flexDirection: 'row',
-    marginBottom: 20,
+    justifyContent: 'space-around',
   },
   genderButton: {
-    flex: 1,
     alignItems: 'center',
     padding: 10,
   },
