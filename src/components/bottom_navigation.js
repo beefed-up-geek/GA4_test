@@ -12,11 +12,12 @@ import Authentication2Screen from '../screen/healthscreen/authentication2';
 import Authentication3Screen from '../screen/healthscreen/authentication3';
 import Header from './header';
 import Kit_checkupScreen1 from '../screen/Kit_checkup';
-import {Kit_checkupScreen2} from '../screen/Kit_checkup/Kit_checkup2';
-import {Kit_checkupScreen3} from '../screen/Kit_checkup/Kit_checkup3';
+import Kit_checkupScreen2 from '../screen/Kit_checkup/Kit_checkup2';
+import Kit_checkupScreen3 from '../screen/Kit_checkup/Kit_checkup3';
 import QRCodeScreen from '../screen/Kit_checkup/QRcode';
 import TabDesign from './bottomtab_design';
 import GetUserInfo from '../screen/login/get_usr_info';
+import CameraScreen from '../screen/Kit_checkup/Camera';
 import HospitalScreen from '../screen/hospital/search';
 
 const Stack = createStackNavigator();
@@ -54,6 +55,7 @@ const KitStack = () => (
     <Stack.Screen name="Kit_checkup2" component={Kit_checkupScreen2} />
     <Stack.Screen name="Kit_checkup3" component={Kit_checkupScreen3} />
     <Stack.Screen name="QRcode" component={QRCodeScreen} />
+    <Stack.Screen name="Camera" component={CameraScreen} />
   </Stack.Navigator>
 );
 

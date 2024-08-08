@@ -30,11 +30,13 @@ const Kit_checkupScreen2 = ({onPress, navigation}) => {
         contentInsetAdjustmentBehavior="automatic">
         <View style={styles.container}>
           <View style={styles.header}>
-            <ImageBackground
-              style={styles.headerIcon}
-              source={require('./assets/images/1f9e7f42-01c5-40ec-88d3-2a33f0b7f5aa.png')}
-              resizeMode="cover"
-            />
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <ImageBackground
+                style={styles.headerIcon}
+                source={require('./assets/images/1f9e7f42-01c5-40ec-88d3-2a33f0b7f5aa.png')}
+                resizeMode="cover"
+              />
+            </TouchableOpacity>
             <Text style={styles.headerTitle} numberOfLines={1}>
               소변 검사 가이드
             </Text>
@@ -96,7 +98,7 @@ const Kit_checkupScreen2 = ({onPress, navigation}) => {
               </View>
             ))}
           </View>
-          <TouchableOpacity onPress={() => navigation.navigate('QRcode')}>
+          <TouchableOpacity onPress={() => navigation.navigate('Camera')}>
             <View style={styles.captureButton}>
               <View style={styles.captureButtonTextContainer}>
                 <ImageBackground
