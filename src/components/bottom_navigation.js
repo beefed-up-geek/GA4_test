@@ -1,7 +1,7 @@
-import React, {useState, useEffect} from 'react';
-import {View, StyleSheet} from 'react-native';
-import {useNavigation, useRoute} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+import React, { useState } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import HealthScreen from '../screen/healthscreen';
 import HomeScreen from '../screen/home';
 import MedicineScreen from '../screen/medicine';
@@ -34,9 +34,12 @@ const HealthStack = () => (
   </Stack.Navigator>
 );
 
-const HomeStack = () => (
+const HomeStack = ({ setSelected }) => (
   <Stack.Navigator screenOptions={stackScreenOptions}>
-    <Stack.Screen name="Home" component={HomeScreen} />
+    <Stack.Screen 
+      name="Home" 
+      children={(props) => <HomeScreen {...props} setSelected={setSelected} />} 
+    />
   </Stack.Navigator>
 );
 
@@ -66,7 +69,6 @@ const HospitalStack = () => (
 const BottomNavigation = () => {
   const [selected, setSelected] = useState('Home');
   const navigation = useNavigation();
-  const route = useRoute();
 
   // 아이콘 경로 정의
   const iconSources = {
@@ -87,9 +89,9 @@ const BottomNavigation = () => {
   };
 
   return (
-    <View style={{flex: 1, backgroundColor: '#fff'}}>
-      <View style={{flex: 1}}>
-        {selected === 'Home' && <HomeStack />}
+    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+      <View style={{ flex: 1 }}>
+        {selected === 'Home' && <HomeStack setSelected={setSelected} />}
         {selected === 'HealthCheck' && <HealthStack />}
         {selected === 'KitResult' && <KitStack />}
         {selected === 'HospitalSearch' && <HospitalStack />}
@@ -158,7 +160,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     left: '50%',
-    transform: [{translateX: -175}],
+    transform: [{ translateX: -175 }],
     backgroundColor: 'transparent',
   },
   container: {

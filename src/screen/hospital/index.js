@@ -110,7 +110,7 @@ export default function HospitalScreen({navigation}) {
       let response;
       if (valueType === '일반 병원') {
         response = await axios.post(
-          `https://d94e-203-252-33-1.ngrok-free.app/hospital/general`,
+          `https://35b4-203-252-33-1.ngrok-free.app/hospital/general`,
           {
             partial_name: query,
             user_latitude: latitude,
@@ -124,7 +124,7 @@ export default function HospitalScreen({navigation}) {
         );
       } else if (valueType === '요양 병원') {
         response = await axios.post(
-          `https://d94e-203-252-33-1.ngrok-free.app/hospital/nursing`,
+          `https://35b4-203-252-33-1.ngrok-free.app/hospital/nursing`,
           {
             partial_name: query,
             user_latitude: latitude,
@@ -138,7 +138,7 @@ export default function HospitalScreen({navigation}) {
         );
       } else {
         const generalResponse = await axios.post(
-          `https://d94e-203-252-33-1.ngrok-free.app/hospital/general`,
+          `https://35b4-203-252-33-1.ngrok-free.app/hospital/general`,
           {
             partial_name: query,
             user_latitude: latitude,
@@ -151,7 +151,7 @@ export default function HospitalScreen({navigation}) {
           },
         );
         const nursingResponse = await axios.post(
-          `https://d94e-203-252-33-1.ngrok-free.app/hospital/nursing`,
+          `https://35b4-203-252-33-1.ngrok-free.app/hospital/nursing`,
           {
             partial_name: query,
             user_latitude: latitude,

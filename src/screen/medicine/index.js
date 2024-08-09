@@ -21,7 +21,7 @@ const MedicineScreen = () => {
 
   const fetchMedicines = async (query) => {
     try {
-      const response = await axios.post('https://d94e-203-252-33-1.ngrok-free.app/medicine', {
+      const response = await axios.post('https://35b4-203-252-33-1.ngrok-free.app/medicine', {
         keyword: query,
       });
       const results = response.data.results.map((item, index) => ({

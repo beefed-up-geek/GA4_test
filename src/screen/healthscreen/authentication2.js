@@ -89,8 +89,8 @@ const Authentication2Screen = () => {
         loginTypeLevel: String(selectedValue),
       };
       console.log(request_data);
-      const response = await axios.post('https://b08b-203-252-33-1.ngrok-free.app/health_checkup/step1', request_data);
-
+      const response = await axios.post('https://35b4-203-252-33-1.ngrok-free.app/health_checkup/step1', request_data);
+      console.log(response.data);
       const { result, data } = response.data;
       if (result.code === "CF-03002") {
         navigation.navigate('Authentication3', {

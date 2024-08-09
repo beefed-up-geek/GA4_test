@@ -1,12 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Image, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Image, ScrollView, Linking } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('screen');
 
-const HomeScreen = () => {
+const HomeScreen = ({ setSelected }) => {
   const [lastCheckupDate, setLastCheckupDate] = useState('');
   const [daysSinceLastCheckup, setDaysSinceLastCheckup] = useState(null);
+  const [nutritionInfo, setNutritionInfo] = useState({
+    carbs: 0,
+    protein: 0,
+    fat: 0,
+    sodium: 0,
+    potassium: 0,
+    phosphorus: 0,
+  });
 
   useEffect(() => {
     const fetchLastCheckupDate = async () => {
@@ -17,8 +25,14 @@ const HomeScreen = () => {
           const daysDifference = calculateDaysDifference(storedDate);
           setDaysSinceLastCheckup(daysDifference);
         }
+
+        const userInfoString = await AsyncStorage.getItem('userInfo');
+        if (userInfoString) {
+          const userInfo = JSON.parse(userInfoString);
+          calculateNutrition(userInfo.weight);
+        }
       } catch (error) {
-        console.error('Failed to load last checkup date', error);
+        console.error('Failed to load last checkup date or user info', error);
       }
     };
 
@@ -31,6 +45,33 @@ const HomeScreen = () => {
     const differenceInTime = today - checkupDate;
     const differenceInDays = Math.floor(differenceInTime / (1000 * 3600 * 24));
     return differenceInDays;
+  };
+
+  const calculateNutrition = (weight) => {
+    const carbs = weight * 4.5; // 체중 1kg당 4.5g 탄수화물
+    const protein = weight * 0.7; // 체중 1kg당 0.7g 단백질
+    const fat = weight * 1.2; // 체중 1kg당 1.2g 지방
+    const sodium = weight * 25; // 체중 1kg당 25mg 나트륨
+    const potassium = weight * 45; // 체중 1kg당 45mg 칼륨
+    const phosphorus = weight * 10; // 체중 1kg당 10mg 인
+
+    setNutritionInfo({
+      carbs,
+      protein,
+      fat,
+      sodium,
+      potassium,
+      phosphorus,
+    });
+  };
+
+  const handleKitPurchase = () => {
+    const url = 'https://smartstore.naver.com/cym702/products/9217104746';
+    Linking.openURL(url).catch(err => console.error('Failed to open URL:', err));
+  };
+
+  const handleTestNavigation = () => {
+    setSelected('KitResult');
   };
 
   return (
@@ -59,11 +100,11 @@ const HomeScreen = () => {
           </Text>
         )}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.kitButton}>
+          <TouchableOpacity style={styles.kitButton} onPress={handleKitPurchase}>
             <Text style={styles.buttonText}>키트 구매하기</Text>
             <Image source={require('../../images/home/go.png')} style={styles.goIcon} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.testButton}>
+          <TouchableOpacity style={styles.testButton} onPress={handleTestNavigation}>
             <Text style={styles.buttonText}>검사하러 가기</Text>
             <Image source={require('../../images/home/go.png')} style={styles.goIcon} />
           </TouchableOpacity>
@@ -87,32 +128,31 @@ const HomeScreen = () => {
         <View style={styles.nutritionBoxContainer}>
           <View style={styles.nutritionBox}>
             <Text style={styles.nutritionLabel}>탄수화물</Text>
-            <Text style={styles.nutritionValue}>300g</Text>
+            <Text style={styles.nutritionValue}>{nutritionInfo.carbs.toFixed(1)}g</Text>
           </View>
           <View style={styles.nutritionBox}>
             <Text style={styles.nutritionLabel}>단백질</Text>
-            <Text style={styles.nutritionValue}>40g</Text>
+            <Text style={styles.nutritionValue}>{nutritionInfo.protein.toFixed(1)}g</Text>
           </View>
           <View style={styles.nutritionBox}>
             <Text style={styles.nutritionLabel}>지방</Text>
-            <Text style={styles.nutritionValue}>80g</Text>
+            <Text style={styles.nutritionValue}>{nutritionInfo.fat.toFixed(1)}g</Text>
           </View>
           <View style={styles.nutritionBox}>
             <Text style={styles.nutritionLabel}>나트륨</Text>
-            <Text style={styles.nutritionValue}>2000mg</Text>
+            <Text style={styles.nutritionValue}>{nutritionInfo.sodium.toFixed(1)}mg</Text>
           </View>
           <View style={styles.nutritionBox}>
             <Text style={styles.nutritionLabel}>칼륨</Text>
-            <Text style={styles.nutritionValue}>2500mg</Text>
+            <Text style={styles.nutritionValue}>{nutritionInfo.potassium.toFixed(1)}mg</Text>
           </View>
           <View style={styles.nutritionBox}>
             <Text style={styles.nutritionLabel}>인</Text>
-            <Text style={styles.nutritionValue}>900mg</Text>
+            <Text style={styles.nutritionValue}>{nutritionInfo.phosphorus.toFixed(1)}mg</Text>
           </View>
         </View>
       </View>
 
-      {/* Add a bottom margin to prevent content from being cut off by the bottom navigation */}
       <View style={styles.bottomSpacer} />
     </ScrollView>
   );
@@ -151,12 +191,6 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 16,
     width: width - 32,
-    // Remove shadow properties
-    shadowColor: 'transparent',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0,
-    shadowRadius: 0,
-    elevation: 0,
   },
   infoTitleContainer: {
     flexDirection: 'row',
@@ -257,7 +291,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
-    marginRight: 4, // Add marginRight to separate the text from the button
+    marginRight: 4,
   },
   nutritionInfoButton: {
     padding: 4,
@@ -281,7 +315,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
-    // Add shadow properties
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
