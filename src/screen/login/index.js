@@ -12,7 +12,14 @@ const Login1 = () => {
     const checkLoginMethod = async () => {
       const loginMethod = await AsyncStorage.getItem('loginMethod');
       const userInfo = await AsyncStorage.getItem('userInfo');
-
+      console.log("<<< loginMethod >>>");
+      console.log(loginMethod);
+      console.log("<<< userId >>>");
+      console.log(await AsyncStorage.getItem('userId'));
+      console.log("<<< username >>>");
+      console.log(await AsyncStorage.getItem('username')); 
+      console.log("<<< userInfo >>>");
+      console.log(userInfo);
       if (loginMethod) {
         const timer = setTimeout(() => {
           if (userInfo) {

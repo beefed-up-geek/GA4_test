@@ -8,7 +8,7 @@ import theme from '../../theme';
 const width_ratio = Dimensions.get('screen').width / 390;
 const height_ratio = Dimensions.get('screen').height / 844;
 
-const GetUser_info = () => {
+const Get_User_Info = () => {
   const [name, setName] = useState('');
   const [nickname, setNickname] = useState('');
   const [birthdate, setBirthdate] = useState('');
@@ -75,7 +75,7 @@ const GetUser_info = () => {
     const currentYear = new Date().getFullYear();
     const [year, month, day] = birthdate.split('/').map(Number);
     let errorMessage = '';
-
+  
     if (!name) {
       errorMessage += '이름을 입력해주세요.\n';
     }
@@ -104,21 +104,23 @@ const GetUser_info = () => {
         errorMessage += '생년월일의 일은 01에서 31 사이여야 합니다.\n';
       }
     }
-
+  
     if (errorMessage) {
       Alert.alert('입력 오류', errorMessage);
       return;
     }
-
+  
     const userInfo = { name, nickname, birthdate, height, weight, gender };
     try {
       await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
-      Alert.alert('사용자 정보를 성공적으로 저장했습니다!');
-      navigation.navigate('BottomNavigation');
+      console.log("<<< Get_User_Info화면 사용자 정보 저장됨 >>>");
+      console.log(await AsyncStorage.getItem('userInfo'));
+      navigation.navigate('GetKidneyInfo');  // Navigate to GetKidneyInfo screen
     } catch (error) {
       Alert.alert('사용자 정보 저장 실패');
     }
   };
+  
 
   const handleHeightChange = (value) => {
     const numValue = parseInt(value.replace(/[^0-9]/g, ''), 10);
@@ -258,12 +260,14 @@ const GetUser_info = () => {
         </View>
       </KeyboardAwareScrollView>
 
-      <TouchableOpacity
-        onPress={isFormValid ? handleSave : () => Alert.alert('입력 오류', '모든 필드를 형식에 맞게 입력해주세요.')}
-        style={[styles.button, isFormValid ? styles.buttonEnabled : styles.buttonDisabled]}
-      >
-        <Text style={[styles.buttonText, isFormValid ? styles.buttonTextEnabled : styles.buttonTextDisabled]}>다음</Text>
-      </TouchableOpacity>
+      <View style={styles.fixedButtonContainer}>
+        <TouchableOpacity
+          onPress={isFormValid ? handleSave : () => Alert.alert('입력 오류', '모든 필드를 형식에 맞게 입력해주세요.')}
+          style={[styles.button, isFormValid ? styles.buttonEnabled : styles.buttonDisabled]}
+        >
+          <Text style={[styles.buttonText, isFormValid ? styles.buttonTextEnabled : styles.buttonTextDisabled]}>다음</Text>
+        </TouchableOpacity>
+      </View>
     </KeyboardAvoidingView>
   );
 };
@@ -332,15 +336,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginHorizontal: -8,
   },
+  fixedButtonContainer: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    backgroundColor: 'white',
+    paddingVertical: 20,
+    alignItems: 'center',
+  },
   button: {
     paddingVertical: 17,
     borderRadius: 24,
     alignItems: 'center',
-    marginTop: 20,
     width: '66.67%', // 화면 너비의 2/3
-    position: 'absolute',
-    bottom: 30, // 화면 하단에서 30px 위에 위치하도록 조정
-    alignSelf: 'center',
   },
   buttonEnabled: {
     backgroundColor: '#EBEFFE',
@@ -371,7 +379,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   genderImageFemale: {
-    marginLeft: 26, 
+    marginLeft: 26,
     width: 109,
     height: 117.63,
     resizeMode: 'contain',
@@ -388,4 +396,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default GetUser_info;
+export default Get_User_Info;

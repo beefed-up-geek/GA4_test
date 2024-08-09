@@ -6,7 +6,6 @@ import HealthScreen from '../screen/healthscreen';
 import HomeScreen from '../screen/home';
 import MedicineScreen from '../screen/medicine';
 import KitScreen from '../screen/kit';
-import DietScreen from '../screen/diet';
 import Authentication1Screen from '../screen/healthscreen/authentication1';
 import Authentication2Screen from '../screen/healthscreen/authentication2';
 import Authentication3Screen from '../screen/healthscreen/authentication3';
@@ -16,7 +15,6 @@ import Kit_checkupScreen2 from '../screen/Kit_checkup/Kit_checkup2';
 import Kit_checkupScreen3 from '../screen/Kit_checkup/Kit_checkup3';
 import QRCodeScreen from '../screen/Kit_checkup/QRcode';
 import TabDesign from './bottomtab_design';
-import GetUserInfo from '../screen/login/get_usr_info';
 import CameraScreen from '../screen/Kit_checkup/Camera';
 import HospitalScreen from '../screen/hospital';
 

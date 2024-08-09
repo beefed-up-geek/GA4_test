@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Image, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('screen');
@@ -34,7 +34,7 @@ const HomeScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.profileContainer}>
         <TouchableOpacity style={styles.profileButton}>
           <Text style={styles.profileText}>내 프로필</Text>
@@ -76,13 +76,51 @@ const HomeScreen = () => {
           콩팥 기능의 콩팥 건강은? 단계에요. 자가진단키트로 검사하고 콩팥 기능 단계를 알아보세요.
         </Text>
       </View>
-    </View>
+
+      <View style={styles.nutritionContainer}>
+        <View style={styles.nutritionHeader}>
+          <Text style={styles.nutritionTitle}>맞춤 영양 정보</Text>
+          <TouchableOpacity style={styles.nutritionInfoButton}>
+            <Image source={require('../../images/home/nutrition.png')} style={styles.nutritionIcon} />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.nutritionBoxContainer}>
+          <View style={styles.nutritionBox}>
+            <Text style={styles.nutritionLabel}>탄수화물</Text>
+            <Text style={styles.nutritionValue}>300g</Text>
+          </View>
+          <View style={styles.nutritionBox}>
+            <Text style={styles.nutritionLabel}>단백질</Text>
+            <Text style={styles.nutritionValue}>40g</Text>
+          </View>
+          <View style={styles.nutritionBox}>
+            <Text style={styles.nutritionLabel}>지방</Text>
+            <Text style={styles.nutritionValue}>80g</Text>
+          </View>
+          <View style={styles.nutritionBox}>
+            <Text style={styles.nutritionLabel}>나트륨</Text>
+            <Text style={styles.nutritionValue}>2000mg</Text>
+          </View>
+          <View style={styles.nutritionBox}>
+            <Text style={styles.nutritionLabel}>칼륨</Text>
+            <Text style={styles.nutritionValue}>2500mg</Text>
+          </View>
+          <View style={styles.nutritionBox}>
+            <Text style={styles.nutritionLabel}>인</Text>
+            <Text style={styles.nutritionValue}>900mg</Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Add a bottom margin to prevent content from being cut off by the bottom navigation */}
+      <View style={styles.bottomSpacer} />
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: 'white',
     paddingHorizontal: 16,
     paddingTop: 16,
@@ -113,6 +151,12 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 16,
     width: width - 32,
+    // Remove shadow properties
+    shadowColor: 'transparent',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 0,
   },
   infoTitleContainer: {
     flexDirection: 'row',
@@ -197,6 +241,65 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     textAlign: 'center',
+  },
+  nutritionContainer: {
+    marginBottom: 16,
+    backgroundColor: 'white',
+    padding: 16,
+    borderRadius: 16,
+  },
+  nutritionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  nutritionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+    marginRight: 4, // Add marginRight to separate the text from the button
+  },
+  nutritionInfoButton: {
+    padding: 4,
+  },
+  nutritionIcon: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
+  },
+  nutritionBoxContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    paddingHorizontal: 0,
+  },
+  nutritionBox: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    width: (width - 72) / 3,
+    height: (width - 72) / 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+    // Add shadow properties
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  nutritionLabel: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 4,
+  },
+  nutritionValue: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  bottomSpacer: {
+    height: 100,
   },
 });
 
