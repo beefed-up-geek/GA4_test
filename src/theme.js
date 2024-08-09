@@ -13,27 +13,34 @@ const theme = {
     textGray: '#8B8B91',
   },
   fonts: {
-    Bold: {
-      fontFamily: 'PretendardVariable',
-      fontStyle: 'normal',
-      fontWeight: '700', // Ensure this is a string
+    Black: {
+      fontFamily: 'Pretendard-Black',
     },
-    Semibold: {
-      fontFamily: 'PretendardVariable',
-      fontStyle: 'normal',
-      fontWeight: '600', // Ensure this is a string
+    Bold: {
+      fontFamily: 'Pretendard-Bold',
+    },
+    ExtraBold: {
+      fontFamily: 'Pretendard-ExtraBold',
+    },
+    ExtraLight: {
+      fontFamily: 'Pretendard-ExtraLight',
+    },
+    Light: {
+      fontFamily: 'Pretendard-Light',
     },
     Medium: {
-      fontFamily: 'PretendardVariable',
-      fontStyle: 'normal',
-      fontWeight: '500', // Ensure this is a string
+      fontFamily: 'Pretendard-Medium',
     },
     Regular: {
-      fontFamily: 'PretendardVariable',
-      fontStyle: 'normal',
-      fontWeight: '400', // Ensure this is a string
+      fontFamily: 'Pretendard-Regular',
     },
-  }
+    SemiBold: {
+      fontFamily: 'Pretendard-SemiBold',
+    },
+    Thin: {
+      fontFamily: 'Pretendard-Thin',
+    },
+  },
 };
 
 export default theme;
