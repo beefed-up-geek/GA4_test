@@ -1,10 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Image, ScrollView, Linking } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+  Image,
+  ScrollView,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const { width } = Dimensions.get('screen');
+const {width} = Dimensions.get('screen');
 
-const HomeScreen = ({ setSelected }) => {
+const HomeScreen = ({setSelected}) => {
   const [lastCheckupDate, setLastCheckupDate] = useState('');
   const [daysSinceLastCheckup, setDaysSinceLastCheckup] = useState(null);
   const [nutritionInfo, setNutritionInfo] = useState({
@@ -42,7 +50,7 @@ const HomeScreen = ({ setSelected }) => {
     fetchUserInfoAndCheckupDate();
   }, []);
 
-  const calculateDaysDifference = (dateString) => {
+  const calculateDaysDifference = dateString => {
     const checkupDate = new Date(dateString);
     const today = new Date();
     const differenceInTime = today - checkupDate;
@@ -50,7 +58,7 @@ const HomeScreen = ({ setSelected }) => {
     return differenceInDays;
   };
 
-  const calculateNutrition = (weight) => {
+  const calculateNutrition = weight => {
     const carbs = weight * 4.5;
     const protein = weight * 0.7;
     const fat = weight * 1.2;
@@ -70,7 +78,9 @@ const HomeScreen = ({ setSelected }) => {
 
   const handleKitPurchase = () => {
     const url = 'https://smartstore.naver.com/cym702/products/9217104746';
-    Linking.openURL(url).catch(err => console.error('Failed to open URL:', err));
+    Linking.openURL(url).catch(err =>
+      console.error('Failed to open URL:', err),
+    );
   };
 
   const handleTestNavigation = () => {
@@ -90,20 +100,27 @@ const HomeScreen = ({ setSelected }) => {
       <View style={styles.profileContainer}>
         <TouchableOpacity style={styles.profileButton}>
           <Text style={styles.profileText}>내 프로필</Text>
-          <Image source={require('../../images/home/user.png')} style={styles.profileIcon} />
+          <Image
+            source={require('../../images/home/user.png')}
+            style={styles.profileIcon}
+          />
         </TouchableOpacity>
       </View>
 
       <View style={styles.infoBox}>
         <View style={styles.infoTitleContainer}>
-          <Image source={require('../../images/home/exclamation.png')} style={styles.infoIcon} />
+          <Image
+            source={require('../../images/home/exclamation.png')}
+            style={styles.infoIcon}
+          />
           <Text style={styles.infoTitle}>
             최근 검사 : {lastCheckupDate ? lastCheckupDate : '검사 이력 없음'}
           </Text>
         </View>
         {lastCheckupDate ? (
           <Text style={styles.infoSubtitle}>
-            마지막 검사자 {daysSinceLastCheckup}일 전이에요. 지금 검사하고 꾸준히 콩팥 건강을 관리해 보세요.
+            마지막 검사자 {daysSinceLastCheckup}일 전이에요. 지금 검사하고
+            꾸준히 콩팥 건강을 관리해 보세요.
           </Text>
         ) : (
           <Text style={styles.infoSubtitle}>
@@ -111,33 +128,53 @@ const HomeScreen = ({ setSelected }) => {
           </Text>
         )}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.kitButton} onPress={handleKitPurchase}>
+          <TouchableOpacity
+            style={styles.kitButton}
+            onPress={handleKitPurchase}>
             <Text style={styles.buttonText}>키트 구매하기</Text>
-            <Image source={require('../../images/home/go.png')} style={styles.goIcon} />
+            <Image
+              source={require('../../images/home/go.png')}
+              style={styles.goIcon}
+            />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.testButton} onPress={handleTestNavigation}>
+          <TouchableOpacity
+            style={styles.testButton}
+            onPress={handleTestNavigation}>
             <Text style={styles.buttonText}>검사하러 가기</Text>
-            <Image source={require('../../images/home/go.png')} style={styles.goIcon} />
+            <Image
+              source={require('../../images/home/go.png')}
+              style={styles.goIcon}
+            />
           </TouchableOpacity>
         </View>
       </View>
 
       <View style={styles.dialBox}>
-        <Image source={require('../../images/home/state.png')} style={styles.dialImage} />
+        <Image
+          source={require('../../images/home/state.png')}
+          style={styles.dialImage}
+        />
         <Text style={styles.dialText}>
-          콩팥 기능의 콩팥 건강은? 단계에요. 자가진단키트로 검사하고 콩팥 기능 단계를 알아보세요.
+          콩팥 기능의 콩팥 건강은? 단계에요. 자가진단키트로 검사하고 콩팥 기능
+          단계를 알아보세요.
         </Text>
       </View>
 
       <View style={styles.nutritionContainer}>
         <View style={styles.nutritionHeader}>
           <Text style={styles.nutritionTitle}>맞춤 영양 정보</Text>
-          <TouchableOpacity style={styles.nutritionInfoButton} onPress={toggleTooltip}>
-            <Image source={require('../../images/home/nutrition.png')} style={styles.nutritionIcon} />
+          <TouchableOpacity style={styles.nutritionInfoButton}>
+            <Image
+              source={require('../../images/home/nutrition.png')}
+              style={styles.nutritionIcon}
+            />
           </TouchableOpacity>
         </View>
         {showTooltip && userInfo && (
-          <TouchableOpacity style={styles.overlay} onPress={closeTooltip} activeOpacity={1}>
+          <TouchableOpacity
+            style={styles.overlay}
+            onPress={closeTooltip}
+            activeOpacity={1}>
             <View style={styles.tooltipContainer}>
               <View style={styles.tooltip}>
                 <Text style={styles.tooltipText}>
@@ -154,27 +191,39 @@ const HomeScreen = ({ setSelected }) => {
         <View style={styles.nutritionBoxContainer}>
           <View style={styles.nutritionBox}>
             <Text style={styles.nutritionLabel}>탄수화물</Text>
-            <Text style={styles.nutritionValue}>{nutritionInfo.carbs.toFixed(1)}g</Text>
+            <Text style={styles.nutritionValue}>
+              {nutritionInfo.carbs.toFixed(1)}g
+            </Text>
           </View>
           <View style={styles.nutritionBox}>
             <Text style={styles.nutritionLabel}>단백질</Text>
-            <Text style={styles.nutritionValue}>{nutritionInfo.protein.toFixed(1)}g</Text>
+            <Text style={styles.nutritionValue}>
+              {nutritionInfo.protein.toFixed(1)}g
+            </Text>
           </View>
           <View style={styles.nutritionBox}>
             <Text style={styles.nutritionLabel}>지방</Text>
-            <Text style={styles.nutritionValue}>{nutritionInfo.fat.toFixed(1)}g</Text>
+            <Text style={styles.nutritionValue}>
+              {nutritionInfo.fat.toFixed(1)}g
+            </Text>
           </View>
           <View style={styles.nutritionBox}>
             <Text style={styles.nutritionLabel}>나트륨</Text>
-            <Text style={styles.nutritionValue}>{nutritionInfo.sodium.toFixed(1)}mg</Text>
+            <Text style={styles.nutritionValue}>
+              {nutritionInfo.sodium.toFixed(1)}mg
+            </Text>
           </View>
           <View style={styles.nutritionBox}>
             <Text style={styles.nutritionLabel}>칼륨</Text>
-            <Text style={styles.nutritionValue}>{nutritionInfo.potassium.toFixed(1)}mg</Text>
+            <Text style={styles.nutritionValue}>
+              {nutritionInfo.potassium.toFixed(1)}mg
+            </Text>
           </View>
           <View style={styles.nutritionBox}>
             <Text style={styles.nutritionLabel}>인</Text>
-            <Text style={styles.nutritionValue}>{nutritionInfo.phosphorus.toFixed(1)}mg</Text>
+            <Text style={styles.nutritionValue}>
+              {nutritionInfo.phosphorus.toFixed(1)}mg
+            </Text>
           </View>
         </View>
       </View>
@@ -217,6 +266,12 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 16,
     width: width - 32,
+    // Remove shadow properties
+    shadowColor: 'transparent',
+    shadowOffset: {width: 0, height: 0},
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 0,
   },
   infoTitleContainer: {
     flexDirection: 'row',
@@ -286,14 +341,14 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 5,
   },
   dialImage: {
     width: (width * 3) / 4,
-    height: ((width * 3) / 4) / 2,
+    height: (width * 3) / 4 / 2,
     resizeMode: 'contain',
     marginBottom: 16,
   },
@@ -330,17 +385,17 @@ const styles = StyleSheet.create({
   tooltipContainer: {
     position: 'absolute',
     top: -100, // Adjusted to place the tooltip above the button
-    right: (width/ 3), // Centered horizontally
+    right: width / 3, // Centered horizontally
     alignItems: 'center',
   },
   tooltip: {
     backgroundColor: '#7596FF',
     padding: 10,
     borderRadius: 8,
-    width: width * 2 / 3,
+    width: (width * 2) / 3,
     zIndex: 1,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 5,
@@ -363,7 +418,7 @@ const styles = StyleSheet.create({
     marginTop: -1,
     zIndex: 1,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.5,
     shadowRadius: 4,
   },
@@ -382,7 +437,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 5,
