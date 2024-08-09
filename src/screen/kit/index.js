@@ -102,7 +102,7 @@ const HomeScreen = ({onPress, navigation}) => {
                   <View style={styles.analysisCardContent}>
                     <View style={styles.analysisCardRow}>
                       <View style={styles.analysisCardRowInner}>
-                        <Text style={styles.analysisCardRowText}>바보바보</Text>
+                        <Text style={styles.analysisCardRowText}>키트 검사 분석이 제공되는 곳입니다. </Text>
                       </View>
                     </View>
                   </View>

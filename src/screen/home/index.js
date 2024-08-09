@@ -15,9 +15,11 @@ const HomeScreen = ({ setSelected }) => {
     potassium: 0,
     phosphorus: 0,
   });
+  const [userInfo, setUserInfo] = useState(null);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
-    const fetchLastCheckupDate = async () => {
+    const fetchUserInfoAndCheckupDate = async () => {
       try {
         const storedDate = await AsyncStorage.getItem('last_kit_checkup');
         if (storedDate) {
@@ -28,15 +30,16 @@ const HomeScreen = ({ setSelected }) => {
 
         const userInfoString = await AsyncStorage.getItem('userInfo');
         if (userInfoString) {
-          const userInfo = JSON.parse(userInfoString);
-          calculateNutrition(userInfo.weight);
+          const userInfoData = JSON.parse(userInfoString);
+          setUserInfo(userInfoData);
+          calculateNutrition(userInfoData.weight);
         }
       } catch (error) {
         console.error('Failed to load last checkup date or user info', error);
       }
     };
 
-    fetchLastCheckupDate();
+    fetchUserInfoAndCheckupDate();
   }, []);
 
   const calculateDaysDifference = (dateString) => {
@@ -48,12 +51,12 @@ const HomeScreen = ({ setSelected }) => {
   };
 
   const calculateNutrition = (weight) => {
-    const carbs = weight * 4.5; // 체중 1kg당 4.5g 탄수화물
-    const protein = weight * 0.7; // 체중 1kg당 0.7g 단백질
-    const fat = weight * 1.2; // 체중 1kg당 1.2g 지방
-    const sodium = weight * 25; // 체중 1kg당 25mg 나트륨
-    const potassium = weight * 45; // 체중 1kg당 45mg 칼륨
-    const phosphorus = weight * 10; // 체중 1kg당 10mg 인
+    const carbs = weight * 4.5;
+    const protein = weight * 0.7;
+    const fat = weight * 1.2;
+    const sodium = weight * 25;
+    const potassium = weight * 45;
+    const phosphorus = weight * 10;
 
     setNutritionInfo({
       carbs,
@@ -72,6 +75,14 @@ const HomeScreen = ({ setSelected }) => {
 
   const handleTestNavigation = () => {
     setSelected('KitResult');
+  };
+
+  const toggleTooltip = () => {
+    setShowTooltip(!showTooltip);
+  };
+
+  const closeTooltip = () => {
+    setShowTooltip(false);
   };
 
   return (
@@ -121,10 +132,25 @@ const HomeScreen = ({ setSelected }) => {
       <View style={styles.nutritionContainer}>
         <View style={styles.nutritionHeader}>
           <Text style={styles.nutritionTitle}>맞춤 영양 정보</Text>
-          <TouchableOpacity style={styles.nutritionInfoButton}>
+          <TouchableOpacity style={styles.nutritionInfoButton} onPress={toggleTooltip}>
             <Image source={require('../../images/home/nutrition.png')} style={styles.nutritionIcon} />
           </TouchableOpacity>
         </View>
+        {showTooltip && userInfo && (
+          <TouchableOpacity style={styles.overlay} onPress={closeTooltip} activeOpacity={1}>
+            <View style={styles.tooltipContainer}>
+              <View style={styles.tooltip}>
+                <Text style={styles.tooltipText}>
+                  {`${userInfo.name}님을 위한 영양소 지침입니다.\n`}
+                  {`신장병 상태: ${userInfo.kidneyDisease}\n`}
+                  {`체중: ${userInfo.weight} kg\n`}
+                  {`키트검사 결과: 없음`}
+                </Text>
+              </View>
+              <View style={styles.tooltipArrow} />
+            </View>
+          </TouchableOpacity>
+        )}
         <View style={styles.nutritionBoxContainer}>
           <View style={styles.nutritionBox}>
             <Text style={styles.nutritionLabel}>탄수화물</Text>
@@ -301,6 +327,46 @@ const styles = StyleSheet.create({
     height: 24,
     resizeMode: 'contain',
   },
+  tooltipContainer: {
+    position: 'absolute',
+    top: -100, // Adjusted to place the tooltip above the button
+    right: (width/ 3), // Centered horizontally
+    alignItems: 'center',
+  },
+  tooltip: {
+    backgroundColor: '#7596FF',
+    padding: 10,
+    borderRadius: 8,
+    width: width * 2 / 3,
+    zIndex: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  tooltipText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    textAlign: 'left',
+    marginLeft: 20,
+  },
+  tooltipArrow: {
+    width: 0,
+    height: 0,
+    borderLeftWidth: 10,
+    borderRightWidth: 10,
+    borderTopWidth: 10,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderTopColor: '#7596FF',
+    marginTop: -1,
+    zIndex: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+  },
   nutritionBoxContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -333,6 +399,15 @@ const styles = StyleSheet.create({
   },
   bottomSpacer: {
     height: 100,
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: width,
+    height: '100%',
+    backgroundColor: 'transparent',
+    zIndex: 1,
   },
 });
 
