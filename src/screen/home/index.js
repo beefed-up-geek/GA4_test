@@ -43,7 +43,7 @@ const HomeScreen = () => {
     phosphorus: 900,
   };
 
-  const baseDuration = 500; // 기본 3초
+  const baseDuration = 3000; // 기본 3초
 
   const incrementValues = (setValue, target, duration, incrementStep = 1) => {
     const stepTime = duration / (target / incrementStep);
@@ -60,7 +60,7 @@ const HomeScreen = () => {
   };
 
   useEffect(() => {
-    const fetchUserInfoAndCheckupDate = async () => {
+    const fetchLastCheckupDate = async () => {
       try {
         const storedDate = await AsyncStorage.getItem('last_kit_checkup');
         if (storedDate) {
@@ -68,15 +68,8 @@ const HomeScreen = () => {
           const daysDifference = calculateDaysDifference(storedDate);
           setDaysSinceLastCheckup(daysDifference);
         }
-
-        const userInfoString = await AsyncStorage.getItem('userInfo');
-        if (userInfoString) {
-          const userInfoData = JSON.parse(userInfoString);
-          setUserInfo(userInfoData);
-          calculateNutrition(userInfoData.weight);
-        }
       } catch (error) {
-        console.error('Failed to load last checkup date or user info', error);
+        console.error('Failed to load last checkup date', error);
       }
 
       // 180도 회전 후에 흔들리는 효과 추가
@@ -89,12 +82,12 @@ const HomeScreen = () => {
         () => {
           // 흔들리는 효과 추가
           rotation.value = withSpring(120, {
-            damping: 4, // 감쇠 계수, 낮을수록 더 많은 흔들림
-            stiffness: 400, // 스프링 강도, 높을수록 빠른 정지
-            mass: 1, // 질량
-            overshootClamping: false, // overshoot를 허용
-            restDisplacementThreshold: 0.007, // 얼마나 흔들리다가 멈출지 결정
-            restSpeedThreshold: 0.01, // 얼마나 천천히 흔들리다가 멈출지 결정
+            damping: 4,
+            stiffness: 400,
+            mass: 1,
+            overshootClamping: false,
+            restDisplacementThreshold: 0.007,
+            restSpeedThreshold: 0.01,
           });
         },
       );
@@ -102,12 +95,13 @@ const HomeScreen = () => {
 
     fetchLastCheckupDate();
 
-    incrementValues(setCarbs, targets.carbs, baseDuration, 10);
-    incrementValues(setProtein, targets.protein, baseDuration, 2); // 기본
-    incrementValues(setFat, targets.fat, baseDuration, 4); // 빠르게 증가
-    incrementValues(setSodium, targets.sodium, baseDuration, 100); // 매우 빠르게 증가
-    incrementValues(setPotassium, targets.potassium, baseDuration, 125); // 매우 빠르게 증가
-    incrementValues(setPhosphorus, targets.phosphorus, baseDuration, 45); // 빠르게 증가
+    // 영양 성분마다 다른 incrementStep을 적용하여 증가 속도를 조절합니다.
+    incrementValues(setCarbs, targets.carbs, baseDuration);
+    incrementValues(setProtein, targets.protein, baseDuration, 1); // 기본
+    incrementValues(setFat, targets.fat, baseDuration, 2); // 빠르게 증가
+    incrementValues(setSodium, targets.sodium, baseDuration, 50); // 매우 빠르게 증가
+    incrementValues(setPotassium, targets.potassium, baseDuration, 50); // 매우 빠르게 증가
+    incrementValues(setPhosphorus, targets.phosphorus, baseDuration, 5); // 빠르게 증가
   }, []);
 
   const calculateDaysDifference = dateString => {
@@ -120,9 +114,9 @@ const HomeScreen = () => {
 
   const animatedProps = useAnimatedProps(() => {
     const angleInRadians = (rotation.value * Math.PI) / 180;
-    const radius = 75; // 회전 반지름
-    const x2 = 150 - radius * Math.cos(angleInRadians); // x2는 75에서 225로 변하게 됩니다.
-    const y2 = 150 - radius * Math.sin(angleInRadians); // y2는 150을 중심으로 변합니다.
+    const radius = 75;
+    const x2 = 150 - radius * Math.cos(angleInRadians);
+    const y2 = 150 - radius * Math.sin(angleInRadians);
 
     return {
       x2: `${x2}`,
@@ -162,18 +156,14 @@ const HomeScreen = () => {
           </Text>
         )}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.kitButton}
-            onPress={handleKitPurchase}>
+          <TouchableOpacity style={styles.kitButton}>
             <Text style={styles.buttonText}>키트 구매하기</Text>
             <Image
               source={require('../../images/home/go.png')}
               style={styles.goIcon}
             />
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.testButton}
-            onPress={handleTestNavigation}>
+          <TouchableOpacity style={styles.testButton}>
             <Text style={styles.buttonText}>검사하러 가기</Text>
             <Image
               source={require('../../images/home/go.png')}
@@ -191,7 +181,7 @@ const HomeScreen = () => {
           height="180">
           <Image
             source={require('../../images/home/state.png')}
-            style={styles.dialImage} // 다이얼 이미지
+            style={styles.dialImage}
           />
           <Circle cx="150" cy="150" r="3" fill="blue" />
           <AnimatedLine
@@ -219,24 +209,6 @@ const HomeScreen = () => {
             />
           </TouchableOpacity>
         </View>
-        {showTooltip && userInfo && (
-          <TouchableOpacity
-            style={styles.overlay}
-            onPress={closeTooltip}
-            activeOpacity={1}>
-            <View style={styles.tooltipContainer}>
-              <View style={styles.tooltip}>
-                <Text style={styles.tooltipText}>
-                  {`${userInfo.name}님을 위한 영양소 지침입니다.\n`}
-                  {`신장병 상태: ${userInfo.kidneyDisease}\n`}
-                  {`체중: ${userInfo.weight} kg\n`}
-                  {`키트검사 결과: 없음`}
-                </Text>
-              </View>
-              <View style={styles.tooltipArrow} />
-            </View>
-          </TouchableOpacity>
-        )}
         <View style={styles.nutritionBoxContainer}>
           <View style={styles.nutritionBox}>
             <Text style={styles.nutritionLabel}>탄수화물</Text>
@@ -412,7 +384,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
     marginRight: 4,
-    marginRight: 4,
   },
   nutritionInfoButton: {
     padding: 4,
@@ -421,46 +392,6 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     resizeMode: 'contain',
-  },
-  tooltipContainer: {
-    position: 'absolute',
-    top: -100, // Adjusted to place the tooltip above the button
-    right: width / 3, // Centered horizontally
-    alignItems: 'center',
-  },
-  tooltip: {
-    backgroundColor: '#7596FF',
-    padding: 10,
-    borderRadius: 8,
-    width: (width * 2) / 3,
-    zIndex: 1,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  tooltipText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    textAlign: 'left',
-    marginLeft: 20,
-  },
-  tooltipArrow: {
-    width: 0,
-    height: 0,
-    borderLeftWidth: 10,
-    borderRightWidth: 10,
-    borderTopWidth: 10,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderTopColor: '#7596FF',
-    marginTop: -1,
-    zIndex: 1,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
   },
   nutritionBoxContainer: {
     flexDirection: 'row',
@@ -494,15 +425,6 @@ const styles = StyleSheet.create({
   },
   bottomSpacer: {
     height: 100,
-  },
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: width,
-    height: '100%',
-    backgroundColor: 'transparent',
-    zIndex: 1,
   },
 });
 
