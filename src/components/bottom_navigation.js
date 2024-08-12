@@ -51,7 +51,7 @@ const MedicineStack = () => (
 
 const KitStack = () => (
   <Stack.Navigator screenOptions={stackScreenOptions}>
-    <Stack.Screen name="Kit" component={KitScreen} />
+    <Stack.Screen name="KitResult" component={KitScreen} />
     <Stack.Screen name="Kit_checkup1" component={Kit_checkupScreen1} />
     <Stack.Screen name="Kit_checkup2" component={Kit_checkupScreen2} />
     <Stack.Screen name="Kit_checkup3" component={Kit_checkupScreen3} />

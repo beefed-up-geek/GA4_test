@@ -8,23 +8,56 @@ import {
   Image,
   ScrollView,
 } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedProps,
+  withTiming,
+  Easing,
+  withSpring,
+} from 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {Circle, Svg, Line} from 'react-native-svg';
 
 const {width} = Dimensions.get('screen');
 
-const HomeScreen = ({setSelected}) => {
+const AnimatedLine = Animated.createAnimatedComponent(Line);
+
+const HomeScreen = () => {
   const [lastCheckupDate, setLastCheckupDate] = useState('');
   const [daysSinceLastCheckup, setDaysSinceLastCheckup] = useState(null);
-  const [nutritionInfo, setNutritionInfo] = useState({
-    carbs: 0,
-    protein: 0,
-    fat: 0,
-    sodium: 0,
-    potassium: 0,
-    phosphorus: 0,
-  });
-  const [userInfo, setUserInfo] = useState(null);
-  const [showTooltip, setShowTooltip] = useState(false);
+  const rotation = useSharedValue(0);
+
+  const [carbs, setCarbs] = useState(0);
+  const [protein, setProtein] = useState(0);
+  const [fat, setFat] = useState(0);
+  const [sodium, setSodium] = useState(0);
+  const [potassium, setPotassium] = useState(0);
+  const [phosphorus, setPhosphorus] = useState(0);
+
+  const targets = {
+    carbs: 300,
+    protein: 40,
+    fat: 80,
+    sodium: 2000,
+    potassium: 2500,
+    phosphorus: 900,
+  };
+
+  const baseDuration = 500; // 기본 3초
+
+  const incrementValues = (setValue, target, duration, incrementStep = 1) => {
+    const stepTime = duration / (target / incrementStep);
+
+    const interval = setInterval(() => {
+      setValue(prev => {
+        if (prev >= target) {
+          clearInterval(interval);
+          return target;
+        }
+        return prev + incrementStep;
+      });
+    }, stepTime);
+  };
 
   useEffect(() => {
     const fetchUserInfoAndCheckupDate = async () => {
@@ -45,9 +78,36 @@ const HomeScreen = ({setSelected}) => {
       } catch (error) {
         console.error('Failed to load last checkup date or user info', error);
       }
+
+      // 180도 회전 후에 흔들리는 효과 추가
+      rotation.value = withTiming(
+        180,
+        {
+          duration: 200, // 0.5초에 180도 회전
+          easing: Easing.linear,
+        },
+        () => {
+          // 흔들리는 효과 추가
+          rotation.value = withSpring(120, {
+            damping: 4, // 감쇠 계수, 낮을수록 더 많은 흔들림
+            stiffness: 400, // 스프링 강도, 높을수록 빠른 정지
+            mass: 1, // 질량
+            overshootClamping: false, // overshoot를 허용
+            restDisplacementThreshold: 0.007, // 얼마나 흔들리다가 멈출지 결정
+            restSpeedThreshold: 0.01, // 얼마나 천천히 흔들리다가 멈출지 결정
+          });
+        },
+      );
     };
 
-    fetchUserInfoAndCheckupDate();
+    fetchLastCheckupDate();
+
+    incrementValues(setCarbs, targets.carbs, baseDuration, 10);
+    incrementValues(setProtein, targets.protein, baseDuration, 2); // 기본
+    incrementValues(setFat, targets.fat, baseDuration, 4); // 빠르게 증가
+    incrementValues(setSodium, targets.sodium, baseDuration, 100); // 매우 빠르게 증가
+    incrementValues(setPotassium, targets.potassium, baseDuration, 125); // 매우 빠르게 증가
+    incrementValues(setPhosphorus, targets.phosphorus, baseDuration, 45); // 빠르게 증가
   }, []);
 
   const calculateDaysDifference = dateString => {
@@ -58,42 +118,17 @@ const HomeScreen = ({setSelected}) => {
     return differenceInDays;
   };
 
-  const calculateNutrition = weight => {
-    const carbs = weight * 4.5;
-    const protein = weight * 0.7;
-    const fat = weight * 1.2;
-    const sodium = weight * 25;
-    const potassium = weight * 45;
-    const phosphorus = weight * 10;
+  const animatedProps = useAnimatedProps(() => {
+    const angleInRadians = (rotation.value * Math.PI) / 180;
+    const radius = 75; // 회전 반지름
+    const x2 = 150 - radius * Math.cos(angleInRadians); // x2는 75에서 225로 변하게 됩니다.
+    const y2 = 150 - radius * Math.sin(angleInRadians); // y2는 150을 중심으로 변합니다.
 
-    setNutritionInfo({
-      carbs,
-      protein,
-      fat,
-      sodium,
-      potassium,
-      phosphorus,
-    });
-  };
-
-  const handleKitPurchase = () => {
-    const url = 'https://smartstore.naver.com/cym702/products/9217104746';
-    Linking.openURL(url).catch(err =>
-      console.error('Failed to open URL:', err),
-    );
-  };
-
-  const handleTestNavigation = () => {
-    setSelected('KitResult');
-  };
-
-  const toggleTooltip = () => {
-    setShowTooltip(!showTooltip);
-  };
-
-  const closeTooltip = () => {
-    setShowTooltip(false);
-  };
+    return {
+      x2: `${x2}`,
+      y2: `${y2}`,
+    };
+  });
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -106,7 +141,6 @@ const HomeScreen = ({setSelected}) => {
           />
         </TouchableOpacity>
       </View>
-
       <View style={styles.infoBox}>
         <View style={styles.infoTitleContainer}>
           <Image
@@ -150,16 +184,31 @@ const HomeScreen = ({setSelected}) => {
       </View>
 
       <View style={styles.dialBox}>
-        <Image
-          source={require('../../images/home/state.png')}
-          style={styles.dialImage}
-        />
+        <Svg
+          justifyContent="center"
+          alignItems="center"
+          width="300"
+          height="180">
+          <Image
+            source={require('../../images/home/state.png')}
+            style={styles.dialImage} // 다이얼 이미지
+          />
+          <Circle cx="150" cy="150" r="3" fill="blue" />
+          <AnimatedLine
+            x1="150"
+            y1="150"
+            x2="75"
+            y2="150"
+            stroke="blue"
+            strokeWidth="4"
+            animatedProps={animatedProps}
+          />
+        </Svg>
         <Text style={styles.dialText}>
           콩팥 기능의 콩팥 건강은? 단계에요. 자가진단키트로 검사하고 콩팥 기능
           단계를 알아보세요.
         </Text>
       </View>
-
       <View style={styles.nutritionContainer}>
         <View style={styles.nutritionHeader}>
           <Text style={styles.nutritionTitle}>맞춤 영양 정보</Text>
@@ -191,43 +240,30 @@ const HomeScreen = ({setSelected}) => {
         <View style={styles.nutritionBoxContainer}>
           <View style={styles.nutritionBox}>
             <Text style={styles.nutritionLabel}>탄수화물</Text>
-            <Text style={styles.nutritionValue}>
-              {nutritionInfo.carbs.toFixed(1)}g
-            </Text>
+            <Text style={styles.nutritionValue}>{carbs}g</Text>
           </View>
           <View style={styles.nutritionBox}>
             <Text style={styles.nutritionLabel}>단백질</Text>
-            <Text style={styles.nutritionValue}>
-              {nutritionInfo.protein.toFixed(1)}g
-            </Text>
+            <Text style={styles.nutritionValue}>{protein}g</Text>
           </View>
           <View style={styles.nutritionBox}>
             <Text style={styles.nutritionLabel}>지방</Text>
-            <Text style={styles.nutritionValue}>
-              {nutritionInfo.fat.toFixed(1)}g
-            </Text>
+            <Text style={styles.nutritionValue}>{fat}g</Text>
           </View>
           <View style={styles.nutritionBox}>
             <Text style={styles.nutritionLabel}>나트륨</Text>
-            <Text style={styles.nutritionValue}>
-              {nutritionInfo.sodium.toFixed(1)}mg
-            </Text>
+            <Text style={styles.nutritionValue}>{sodium}mg</Text>
           </View>
           <View style={styles.nutritionBox}>
             <Text style={styles.nutritionLabel}>칼륨</Text>
-            <Text style={styles.nutritionValue}>
-              {nutritionInfo.potassium.toFixed(1)}mg
-            </Text>
+            <Text style={styles.nutritionValue}>{potassium}mg</Text>
           </View>
           <View style={styles.nutritionBox}>
             <Text style={styles.nutritionLabel}>인</Text>
-            <Text style={styles.nutritionValue}>
-              {nutritionInfo.phosphorus.toFixed(1)}mg
-            </Text>
+            <Text style={styles.nutritionValue}>{phosphorus}mg</Text>
           </View>
         </View>
       </View>
-
       <View style={styles.bottomSpacer} />
     </ScrollView>
   );
@@ -266,12 +302,6 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 16,
     width: width - 32,
-    // Remove shadow properties
-    shadowColor: 'transparent',
-    shadowOffset: {width: 0, height: 0},
-    shadowOpacity: 0,
-    shadowRadius: 0,
-    elevation: 0,
   },
   infoTitleContainer: {
     flexDirection: 'row',
@@ -352,6 +382,15 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     marginBottom: 16,
   },
+  needleImage: {
+    position: 'absolute',
+    width: 10,
+    height: (width * 3) / 8, // 바늘의 길이를 조정하세요
+    resizeMode: 'contain',
+    bottom: '50%',
+    left: '50%',
+    transform: [{translateX: -5}, {translateY: 0}], // 바늘의 중심을 기준으로 위치 조정
+  },
   dialText: {
     fontSize: 14,
     color: '#666',
@@ -372,6 +411,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
+    marginRight: 4,
     marginRight: 4,
   },
   nutritionInfoButton: {

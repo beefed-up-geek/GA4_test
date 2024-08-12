@@ -19,7 +19,7 @@ import {
 import {BlurView} from '@react-native-community/blur';
 import LinearGradient from 'react-native-linear-gradient';
 
-const HomeScreen = ({onPress, navigation}) => {
+const KitScreen = ({onPress, navigation}) => {
   const openLink = async () => {
     const url =
       'https://smartstore.naver.com/cym702/products/9217837478?nl-au=73c2ac322de14178b4db815f1b00dbc4&NaPm=ct%3Dlzkvph4w%7Cci%3Da28ea338064677d9373a161b9f50241a7019560c%7Ctr%3Dslsl%7Csn%3D3885899%7Chk%3Dbddd970f228d1383600f842947968760acf39ee6';
@@ -1008,4 +1008,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default KitScreen;
