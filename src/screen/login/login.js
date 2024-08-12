@@ -9,6 +9,7 @@ import {
   ScrollView,
   Button,
 } from 'react-native';
+import theme from '../../theme';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import splashImage from '../../images/login/splash2.png';
@@ -263,6 +264,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   welcomeText: {
+    ...theme.fonts.Regular,
     fontSize: 24,
     color: 'black',
   },
