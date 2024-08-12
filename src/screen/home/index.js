@@ -43,7 +43,7 @@ const HomeScreen = () => {
     phosphorus: 900,
   };
 
-  const baseDuration = 3000; // 기본 3초
+  const baseDuration = 500; // 기본 3초
 
   const incrementValues = (setValue, target, duration, incrementStep = 1) => {
     const stepTime = duration / (target / incrementStep);
@@ -96,12 +96,12 @@ const HomeScreen = () => {
     fetchLastCheckupDate();
 
     // 영양 성분마다 다른 incrementStep을 적용하여 증가 속도를 조절합니다.
-    incrementValues(setCarbs, targets.carbs, baseDuration);
-    incrementValues(setProtein, targets.protein, baseDuration, 1); // 기본
-    incrementValues(setFat, targets.fat, baseDuration, 2); // 빠르게 증가
-    incrementValues(setSodium, targets.sodium, baseDuration, 50); // 매우 빠르게 증가
-    incrementValues(setPotassium, targets.potassium, baseDuration, 50); // 매우 빠르게 증가
-    incrementValues(setPhosphorus, targets.phosphorus, baseDuration, 5); // 빠르게 증가
+    incrementValues(setCarbs, targets.carbs, baseDuration, 15);
+    incrementValues(setProtein, targets.protein, baseDuration, 2); // 기본
+    incrementValues(setFat, targets.fat, baseDuration, 4); // 빠르게 증가
+    incrementValues(setSodium, targets.sodium, baseDuration, 100); // 매우 빠르게 증가
+    incrementValues(setPotassium, targets.potassium, baseDuration, 125); // 매우 빠르게 증가
+    incrementValues(setPhosphorus, targets.phosphorus, baseDuration, 45); // 빠르게 증가
   }, []);
 
   const calculateDaysDifference = dateString => {
@@ -114,7 +114,7 @@ const HomeScreen = () => {
 
   const animatedProps = useAnimatedProps(() => {
     const angleInRadians = (rotation.value * Math.PI) / 180;
-    const radius = 75;
+    const radius = 110;
     const x2 = 150 - radius * Math.cos(angleInRadians);
     const y2 = 150 - radius * Math.sin(angleInRadians);
 
@@ -187,7 +187,7 @@ const HomeScreen = () => {
           <AnimatedLine
             x1="150"
             y1="150"
-            x2="75"
+            x2="40"
             y2="150"
             stroke="blue"
             strokeWidth="4"
