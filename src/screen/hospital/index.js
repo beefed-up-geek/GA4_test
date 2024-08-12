@@ -37,9 +37,9 @@ export default function HospitalScreen({navigation}) {
   const [openDistance, setOpenDistance] = useState(false);
   const [valueDistance, setValueDistance] = useState('5');
   const [itemsDistance, setItemsDistance] = useState([
-    {label: '5km이내', value: '5'},
-    {label: '10km이내', value: '10'},
-    {label: '20km이내', value: '20'},
+    {label: '5km내', value: '5'},
+    {label: '10km내', value: '10'},
+    {label: '20km내', value: '20'},
   ]);
 
   const [openType, setOpenType] = useState(false);
@@ -56,6 +56,12 @@ export default function HospitalScreen({navigation}) {
   useEffect(() => {
     requestLocationPermission();
   }, []);
+
+  useEffect(() => {
+    if (latitude && longitude) {
+      fetchAddress();
+    }
+  }, [latitude, longitude]);
 
   useEffect(() => {
     if (!loading) {
@@ -103,6 +109,23 @@ export default function HospitalScreen({navigation}) {
       },
       {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
     );
+  };
+
+  const fetchAddress = async () => {
+    try {
+      const response = await axios.get(
+        `https://dapi.kakao.com/v2/local/geo/coord2address.json?x=${longitude}&y=${latitude}&input_coord=WGS84`,
+        {
+          headers: {
+            Authorization: 'KakaoAK 9ad78febe2e7118089f1c23240bfb973',
+          },
+        },
+      );
+      const address = response.data.documents[0].address.address_name;
+      setAddress(address);
+    } catch (error) {
+      console.error('Error fetching address:', error);
+    }
   };
 
   const fetchHospitalData = async query => {
@@ -215,6 +238,10 @@ export default function HospitalScreen({navigation}) {
           />
         </View>
       </View>
+      <View style={styles.addressContainer}>
+        <Icon name="location-on" size={20} color="#000" />
+        <Text style={styles.locationText}>{address}</Text>
+      </View>
       <ScrollView style={styles.scrollView}>
         <View style={styles.section}>
           <View style={styles.sectionHeader1}>
@@ -278,6 +305,7 @@ export default function HospitalScreen({navigation}) {
               </>
             )}
           </View>
+          <View style={styles.whiteBox}></View>
         </View>
       </ScrollView>
     </View>
@@ -378,6 +406,17 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#fff',
   },
+  whiteBox: {
+    width: 200, // 너비
+    height: 200, // 높이
+    backgroundColor: '#fff', // 배경 색상 (하얀색)
+  },
+  addressContainer: {
+    flexDirection: 'row',
+  },
+  locationText: {
+    color: 'black',
+  },
   searchSection: {
     padding: 10,
     flexDirection: 'row',
@@ -421,6 +460,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   pickerContainer1: {
+    marginRight: 10,
     flex: 1,
   },
   dropdownContainer: {

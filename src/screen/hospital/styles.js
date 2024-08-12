@@ -168,7 +168,8 @@ const styles = StyleSheet.create({
     elevation: 5,
     marginTop: 15,
     marginBottom: 5,
-    marginRight: 10,
+    marginRight: 0,
+    marginLeft: 10,
     position: 'relative', // 자식 요소의 absolute 위치 지정을 위해 필요
   },
   cardHeader: {
