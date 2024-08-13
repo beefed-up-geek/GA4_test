@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
     fontSize: 20 * width_ratio,
     ...theme.fonts.Bold,
     marginBottom: 50 * height_ratio,
-    color: '49494F',
+    color: '#49494F',
     alignSelf: 'flex-start',
   },
   inputWithUnit: {
