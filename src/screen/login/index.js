@@ -102,6 +102,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     marginBottom: 10,
+    color: 'gray',
   },
   loadingIndicator: {
     marginTop: 50,

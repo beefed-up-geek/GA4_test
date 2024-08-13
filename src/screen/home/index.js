@@ -17,7 +17,6 @@ import Animated, {
 } from 'react-native-reanimated';
 import theme from '../../theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Circle, Svg, Line} from 'react-native-svg';
 import LottieView from 'lottie-react-native'; // LottieView import
 import animationData from '../../images/home/click.json'; // JSON 파일 경로
 import { Circle, Svg, Polygon, Image as SvgImage } from 'react-native-svg';
