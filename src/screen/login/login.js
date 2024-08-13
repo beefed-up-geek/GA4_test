@@ -8,8 +8,10 @@ import {
   SafeAreaView,
   ScrollView,
   Button,
+  Dimensions,
 } from 'react-native';
 import theme from '../../theme';
+import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import splashImage from '../../images/login/splash2.png';
@@ -23,6 +25,9 @@ import {
 } from '@react-native-google-signin/google-signin';
 import NaverLogin from '@react-native-seoul/naver-login';
 
+const width_ratio = Dimensions.get('screen').width / 390;
+const height_ratio = Dimensions.get('screen').height / 844;
+
 const consumerKey = 'fujiEAut2m84ybqDQOoq';
 const consumerSecret = 'yXEW6CuruC';
 const appName = 'HS바이오랩';
@@ -35,7 +40,7 @@ GoogleSignin.configure({
   scopes: ['profile', 'email'],
 });
 
-const Gap = () => <View style={{ marginTop: 24 }} />;
+const Gap = () => <View style={{ marginTop: 24 * height_ratio }} />;
 const ResponseJsonText = ({ json = {}, name }) => (
   <View style={styles.responseContainer}>
     <Text style={styles.responseTitle}>{name}</Text>
@@ -166,75 +171,77 @@ const Login2 = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollViewContent}>
-        <View style={styles.header}>
-          <Image source={splashImage} style={styles.splashImage} />
-          <Text style={styles.welcomeText}>환영합니다!</Text>
-        </View>
-        <View style={styles.content}>
-          <Text style={{ color: 'black' }}>
-            나는 /src/screen/login/login.js 🎉
-          </Text>
-          <TouchableOpacity
-            style={[styles.loginButton, { backgroundColor: '#03C75A' }]}
-            onPress={handleNaverLogin}>
-            <Image source={naverIcon} style={styles.icon} />
-            <Text style={styles.buttonText}>네이버로 로그인</Text>
-          </TouchableOpacity>
+    <LinearGradient colors={['#7596FF', '#ffffff']} style={styles.linearGradient}>
+      <SafeAreaView style={styles.safeArea}>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollViewContent}>
+          <View style={styles.header}>
+            <Image source={splashImage} style={styles.splashImage} />
+            <Text style={styles.welcomeText1}>환영합니다!</Text>
+            <Text style={styles.welcomeText2}>혹시 처음이신가요?</Text>
+          </View>
+          <View style={styles.content}>
+            <TouchableOpacity
+              style={[
+                styles.loginButton,
+                {
+                  backgroundColor: '#FFFDF8',
+                },
+              ]}
+              onPress={handleGoogleLogin}>
+              <Image source={googleIcon} style={styles.icon} />
+              <Text style={[styles.buttonText, { color: '#222322' }]}>
+                구글로 로그인
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.loginButton, { backgroundColor: '#03C75A' }]}
+              onPress={handleNaverLogin}>
+              <Image source={naverIcon} style={styles.icon} />
+              <Text style={[styles.buttonText, { color: '#FFFFFF' }]}>
+                네이버로 로그인
+              </Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.loginButton, { backgroundColor: '#FEE500' }]}
-            onPress={handleKakaoLogin}>
-            <Image source={kakaoIcon} style={styles.icon} />
-            <Text style={styles.buttonText}>카카오로 로그인</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              styles.loginButton,
-              {
-                backgroundColor: '#FFFFFF',
-                borderColor: '#DB4437',
-                borderWidth: 1,
-              },
-            ]}
-            onPress={handleGoogleLogin}>
-            <Image source={googleIcon} style={styles.icon} />
-            <Text style={[styles.buttonText, { color: '#DB4437' }]}>
-              구글로 로그인
-            </Text>
-          </TouchableOpacity>
-
-          <Gap />
-          <Button title={'Logout'} onPress={logout} />
-          <Gap />
-          {success && (
-            <>
-              <Button title="Get Profile" onPress={getProfile} />
-              <Gap />
-              <View>
-                <Button title="Delete Token" onPress={() => deleteToken()} />
+            <TouchableOpacity
+              style={[styles.loginButton, { backgroundColor: '#FEE500' }]}
+              onPress={handleKakaoLogin}>
+              <Image source={kakaoIcon} style={styles.icon} />
+              <Text style={[styles.buttonText, { color: '#2A1C11' }]}>
+                카카오로 로그인
+              </Text>
+            </TouchableOpacity>
+            <Gap />
+            <Gap />
+            {success && (
+              <>
+                <Button title="Get Profile" onPress={getProfile} />
                 <Gap />
-                <ResponseJsonText name={'Success'} json={success} />
-              </View>
-            </>
-          )}
-          <Gap />
-          {failure && <ResponseJsonText name={'Failure'} json={failure} />}
-          <Gap />
-          {getProfileRes && (
-            <ResponseJsonText name={'GetProfile'} json={getProfileRes} />
-          )}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+                <View>
+                  <Button title="Delete Token" onPress={() => deleteToken()} />
+                  <Gap />
+                  <ResponseJsonText name={'Success'} json={success} />
+                </View>
+              </>
+            )}
+            <Gap />
+            {failure && <ResponseJsonText name={'Failure'} json={failure} />}
+            <Gap />
+            {getProfileRes && (
+              <ResponseJsonText name={'GetProfile'} json={getProfileRes} />
+            )}
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
+  linearGradient: {
+    flex: 1,
+  },
   safeArea: {
     flex: 1,
   },
@@ -243,71 +250,78 @@ const styles = StyleSheet.create({
   },
   scrollViewContent: {
     flexGrow: 1,
-    padding: 24,
   },
   container: {
     flex: 1,
-    backgroundColor: 'white',
   },
   header: {
     alignItems: 'flex-start',
-    position: 'absolute',
-    top: 50,
-    left: 0,
-    right: 0,
-    marginLeft: 40,
+    marginTop: 100 * height_ratio,
+    marginLeft: 40 * width_ratio,
   },
   splashImage: {
-    width: 100,
-    height: 50,
+    width: 100 * width_ratio,
+    height: 50 * height_ratio,
     resizeMode: 'contain',
-    marginBottom: 10,
+    marginBottom: 50 * height_ratio,
   },
-  welcomeText: {
-    ...theme.fonts.Regular,
-    fontSize: 24,
-    color: 'black',
+  welcomeText1: {
+    ...theme.fonts.Bold,
+    fontSize: 30 * width_ratio,
+    color: 'white',
+  },
+  welcomeText2: {
+    ...theme.fonts.SemiBold,
+    fontSize: 18 * width_ratio,
+    color: 'white',
   },
   content: {
     flex: 1,
+    paddingHorizontal: 30 * width_ratio,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 200,
+    marginTop: 234 * height_ratio,
   },
   loginButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    width: 250,
-    height: 50,
-    borderRadius: 25,
-    marginBottom: 20,
+    justifyContent: 'space-between',
+    width: '100%',
+    height: 60 * height_ratio,
+    borderRadius: 30 * width_ratio,
+    marginBottom: 12 * height_ratio,
+    paddingLeft: 28 * width_ratio, 
+    paddingRight: 52 * width_ratio,
   },
   icon: {
-    width: 24,
-    height: 24,
+    width: 24 * width_ratio,
+    height: 24 * height_ratio,
     resizeMode: 'contain',
-    marginRight: 10,
   },
   buttonText: {
-    fontSize: 16,
+    flex: 1,
+    ...theme.fonts.Medium,
+    fontSize: 18 * width_ratio,
     color: 'white',
+    textAlign: 'center',
+    paddingBottom: 2 * height_ratio,
   },
   responseContainer: {
-    padding: 12,
-    borderRadius: 16,
+    padding: 12 * width_ratio,
+    borderRadius: 16 * width_ratio,
     borderWidth: 1,
     backgroundColor: '#242c3d',
   },
   responseTitle: {
-    fontSize: 20,
+    ...theme.fonts.Medium,
+    fontSize: 20 * width_ratio,
     fontWeight: 'bold',
     color: 'white',
   },
   responseText: {
     color: 'white',
-    fontSize: 13,
-    lineHeight: 20,
+    fontSize: 13 * width_ratio,
+    lineHeight: 20 * height_ratio,
   },
 });
 

@@ -16,6 +16,11 @@ const Get_User_Info = () => {
   const [weight, setWeight] = useState('');
   const [gender, setGender] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
+  const [nameTextAlign, setNameTextAlign] = useState('center');
+  const [nicknameTextAlign, setNicknameTextAlign] = useState('center');
+  const [birthdateTextAlign, setBirthdateTextAlign] = useState('center');
+  const [heightTextAlign, setHeightTextAlign] = useState('center');
+  const [weightTextAlign, setWeightTextAlign] = useState('center');
 
   const navigation = useNavigation();
 
@@ -194,6 +199,9 @@ const Get_User_Info = () => {
                 placeholderTextColor="#828287"
                 value={name}
                 onChangeText={setName}
+                textAlign={name ? "left" : nameTextAlign} // Placeholder centered, text left
+                onFocus={() => setNameTextAlign('left')}
+                onBlur={() => !name && setNameTextAlign('center')}
               />
             </View>
             <View style={styles.inputGroup}>
@@ -205,6 +213,9 @@ const Get_User_Info = () => {
                 placeholderTextColor="#828287"
                 value={nickname}
                 onChangeText={setNickname}
+                textAlign={nickname ? "left" : nicknameTextAlign} // Placeholder centered, text left
+                onFocus={() => setNicknameTextAlign('left')}
+                onBlur={() => !nickname && setNicknameTextAlign('center')}
               />
             </View>
           </View>
@@ -220,6 +231,9 @@ const Get_User_Info = () => {
               onChangeText={handleBirthdateChange}
               keyboardType="numeric"
               maxLength={10}
+              textAlign={birthdate ? "left" : birthdateTextAlign} // Placeholder centered, text left
+              onFocus={() => setBirthdateTextAlign('left')}
+              onBlur={() => !birthdate && setBirthdateTextAlign('center')}
             />
           </View>
 
@@ -236,6 +250,9 @@ const Get_User_Info = () => {
                   onChangeText={handleHeightChange}
                   keyboardType="numeric"
                   maxLength={3}
+                  textAlign={height ? "left" : heightTextAlign} // Placeholder centered, text left
+                  onFocus={() => setHeightTextAlign('left')}
+                  onBlur={() => !height && setHeightTextAlign('center')}
                 />
                 <Text style={styles.unit}>cm</Text>
               </View>
@@ -252,6 +269,9 @@ const Get_User_Info = () => {
                   onChangeText={handleWeightChange}
                   keyboardType="numeric"
                   maxLength={5}
+                  textAlign={weight ? "left" : weightTextAlign} // Placeholder centered, text left
+                  onFocus={() => setWeightTextAlign('left')}
+                  onBlur={() => !weight && setWeightTextAlign('center')}
                 />
                 <Text style={styles.unit}>kg</Text>
               </View>
@@ -279,19 +299,19 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-    paddingBottom: 100, // Ensure there's space for the button
+    paddingBottom: 100 * height_ratio, // Ensure there's space for the button
   },
   innerContainer: {
-    paddingTop: 80,
-    paddingHorizontal: 24,
+    paddingTop: 80 * height_ratio,
+    paddingHorizontal: 24 * width_ratio,
     alignItems: 'center',
   },
   title: {
-    marginLeft: 4,
-    fontSize: 20,
+    marginLeft: 4 * width_ratio,
+    fontSize: 20 * width_ratio,
     ...theme.fonts.Bold,
-    marginBottom: 50,
-    color: 'black',
+    marginBottom: 50 * height_ratio,
+    color: '49494F',
     alignSelf: 'flex-start',
   },
   inputWithUnit: {
@@ -299,54 +319,56 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: '#F1F1F1',
-    borderRadius: 13,
-    paddingRight: 24,
+    borderRadius: 13 * width_ratio,
+    paddingRight: 24 * width_ratio,
   },
   inputGroup: {
     flex: 1,
-    marginHorizontal: 8,
-    marginBottom: 24,
+    marginHorizontal: 8 * width_ratio,
+    marginBottom: 24 * height_ratio,
   },
   inputGroupFullWidth: {
     width: '100%',
-    marginBottom: 24,
+    marginBottom: 24 * height_ratio,
   },
   label: {
-    fontSize: 16,
+    fontSize: 16 * width_ratio,
     ...theme.fonts.Regular,
-    marginBottom: 12,
+    marginBottom: 12 * height_ratio,
     color: 'black',
   },
   input: {
     borderWidth: 0,
     borderColor: '#ccc',
-    borderRadius: 13,
-    paddingVertical: 17,
-    paddingHorizontal: 24,
-    fontSize: 16,
+    borderRadius: 13 * width_ratio,
+    paddingVertical: 17 * height_ratio,
+    paddingHorizontal: 24 * width_ratio,
+    fontSize: 16 * width_ratio,
     ...theme.fonts.Regular,
     color: 'black',
   },
   unit: {
-    fontSize: 16,
+    fontSize: 16 * width_ratio,
+    ...theme.fonts.Regular,
     color: '#828287',
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginHorizontal: -8,
+    marginHorizontal: -8 * width_ratio,
   },
   fixedButtonContainer: {
     position: 'absolute',
     bottom: 0,
     width: '100%',
     backgroundColor: 'white',
-    paddingVertical: 20,
+    paddingTop: 10 * height_ratio,
+    paddingBottom: 20 * height_ratio,
     alignItems: 'center',
   },
   button: {
-    paddingVertical: 17,
-    borderRadius: 24,
+    paddingVertical: 17 * height_ratio,
+    borderRadius: 24 * width_ratio,
     alignItems: 'center',
     width: '66.67%', // 화면 너비의 2/3
   },
@@ -357,7 +379,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#CCCCCC',
   },
   buttonText: {
-    fontSize: 16,
+    fontSize: 16 * width_ratio,
     ...theme.fonts.Bold,
   },
   buttonTextEnabled: {
@@ -368,7 +390,7 @@ const styles = StyleSheet.create({
   },
   genderWrapper: {
     width: '100%',
-    marginBottom: 24,
+    marginBottom: 24 * height_ratio,
   },
   genderContainer: {
     flexDirection: 'row',
@@ -376,24 +398,25 @@ const styles = StyleSheet.create({
   },
   genderButton: {
     alignItems: 'center',
-    padding: 10,
+    padding: 10 * width_ratio,
   },
   genderImageFemale: {
-    marginLeft: 26,
-    width: 109,
-    height: 117.63,
+    marginLeft: 26 * width_ratio,
+    width: 109 * width_ratio,
+    height: 117.63 * height_ratio,
     resizeMode: 'contain',
   },
   genderImageMale: {
-    marginTop: 17,
-    marginRight: 28,
-    width: 102,
-    height: 101,
+    marginTop: 17 * height_ratio,
+    marginRight: 28 * width_ratio,
+    width: 102 * width_ratio,
+    height: 101 * height_ratio,
     resizeMode: 'contain',
   },
   desaturated: {
     opacity: 0.5,
   },
 });
+
 
 export default Get_User_Info;
