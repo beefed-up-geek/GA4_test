@@ -43,7 +43,7 @@ const HomeScreen = () => {
     phosphorus: 900,
   };
 
-  const baseDuration = 500; // 기본 0.5초
+  const baseDuration = 1000; // 기본 1초
 
   const incrementValues = (setValue, target, duration, incrementStep = 1) => {
     const stepTime = duration / (target / incrementStep);
