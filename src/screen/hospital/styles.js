@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#FFF',
     marginBottom: 10,
   },
   searchInputContainer: {
@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     borderWidth: 1,
     borderRadius: 5,
-    backgroundColor: '#fff',
+    backgroundColor: '#f9f9f9',
   },
   input: {
     flex: 1,
@@ -36,6 +36,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     resizeMode: 'contain',
+    tintColor: '#8E9098',
     borderRadius: 5,
     marginLeft: 10,
     marginBottom: 2,
@@ -45,6 +46,30 @@ const styles = StyleSheet.create({
     height: 35,
     resizeMode: 'contain',
     tintColor: '#fff',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+    marginTop: 5,
+  },
+  button: {
+    backgroundColor: '#F1F1F1',
+    marginRight: 5,
+    marginTop: 5,
+    borderRadius: 13,
+    alignItems: 'center',
+    paddingHorizontal: 10, // 버튼 내의 내용에 따라 크기가 변하도록 패딩 설정
+    paddingVertical: 10,
+    flexShrink: 1, // 내용에 따라 버튼 크기가 줄어들도록 설정
+  },
+  buttonActive: {
+    backgroundColor: '#E4EDFF',
+  },
+  buttonText: {
+    fontSize: 12,
+    color: '#646464',
+    fontfamily: 'Pretendard Variable',
   },
   mapButton: {
     backgroundColor: '#007bff',
@@ -57,16 +82,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 10,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#FFF',
     paddingLeft: 20,
+    marginTop: -20,
   },
   mapButtonText: {
     color: '#fff',
   },
   locationText: {
     paddingHorizontal: 12,
-    paddingVertical: 10,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#FFF',
     color: '#222',
     fontSize: 15,
   },
@@ -88,7 +113,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 10,
-    marginTop: 10,
+    marginTop: 0,
   },
   sectionTitle: {
     color: 'black',
@@ -104,6 +129,7 @@ const styles = StyleSheet.create({
     color: 'black',
     width: 120, // Reduced the width of the picker
     zIndex: 5000, // 중요: DropDownPicker와 겹치는 요소를 피하기 위해 zIndex 설정
+    paddingVertical: 0,
     marginLeft: 5,
   },
   dropdownContainer: {
@@ -112,19 +138,18 @@ const styles = StyleSheet.create({
   dropdown: {
     borderColor: '#ddd',
     borderWidth: 1,
-    borderRadius: 4,
-    height: 0, // Reduced the height of the picker
+    borderRadius: 15,
   },
   dropdownList: {
     borderColor: '#ddd',
     borderWidth: 1,
-    borderRadius: 4,
+    borderRadius: 15,
     maxHeight: 200,
   }, //dropdownList1은 세로로 병원 나열할때
   dropdownList1: {
     borderColor: '#ddd',
     borderWidth: 1,
-    borderRadius: 4,
+    borderRadius: 15,
     maxHeight: 250,
   },
   dropdownText: {
@@ -157,7 +182,7 @@ const styles = StyleSheet.create({
   // card1은 세로로 있을 때
   card1: {
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#fafafa',
     borderRadius: 10,
     width: 350,
     height: 180,
