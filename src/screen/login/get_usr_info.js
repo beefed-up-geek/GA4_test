@@ -18,6 +18,11 @@ const Get_User_Info = () => {
   const [isFormValid, setIsFormValid] = useState(false);
   const [nameError, setNameError] = useState('');
   const [nicknameError, setNicknameError] = useState('');
+  const [nameTextAlign, setNameTextAlign] = useState('center');
+  const [nicknameTextAlign, setNicknameTextAlign] = useState('center');
+  const [birthdateTextAlign, setBirthdateTextAlign] = useState('center');
+  const [heightTextAlign, setHeightTextAlign] = useState('center');
+  const [weightTextAlign, setWeightTextAlign] = useState('center');
 
   const navigation = useNavigation();
 
@@ -214,7 +219,10 @@ const Get_User_Info = () => {
                 placeholder="홍길동"
                 placeholderTextColor="#828287"
                 value={name}
-                onChangeText={handleNameChange}
+                onChangeText={setName}
+                textAlign={name ? "left" : nameTextAlign} // Placeholder centered, text left
+                onFocus={() => setNameTextAlign('left')}
+                onBlur={() => !name && setNameTextAlign('center')}
               />
               {nameError ? <Text style={styles.errorText}>{nameError}</Text> : null}
             </View>
@@ -226,7 +234,10 @@ const Get_User_Info = () => {
                 placeholder="6자리 이내로 입력"
                 placeholderTextColor="#828287"
                 value={nickname}
-                onChangeText={handleNicknameChange}
+                onChangeText={setNickname}
+                textAlign={nickname ? "left" : nicknameTextAlign} // Placeholder centered, text left
+                onFocus={() => setNicknameTextAlign('left')}
+                onBlur={() => !nickname && setNicknameTextAlign('center')}
               />
               {nicknameError ? <Text style={styles.errorText}>{nicknameError}</Text> : null}
             </View>
@@ -243,6 +254,9 @@ const Get_User_Info = () => {
               onChangeText={handleBirthdateChange}
               keyboardType="numeric"
               maxLength={10}
+              textAlign={birthdate ? "left" : birthdateTextAlign} // Placeholder centered, text left
+              onFocus={() => setBirthdateTextAlign('left')}
+              onBlur={() => !birthdate && setBirthdateTextAlign('center')}
             />
           </View>
 
@@ -259,6 +273,9 @@ const Get_User_Info = () => {
                   onChangeText={handleHeightChange}
                   keyboardType="numeric"
                   maxLength={3}
+                  textAlign={height ? "left" : heightTextAlign} // Placeholder centered, text left
+                  onFocus={() => setHeightTextAlign('left')}
+                  onBlur={() => !height && setHeightTextAlign('center')}
                 />
                 <Text style={styles.unit}>cm</Text>
               </View>
@@ -275,6 +292,9 @@ const Get_User_Info = () => {
                   onChangeText={handleWeightChange}
                   keyboardType="numeric"
                   maxLength={5}
+                  textAlign={weight ? "left" : weightTextAlign} // Placeholder centered, text left
+                  onFocus={() => setWeightTextAlign('left')}
+                  onBlur={() => !weight && setWeightTextAlign('center')}
                 />
                 <Text style={styles.unit}>kg</Text>
               </View>
@@ -302,7 +322,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-    paddingBottom: 100 * height_ratio,
+    paddingBottom: 100 * height_ratio, // Ensure there's space for the button
   },
   innerContainer: {
     paddingTop: 80 * height_ratio,
@@ -314,7 +334,7 @@ const styles = StyleSheet.create({
     fontSize: 20 * width_ratio,
     ...theme.fonts.Bold,
     marginBottom: 50 * height_ratio,
-    color: 'black',
+    color: '49494F',
     alignSelf: 'flex-start',
   },
   inputWithUnit: {
@@ -352,6 +372,7 @@ const styles = StyleSheet.create({
   },
   unit: {
     fontSize: 16 * width_ratio,
+    ...theme.fonts.Regular,
     color: '#828287',
   },
   row: {
@@ -364,7 +385,8 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '100%',
     backgroundColor: 'white',
-    paddingVertical: 20 * height_ratio,
+    paddingTop: 10 * height_ratio,
+    paddingBottom: 20 * height_ratio,
     alignItems: 'center',
   },
   button: {
@@ -423,5 +445,6 @@ const styles = StyleSheet.create({
     marginTop: 4 * height_ratio,
   },
 });
+
 
 export default Get_User_Info;

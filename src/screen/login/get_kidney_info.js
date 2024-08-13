@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import theme from '../../theme';
+
+const width_ratio = Dimensions.get('screen').width / 390;
+const height_ratio = Dimensions.get('screen').height / 844;
 
 const GetKidneyInfo = () => {
   const [selectedOption, setSelectedOption] = useState(null);
@@ -36,7 +40,7 @@ const GetKidneyInfo = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.question}>만성콩팥병 진단을 받으셨나요?</Text>
+      <Text style={styles.title}>만성콩팥병 진단을 받으셨나요?</Text>
 
       <TouchableOpacity
         style={[
@@ -136,44 +140,47 @@ const GetKidneyInfo = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    justifyContent: 'center',
+    padding: 16 * width_ratio,
     backgroundColor: '#FFFFFF',
-    padding: 24,
+    padding: 24 * width_ratio,
   },
-  question: {
-    fontSize: 20,
-    textAlign: 'center',
-    marginBottom: 24,
-    color: '#333333',
+  title: {
+    ...theme.fonts.Bold,
+    fontSize: 20 * width_ratio,
+    marginLeft: 2 * width_ratio,
+    marginTop: 80 * height_ratio,
+    marginBottom: 47 * height_ratio,
+    color: '#49494F',
   },
   optionButton: {
-    backgroundColor: '#F5F5F5',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 12,
-    marginVertical: 8,
+    backgroundColor: '#F1F1F1',
+    paddingVertical: 18 * height_ratio,
+    paddingHorizontal: 20 * width_ratio,
+    borderRadius: 12 * width_ratio,
+    marginVertical: 4 * height_ratio,
   },
   selectedButton: {
-    backgroundColor: '#7596FF',
+    backgroundColor: '#E4EDFF',
   },
   optionText: {
-    fontSize: 16,
-    color: '#666666',
+    ...theme.fonts.Regular,
+    fontSize: 16 * width_ratio,
+    color: '#646464',
     textAlign: 'center',
   },
   selectedText: {
-    color: '#FFFFFF',
+    color: '#7596FF',
   },
   nextButton: {
-    marginTop: 24,
+    marginTop: 24 * height_ratio,
     backgroundColor: '#E3EAFD',
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderRadius: 24,
+    paddingVertical: 18 * height_ratio,
+    paddingHorizontal: 20 * width_ratio,
+    borderRadius: 24 * width_ratio,
   },
   nextButtonText: {
-    fontSize: 18,
+    ...theme.fonts.SemiBold,
+    fontSize: 14 * width_ratio,
     color: '#4A61ED',
     textAlign: 'center',
   },
