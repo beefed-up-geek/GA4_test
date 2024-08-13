@@ -7,6 +7,7 @@ import {
   Easing,
   Image,
 } from 'react-native';
+import theme from '../theme';
 
 const TabDesign = ({
   label,
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
   label: {
     color: '#fff',
     marginLeft: 5,
-    fontWeight: 'bold',
+    ...theme.fonts.Bold,
   },
 });
 

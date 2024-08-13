@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderColor: '#7596FF',
     paddingVertical: 12 * height_ratio,
-    paddingLeft: 20 * width_ratio,
+    paddingLeft: 22 * width_ratio,
     paddingRight: 18 * width_ratio,
     borderRadius: 30 * width_ratio,
     flexDirection: 'row',
