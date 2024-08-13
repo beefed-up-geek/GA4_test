@@ -1,7 +1,10 @@
 // /src/components/header.js
 
 import React from 'react';
-import {View, Image, StyleSheet} from 'react-native';
+import {View, Image, StyleSheet, Dimensions} from 'react-native';
+
+const width_ratio = Dimensions.get('screen').width / 390;
+const height_ratio = Dimensions.get('screen').height / 844;
 
 const Header = () => {
   return (
@@ -15,7 +18,9 @@ const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    padding: 10,
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingHorizontal: 8,
   },
   headerIcon: {
     width: 60,

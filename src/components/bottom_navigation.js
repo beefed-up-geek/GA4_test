@@ -23,6 +23,9 @@ const Stack = createStackNavigator();
 const stackScreenOptions = {
   headerTitle: () => <Header />,
   headerLeft: () => null,
+  headerStyle: {
+    height: 64, // 기본적으로 56px이므로 60px로 조정했습니다. 더 줄일 수도 있습니다.
+  },
 };
 
 const HealthStack = () => (

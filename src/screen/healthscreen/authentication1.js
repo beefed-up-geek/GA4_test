@@ -1,8 +1,11 @@
-// /src/screen/health_screen/authentication1.js
-
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import theme from '../../theme';
+
+const width_ratio = Dimensions.get('screen').width / 390;
+const height_ratio = Dimensions.get('screen').height / 844;
+const buttonWidth = (Dimensions.get('screen').width - 65 * width_ratio) / 3; // Adjusted for 3 buttons per row with equal margins
 
 const Authentication1Screen = () => {
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(null);
@@ -26,11 +29,26 @@ const Authentication1Screen = () => {
     require('../../images/health_screen/toss.png'),
   ];
 
+  const labels = [
+    "카카오",
+    "PAYCO",
+    "삼성패스",
+    "KB",
+    "PASS",
+    "네이버",
+    "신한",
+    "토스"
+  ];
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={{ color: 'black', marginBottom: 20 }}>이 화면은 /src/screen/health_screen/authentication1.js 🎉</Text>
-      <Text style={{ color: 'black', marginBottom: 20 }}> 건강 검진 내역을 불러오기 위해 본인인증이 필요합니다.</Text>
-      <Text style={styles.methodText}>간편인증 방법</Text>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <Image
+          source={require('../../images/chevronArrowLeft.png')}
+          style={styles.backButtonImage}
+        />
+      </TouchableOpacity>
+      <Text style={{ ...styles.title, color: 'black', marginBottom: 20 }}>건강 검진 내역을 불러오기 위해{"\n"}본인인증이 필요합니다.</Text>
       <View style={styles.buttonContainer}>
         {images.map((image, index) => (
           <TouchableOpacity
@@ -42,6 +60,7 @@ const Authentication1Screen = () => {
               source={image}
               style={styles.buttonImage}
             />
+            <Text style={styles.buttonText}>{labels[index]}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -51,35 +70,66 @@ const Authentication1Screen = () => {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: '#ffffff',
     flexGrow: 1,
-    alignItems: 'center',
-    paddingVertical: 20,
+    paddingVertical: 20 * height_ratio,
+    paddingHorizontal: 24 * width_ratio, 
   },
-  methodText: {
-    alignSelf: 'flex-start',
-    color: 'black',
-    marginBottom: 10,
-    marginLeft: 20,
+  title: {
+    fontSize: 20 * height_ratio,
+    ...theme.fonts.SemiBold,
+    marginBottom: 40 * height_ratio,
+    marginLeft: 2 * width_ratio,
   },
+  backButton: {
+    marginBottom: 40 * height_ratio,
+  },
+  backButtonImage: {
+    width: 24 * width_ratio,
+    height: 24 * width_ratio,
+  },
+  // buttonContainer: {
+  //   flexDirection: 'row',
+  //   flexWrap: 'wrap',
+  //   justifyContent: 'space-around',
+  // },
+  // button: {
+  //   width: (Dimensions.get('screen').width / 3) - 24 * width_ratio, // Adjust width to fit 3 per row
+  //   height: 100 * width_ratio,
+  //   marginBottom: 12 * height_ratio,
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  //   backgroundColor: '#FAFAFB',
+  //   borderRadius: 13 * width_ratio,
+  // },
   buttonContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'center',
-  },
+    justifyContent: 'flex-start',
+    marginRight: -8 * width_ratio,
+    },
   button: {
-    width: 80,
-    height: 80,
-    margin: 10,
+    width: buttonWidth, // Adjust width to fit 3 per row
+    height: 100 * width_ratio,
+    marginBottom: 12 * height_ratio,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#e0e0e0',
-    borderRadius: 10,
+    backgroundColor: '#FAFAFB',
+    borderRadius: 13 * width_ratio,
+    marginRight: 8 * width_ratio,
   },
   buttonImage: {
-    width: 70,
-    height: 70,
-    borderRadius: 10,
+    width: 40 * width_ratio,
+    height: 40 * width_ratio,
+    borderRadius: 10 * width_ratio,
+  },
+  buttonText: {
+    marginTop: 4 * height_ratio,
+    fontSize: 12 * height_ratio,
+    color: '#828287',
+    textAlign: 'center',
   },
 });
+
 
 export default Authentication1Screen;
