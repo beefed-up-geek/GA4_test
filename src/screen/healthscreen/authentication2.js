@@ -1,92 +1,56 @@
-// /src/screen/health_screen/authentication2.js
-
-import React, { useState, useEffect, useMemo } from 'react';
-import { View, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, Modal, TouchableWithoutFeedback, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Image, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, Modal, Dimensions } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import RadioGroup from 'react-native-radio-buttons-group';
-import CheckBox from 'react-native-checkbox';
 import axios from 'axios';
-import { privacy_usage_agreement, terms_of_service, thrid_part_info_conset } from './legal_conset_text.js';
+import theme from '../../theme';
+
+const width_ratio = Dimensions.get('screen').width / 390;
+const height_ratio = Dimensions.get('screen').height / 844;
+
+const telecomOptions = ["SKT", "KT", "LGU+", "알뜰폰 (SKT)", "알뜰폰 (KT)", "알뜰폰 (LGU+)"];
 
 const Authentication2Screen = () => {
   const [name, setName] = useState(''); // 이름
   const [birthdate, setBirthdate] = useState(''); // 생년월일
   const [phoneNumber, setPhoneNumber] = useState(''); // 전화번호
-  const [selectedId, setSelectedId] = useState(1); // 선택된 통신사 ID
-  const [agreePrivacy, setAgreePrivacy] = useState(false);
-  const [agreeTerms, setAgreeTerms] = useState(false);
-  const [agreeThirdParty, setAgreeThirdParty] = useState(false);
-  const [agreeAll, setAgreeAll] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalText, setModalText] = useState('');
+  const [selectedTelecom, setSelectedTelecom] = useState(''); // Selected Telecom
+  const [nameFocused, setNameFocused] = useState(false);
+  const [birthdateFocused, setBirthdateFocused] = useState(false);
+  const [phoneNumberFocused, setPhoneNumberFocused] = useState(false);
+  const [birthdateError, setBirthdateError] = useState(false);
+  const [phoneNumberError, setPhoneNumberError] = useState(false);
+  const [formValid, setFormValid] = useState(false);
+  const [telecomModalVisible, setTelecomModalVisible] = useState(false);
+
   const route = useRoute();
   const { selectedValue } = route.params;
   const navigation = useNavigation();
 
-  const radioButtons = useMemo(() => [
-    { id: '0', label: 'SKT', value: 'SKT', labelStyle: { color: 'black' } },
-    { id: '1', label: 'KT', value: 'KT', labelStyle: { color: 'black' } },
-    { id: '2', label: 'LG U+', value: 'LG U+', labelStyle: { color: 'black' } }
-  ], []);
-
   useEffect(() => {
-    if (agreePrivacy && agreeTerms && agreeThirdParty) {
-      setAgreeAll(true);
+    // Check if all inputs are valid
+    if (
+      name.length > 0 && // Name can be less than 8 characters
+      birthdate.length === 8 &&
+      phoneNumber.length === 10 &&
+      !birthdateError &&
+      !phoneNumberError &&
+      selectedTelecom.length > 0
+    ) {
+      setFormValid(true);
     } else {
-      setAgreeAll(false);
+      setFormValid(false);
     }
-  }, [agreePrivacy, agreeTerms, agreeThirdParty]);
-
-  const handleAgreeAll = () => {
-    const newValue = !agreeAll;
-    setAgreeAll(newValue);
-    setAgreePrivacy(newValue);
-    setAgreeTerms(newValue);
-    setAgreeThirdParty(newValue);
-  };
-
-  const openModal = (text) => {
-    setModalText(text);
-    setModalVisible(true);
-  };
+  }, [name, birthdate, phoneNumber, birthdateError, phoneNumberError, selectedTelecom]);
 
   const handleAuthentication = async () => {
-    if (!name) {
-      Alert.alert('경고', '이름을 입력해주세요.');
-      return;
-    }
-    if (!birthdate) {
-      Alert.alert('경고', '생년월일을 입력해주세요.');
-      return;
-    }
-    if (!phoneNumber) {
-      Alert.alert('경고', '휴대폰번호를 입력해주세요.');
-      return;
-    }
-    if (!agreePrivacy) {
-      Alert.alert('경고', '개인정보이용동의(필수)를 체크해주세요.');
-      return;
-    }
-    if (!agreeTerms) {
-      Alert.alert('경고', '서비스이용약관동의(필수)를 체크해주세요.');
-      return;
-    }
-    if (!agreeThirdParty) {
-      Alert.alert('경고', '제3자정보제공동의(필수)를 체크해주세요.');
-      return;
-    }
-    if (selectedValue === 5 && !selectedId) {
-      Alert.alert('경고', '통신사를 선택해주세요.');
-      return;
-    }
+    if (!formValid) return;
 
     try {
       const request_data = {
         userName: name,
         identity: birthdate,
         phoneNo: phoneNumber,
-        telecom: selectedId,
-        loginTypeLevel: String(selectedValue),
+        telecom: selectedValue,
       };
       console.log(request_data);
       const response = await axios.post('https://35b4-203-252-33-1.ngrok-free.app/health_checkup/step1', request_data);
@@ -99,127 +63,175 @@ const Authentication2Screen = () => {
           name: name,
           birthdate: birthdate,
           phoneNo: phoneNumber,
-          telecom: selectedId,
-          loginTypeLevel:  String(selectedValue)
+          telecom: selectedValue
         });
       } else {
-        Alert.alert('잘못된 사용자 정보 입력');
+        setBirthdateError(true);
+        setPhoneNumberError(true);
       }
     } catch (error) {
       console.error(error);
-      Alert.alert('오류', '인증 요청 중 오류가 발생했습니다.');
     }
+  };
+
+  const handleTelecomSelect = (provider) => {
+    setSelectedTelecom(provider);
+    setTelecomModalVisible(false);
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={{ color: 'black', marginBottom: 20 }}>이 화면은 /src/screen/health_screen/authentication2.js 🎉</Text>
-      <Text style={{ color: 'black', marginBottom: 20 }}>개인정보 입력</Text>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <Image
+          source={require('../../images/chevronArrowLeft.png')}
+          style={styles.backButtonImage}
+        />
+      </TouchableOpacity>
+      <Text style={styles.title}>개인정보 입력</Text>
+      <Text style={styles.subtitle}>본인인증을 진행하기 위해 개인정보를 입력해주세요.</Text>
+      
       <View style={styles.inputContainer}>
-        <View style={styles.inputRow}>
-          <Text style={styles.label}>이름</Text>
+        <View style={[
+          styles.inputWrapper, 
+          nameFocused && styles.inputWrapperFocused
+        ]}>
+          <Text style={styles.floatingLabel}>
+            이름
+          </Text>
           <TextInput
             style={styles.input}
             value={name}
-            onChangeText={setName}
-            placeholder="홍길동"
+            onChangeText={(text) => setName(text.slice(0, 8))}
+            placeholder={!nameFocused ? '이름 입력' : ''}
             placeholderTextColor="#777"
+            maxLength={8} // Set max length to 8
+            onFocus={() => setNameFocused(true)}
+            onBlur={() => setNameFocused(false)}
           />
         </View>
-        <View style={styles.inputRow}>
-          <Text style={styles.label}>생년월일</Text>
+
+        <View style={[
+          styles.inputWrapper, 
+          birthdateFocused && styles.inputWrapperFocused, 
+          birthdateError && styles.inputWrapperError
+        ]}>
+          <Text style={styles.floatingLabel}>
+            생년월일 8자리
+          </Text>
           <TextInput
             style={styles.input}
             value={birthdate}
-            onChangeText={setBirthdate}
-            placeholder="20240101"
+            onChangeText={(text) => setBirthdate(text.slice(0, 8))}
+            placeholder={!birthdateFocused ? '생년월일' : ''}
             keyboardType="numeric"
             placeholderTextColor="#777"
+            maxLength={8} // Set max length to 8
+            onFocus={() => {
+              setBirthdateFocused(true);
+              setBirthdateError(false);
+            }}
+            onBlur={() => {
+              setBirthdateFocused(false);
+              if (birthdate.length !== 8) {
+                setBirthdateError(true);
+              }
+            }}
           />
         </View>
-        <View style={styles.inputRow}>
-          <Text style={styles.label}>휴대폰번호</Text>
-          <TextInput
-            style={styles.phoneInput}
-            value={phoneNumber}
-            onChangeText={setPhoneNumber}
-            placeholder="01012345678"
-            keyboardType="phone-pad"
-            placeholderTextColor="#777"
-          />
-        </View>
-        {selectedValue === 5 && (
-          <View style={styles.inputRow}>
-            <Text style={styles.label}>통신사</Text>
-            <RadioGroup
-              radioButtons={radioButtons}
-              onPress={setSelectedId}
-              selectedId={selectedId}
-              layout="row"
-            />
-          </View>
-        )}
-        <View style={styles.checkboxContainer}>
-          <CheckBox
-            label="이용약관 전체동의"
-            checked={agreeAll}
-            onChange={handleAgreeAll}
-          />
-        </View>
-        <View style={styles.separator} />
-        <View style={styles.checkboxContainer}>
-          <View style={styles.checkboxRow}>
-            <CheckBox
-              label="개인정보이용동의(필수)"
-              checked={agreePrivacy}
-              onChange={() => setAgreePrivacy(!agreePrivacy)}
-            />
-            <TouchableOpacity onPress={() => openModal(privacy_usage_agreement)}>
-              <Text style={styles.link}>보기</Text>
+        {!birthdateFocused && birthdateError && <Text style={styles.errorText}>입력한 정보를 확인해주세요</Text>}
+
+        <View style={[
+          styles.inputWrapper, 
+          phoneNumberFocused && styles.inputWrapperFocused, 
+          phoneNumberError && styles.inputWrapperError,
+        ]}>
+          <Text style={styles.floatingLabel}>휴대폰번호</Text>
+          <View style={styles.phoneInputRow}>
+            <TouchableOpacity
+              style={styles.telecomButton}
+              onPress={() => setTelecomModalVisible(true)}
+            >
+              <Text style={styles.telecomButtonText}>
+                {selectedTelecom || "KT"}
+              </Text>
+              <Image
+                source={require('../../images/login/underTriangle.png')}
+                style={styles.underTriangleButtonImage}
+              />
             </TouchableOpacity>
-          </View>
-          <View style={styles.checkboxRow}>
-            <CheckBox
-              label="서비스이용약관동의(필수)"
-              checked={agreeTerms}
-              onChange={() => setAgreeTerms(!agreeTerms)}
+            <TextInput
+              style={styles.input}
+              value={phoneNumber}
+              onChangeText={(text) => setPhoneNumber(text.slice(0, 10))}
+              placeholder={!phoneNumberFocused ? '휴대폰번호 입력' : ''}
+              keyboardType="phone-pad"
+              placeholderTextColor="#777"
+              maxLength={10} // Set max length to 10
+              onFocus={() => {
+                setPhoneNumberFocused(true);
+                setPhoneNumberError(false);
+              }}
+              onBlur={() => {
+                setPhoneNumberFocused(false);
+                if (phoneNumber.length !== 10) {
+                  setPhoneNumberError(true);
+                }
+              }}
             />
-            <TouchableOpacity onPress={() => openModal(terms_of_service)}>
-              <Text style={styles.link}>보기</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.checkboxRow}>
-            <CheckBox
-              label="제3자정보제공동의(필수)"
-              checked={agreeThirdParty}
-              onChange={() => setAgreeThirdParty(!agreeThirdParty)}
-            />
-            <TouchableOpacity onPress={() => openModal(thrid_part_info_conset)}>
-              <Text style={styles.link}>보기</Text>
-            </TouchableOpacity>
+            {phoneNumber.length > 0 && (
+              <TouchableOpacity onPress={() => setPhoneNumber('')}>
+                <Image
+                  source={require('../../images/xButton.png')}
+                  style={styles.xButtonImage}
+                />
+              </TouchableOpacity>
+            )}
           </View>
         </View>
-        <TouchableOpacity style={styles.authButton} onPress={handleAuthentication}>
-          <Text style={styles.authButtonText}>인증하기</Text>
-        </TouchableOpacity>
+        {!phoneNumberFocused && phoneNumberError && <Text style={styles.errorText}>입력한 정보를 확인해주세요</Text>}
       </View>
 
+      <TouchableOpacity
+        style={[styles.authButton, formValid ? styles.authButtonEnabled : styles.authButtonDisabled]}
+        onPress={handleAuthentication}
+        disabled={!formValid}
+      >
+        <Text style={[styles.authButtonText, formValid ? styles.authButtonTextEnabled : styles.authButtonTextDisabled]}>
+          인증 요청
+        </Text>
+      </TouchableOpacity>
+
+      {/* Telecom Selection Modal */}
       <Modal
-        visible={modalVisible}
+        visible={telecomModalVisible}
         transparent={true}
         animationType="slide"
-        onRequestClose={() => setModalVisible(false)}
+        onRequestClose={() => setTelecomModalVisible(false)}
       >
-        <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-          <View style={styles.modalOverlay} />
-        </TouchableWithoutFeedback>
-        <View style={styles.modalContainer}>
-          <ScrollView contentContainerStyle={styles.modalScrollViewContent}>
-            <Text style={styles.modalText}>{modalText}</Text>
-          </ScrollView>
-          <TouchableOpacity style={styles.modalButtonContainer} onPress={() => setModalVisible(false)}>
-            <Text style={styles.modalButtonText}>확인</Text>
-          </TouchableOpacity>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalTop}>
+              <Text style={styles.modalTitle}>통신사 선택</Text>
+              <TouchableOpacity
+                style={styles.xButton}
+                onPress={() => setTelecomModalVisible(false)}
+              >
+                <Image
+                  source={require('../../images/xButton.png')}
+                  style={styles.xButtonImage}
+                />
+              </TouchableOpacity>
+            </View>
+            {telecomOptions.map((option) => (
+              <TouchableOpacity
+                key={option}
+                style={styles.telecomOption}
+                onPress={() => handleTelecomSelect(option)}
+              >
+                <Text style={styles.telecomOptionText}>{option}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
       </Modal>
     </ScrollView>
@@ -229,98 +241,147 @@ const Authentication2Screen = () => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    alignItems: 'center',
-    paddingVertical: 20,
+    paddingTop: 20 * height_ratio,
+    paddingBottom: 100 * height_ratio,
+    paddingHorizontal: 24 * width_ratio, 
+    backgroundColor: 'white',
+  },
+  backButton: {
+    marginBottom: 40 * height_ratio,
+  },
+  backButtonImage: {
+    width: 24 * width_ratio,
+    height: 24 * width_ratio,
+  },
+  title: {
+    textAlign: 'left',
+    fontSize: 24 * height_ratio,
+    ...theme.fonts.SemiBold,
+    marginBottom: 10 * height_ratio,
+    color: '#000'
+  },
+  subtitle: {
+    textAlign: 'left',
+    fontSize: 14 * height_ratio,
+    marginBottom: 20 * height_ratio,
+    color: '#666',
   },
   inputContainer: {
-    marginTop: 20,
-    width: '80%',
+    marginBottom: 20 * height_ratio,
   },
-  inputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
+  inputWrapper: {
+    marginBottom: 12 * height_ratio,
+    borderColor: '#F1F1F1',
+    borderWidth: 1,
+    borderRadius: 13 * width_ratio,
+    paddingVertical: 8 * height_ratio,
+    paddingHorizontal: 18 * width_ratio,
   },
-  label: {
-    flex: 1,
-    color: 'black',
+  inputWrapperFocused: {
+    borderColor: 'black',
+  },
+  inputWrapperError: {
+    borderColor: '#F53E50',
+  },
+  floatingLabel: {
+    fontSize: 12 * height_ratio,
+    color: '#828287',
+    marginBottom: 2,
   },
   input: {
-    flex: 2,
-    borderWidth: 1,
-    borderColor: '#000',
-    padding: 5,
-    borderRadius: 5,
-    color: 'black',
+    flex: 1,
+    color: '#000',
+    fontSize: 16 * height_ratio,
+    paddingTop: 0,
+    paddingBottom: 2 * height_ratio,
   },
-  phoneInput: {
-    flex: 2,
-    borderWidth: 1,
-    borderColor: '#000',
-    padding: 5,
-    borderRadius: 5,
-    color: 'black',
-  },
-  checkboxContainer: {
-    marginTop: 10,
-  },
-  checkboxRow: {
+  phoneInputRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
   },
-  separator: {
-    height: 1,
-    backgroundColor: '#000',
-    width: '100%',
+  telecomButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 8 * width_ratio,
+    paddingVertical: 4 * height_ratio,
+    paddingHorizontal: 8 * width_ratio,
+    backgroundColor: '#F1F1F1',
+    borderRadius: 8 * width_ratio,
   },
-  link: {
-    color: 'blue',
-    textDecorationLine: 'underline',
+  telecomButtonText: {
+    fontSize: 14 * width_ratio,
+    color: '#000',
+  },
+  underTriangleButtonImage: {
+    width: 7 * width_ratio,
+    height: 7 * width_ratio,
+    marginLeft: 8 * width_ratio,
+  },
+  xButtonImage: {
+    width: 20 * width_ratio,
+    height: 20 * width_ratio,
+    marginLeft: 8 * width_ratio,
+  },
+  authButton: {
+    paddingVertical: 18 * height_ratio,
+    borderRadius: 13 * width_ratio,
+    alignItems: 'center',
+  },
+  authButtonDisabled: {
+    backgroundColor: '#F1F1F1',
+  },
+  authButtonEnabled: {
+    backgroundColor: '#EBEFFE',
+  },
+  authButtonText: {
+    fontWeight: 'bold',
+    fontSize: 16 * height_ratio,
+  },
+  authButtonTextDisabled: {
+    color: '#828287',
+  },
+  authButtonTextEnabled: {
+    color: '#7596FF',
+  },
+  errorText: {
+    color: '#F53E50',
+    fontSize: 12 * height_ratio,
+    marginTop: -8 * height_ratio,
+    marginBottom: 12 * height_ratio,
   },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
   },
   modalContainer: {
-    position: 'absolute',
-    top: '20%',
-    left: '5%',
-    right: '5%',
-    bottom: '20%',
     backgroundColor: 'white',
-    padding: 20,
-    borderRadius: 10,
+    paddingTop: 20 * height_ratio,
+    paddingBottom: 30 * height_ratio,
+    paddingHorizontal: 24 * width_ratio,
+    borderTopLeftRadius: 20 * width_ratio,
+    borderTopRightRadius: 20 * width_ratio,
+  },
+  modalTop: {
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 24 * height_ratio,
   },
-  modalScrollViewContent: {
-    paddingVertical: 20,
-  },
-  modalText: {
-    color: 'black',
-  },
-  modalButtonContainer: {
-    width: '100%',
-    padding: 15,
-    backgroundColor: '#1677FF',
-    borderRadius: 5,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  modalButtonText: {
-    color: 'white',
+  modalTitle: {
+    fontSize: 18 * height_ratio,
     fontWeight: 'bold',
   },
-  authButton: {
-    marginTop: 20,
-    padding: 15,
-    backgroundColor: '#1677FF',
-    borderRadius: 5,
-    alignItems: 'center',
+  xButtonImage: {
+    width: 24 * width_ratio,
+    height: 24 * width_ratio,
   },
-  authButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+  telecomOption: {
+    paddingVertical: 12 * height_ratio,
+  },
+  telecomOptionText: {
+    fontSize: 14 * height_ratio,
+    color: '#000',
   },
 });
 
