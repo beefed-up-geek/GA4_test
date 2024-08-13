@@ -17,12 +17,15 @@ import Animated, {
 } from 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Circle, Svg, Line} from 'react-native-svg';
+import LottieView from 'lottie-react-native'; // LottieView import
+import animationData from '../../images/home/click.json'; // JSON 파일 경로
 
 const {width} = Dimensions.get('screen');
 
 const AnimatedLine = Animated.createAnimatedComponent(Line);
 
 const HomeScreen = () => {
+  // 이전 코드와 동일
   const [lastCheckupDate, setLastCheckupDate] = useState('');
   const [daysSinceLastCheckup, setDaysSinceLastCheckup] = useState(null);
   const rotation = useSharedValue(0);
@@ -43,7 +46,7 @@ const HomeScreen = () => {
     phosphorus: 900,
   };
 
-  const baseDuration = 1000; // 기본 1초
+  const baseDuration = 500;
 
   const incrementValues = (setValue, target, duration, incrementStep = 1) => {
     const stepTime = duration / (target / incrementStep);
@@ -72,16 +75,14 @@ const HomeScreen = () => {
         console.error('Failed to load last checkup date', error);
       }
 
-      // 180도 회전 후에 흔들리는 효과 추가
       rotation.value = withTiming(
         180,
         {
-          duration: 200, // 0.5초에 180도 회전
+          duration: 200,
           easing: Easing.linear,
         },
         () => {
-          // 흔들리는 효과 추가
-          rotation.value = withSpring(110, {
+          rotation.value = withSpring(120, {
             damping: 4,
             stiffness: 400,
             mass: 1,
@@ -95,13 +96,12 @@ const HomeScreen = () => {
 
     fetchLastCheckupDate();
 
-    // 영양 성분마다 다른 incrementStep을 적용하여 증가 속도를 조절합니다.
     incrementValues(setCarbs, targets.carbs, baseDuration, 15);
-    incrementValues(setProtein, targets.protein, baseDuration, 2); // 기본
-    incrementValues(setFat, targets.fat, baseDuration, 4); // 빠르게 증가
-    incrementValues(setSodium, targets.sodium, baseDuration, 100); // 매우 빠르게 증가
-    incrementValues(setPotassium, targets.potassium, baseDuration, 125); // 매우 빠르게 증가
-    incrementValues(setPhosphorus, targets.phosphorus, baseDuration, 45); // 빠르게 증가
+    incrementValues(setProtein, targets.protein, baseDuration, 2);
+    incrementValues(setFat, targets.fat, baseDuration, 4);
+    incrementValues(setSodium, targets.sodium, baseDuration, 100);
+    incrementValues(setPotassium, targets.potassium, baseDuration, 125);
+    incrementValues(setPhosphorus, targets.phosphorus, baseDuration, 45);
   }, []);
 
   const calculateDaysDifference = dateString => {
@@ -157,6 +157,12 @@ const HomeScreen = () => {
         )}
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.kitButton}>
+            <LottieView
+              source={animationData}
+              autoPlay
+              loop
+              style={styles.lottieAnimation} // 스타일 수정
+            />
             <Text style={styles.buttonText}>키트 구매하기</Text>
             <Image
               source={require('../../images/home/go.png')}
@@ -312,6 +318,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flex: 1,
     marginRight: 8,
+    position: 'relative', // Lottie 애니메이션 위치를 조정하기 위해 position을 relative로 설정
+  },
+  lottieAnimation: {
+    width: 80, // 애니메이션 크기 조정
+    height: 80,
+    position: 'absolute', // Lottie 애니메이션을 버튼 내부에 배치
+    top: -10, // 애니메이션을 버튼 위로 올림
+    left: '100%',
+    transform: [{translateX: -40}], // 가운데 정렬을 위해 X축 위치 조정
   },
   testButton: {
     backgroundColor: 'white',
@@ -357,11 +372,11 @@ const styles = StyleSheet.create({
   needleImage: {
     position: 'absolute',
     width: 10,
-    height: (width * 3) / 8, // 바늘의 길이를 조정하세요
+    height: (width * 3) / 8,
     resizeMode: 'contain',
     bottom: '50%',
     left: '50%',
-    transform: [{translateX: -5}, {translateY: 0}], // 바늘의 중심을 기준으로 위치 조정
+    transform: [{translateX: -5}, {translateY: 0}],
   },
   dialText: {
     fontSize: 14,

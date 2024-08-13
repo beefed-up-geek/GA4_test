@@ -1,10 +1,20 @@
 // /src/screen/medicine/index.js
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TextInput, Image, TouchableOpacity, Alert, Platform } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TextInput,
+  Image,
+  TouchableOpacity,
+  Alert,
+  Platform,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import axios from 'axios';
-import { launchCamera } from 'react-native-image-picker';
-import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import {launchCamera} from 'react-native-image-picker';
+import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 
 const MedicineScreen = () => {
   const [medicines, setMedicines] = useState([]);
@@ -19,11 +29,14 @@ const MedicineScreen = () => {
     fetchMedicines(searchQuery);
   }, [searchQuery]);
 
-  const fetchMedicines = async (query) => {
+  const fetchMedicines = async query => {
     try {
-      const response = await axios.post('https://35b4-203-252-33-1.ngrok-free.app/medicine', {
-        keyword: query,
-      });
+      const response = await axios.post(
+        'https://1ab8-203-252-33-4.ngrok-free.app/medicine',
+        {
+          keyword: query,
+        },
+      );
       const results = response.data.results.map((item, index) => ({
         id: `${item['품목기준코드 [ITEM_SEQ] ']}_${index}`, // Composite key
         name: item['품목명'],
@@ -38,7 +51,10 @@ const MedicineScreen = () => {
   };
 
   const requestCameraPermission = async () => {
-    const cameraPermission = Platform.OS === 'android' ? PERMISSIONS.ANDROID.CAMERA : PERMISSIONS.IOS.CAMERA;
+    const cameraPermission =
+      Platform.OS === 'android'
+        ? PERMISSIONS.ANDROID.CAMERA
+        : PERMISSIONS.IOS.CAMERA;
     const cameraStatus = await check(cameraPermission);
 
     if (cameraStatus !== RESULTS.GRANTED) {
@@ -62,7 +78,7 @@ const MedicineScreen = () => {
       cameraType: 'back', // Use the rear camera
     };
 
-    launchCamera(options, (response) => {
+    launchCamera(options, response => {
       if (response.didCancel) {
         console.log('User cancelled image picker');
       } else if (response.errorCode) {
@@ -75,10 +91,13 @@ const MedicineScreen = () => {
     });
   };
 
-  const renderMedicineItem = ({ item }) => (
+  const renderMedicineItem = ({item}) => (
     <View style={styles.itemContainer}>
       {item.base64_image ? (
-        <Image source={{ uri: `data:image/png;base64,${item.base64_image}` }} style={styles.image} />
+        <Image
+          source={{uri: `data:image/png;base64,${item.base64_image}`}}
+          style={styles.image}
+        />
       ) : (
         <View style={styles.imagePlaceholder} />
       )}
@@ -112,7 +131,12 @@ const MedicineScreen = () => {
           onChangeText={setSearchQuery}
         />
         <TouchableOpacity onPress={handleCameraPress}>
-          <Icon name="camera" size={20} color="#777" style={styles.cameraIcon} />
+          <Icon
+            name="camera"
+            size={20}
+            color="#777"
+            style={styles.cameraIcon}
+          />
         </TouchableOpacity>
       </View>
       <Text style={styles.subheader}>자주 찾는 약</Text>
@@ -172,7 +196,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 10,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 0 },
+    shadowOffset: {width: 0, height: 0},
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 4,

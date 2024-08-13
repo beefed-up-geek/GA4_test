@@ -6,37 +6,23 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
-  withRepeat,
-  withDelay,
+  interpolate,
+  Extrapolate,
 } from 'react-native-reanimated';
-import splashImage from '../../images/login/splash1.png';
 
 const Login1 = () => {
   const navigation = useNavigation();
-  const rotationY = useSharedValue(0);
+  const logoOpacity = useSharedValue(0); // 로고의 투명도
+  const textOpacity = useSharedValue(0);
+  const textColor = useSharedValue(0);
 
   useEffect(() => {
-    // 이미지 회전 애니메이션
-    rotationY.value = withRepeat(
-      withTiming(360, {duration: 1000}), // 1초 동안 360도 회전
-      -1, // 무한 반복
-      true, // 역방향 반복
-    );
-
     const checkLoginMethod = async () => {
       const loginMethod = await AsyncStorage.getItem('loginMethod');
       const userInfo = await AsyncStorage.getItem('userInfo');
-      console.log('<<< loginMethod >>>');
-      console.log(loginMethod);
-      console.log('<<< userId >>>');
-      console.log(await AsyncStorage.getItem('userId'));
-      console.log('<<< username >>>');
-      console.log(await AsyncStorage.getItem('username'));
-      console.log('<<< userInfo >>>');
-      console.log(userInfo);
 
       if (loginMethod) {
-        const timer = setTimeout(() => {
+        setTimeout(() => {
           if (userInfo) {
             navigation.replace('BottomNavigation');
           } else {
@@ -44,38 +30,52 @@ const Login1 = () => {
           }
         }, 3000);
       } else {
-        const timer = setTimeout(() => {
+        setTimeout(() => {
           navigation.replace('Login2');
         }, 3000);
-
-        return () => clearTimeout(timer);
       }
     };
 
     checkLoginMethod();
 
-    setTimeout(() => {
-      rotationY.value = withTiming(0, {duration: 500}); // 애니메이션 종료 후 회전 멈춤
-    }, 2000); // 2.5초 후에 회전을 멈추도록 설정
-  }, [navigation, rotationY]);
+    // 로고 및 텍스트의 투명도 및 색상 애니메이션
+    logoOpacity.value = withTiming(1, {duration: 2000});
+    textOpacity.value = withTiming(1, {duration: 2000});
+    textColor.value = withTiming(1, {duration: 1000});
+  }, [navigation, logoOpacity, textOpacity, textColor]);
 
-  const animatedStyle = useAnimatedStyle(() => {
+  const logoAnimatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [
-        {perspective: 1000}, // 입체감을 위한 perspective 설정
-        {rotateY: `${rotationY.value}deg`}, // Y축 기준 3D 회전
-      ],
+      opacity: logoOpacity.value, // 로고의 투명도만 애니메이션으로 적용
+    };
+  });
+
+  const textAnimatedStyle = useAnimatedStyle(() => {
+    const color = interpolate(
+      textColor.value,
+      [0, 1],
+      ['#FFFFFF', '#000000'], // 흰색에서 검은색으로 점점 진해지는 색상
+      Extrapolate.CLAMP,
+    );
+
+    return {
+      opacity: textOpacity.value,
+      color: color,
     };
   });
 
   return (
     <View style={styles.container}>
       <Animated.Image
-        source={splashImage}
-        style={[styles.image, animatedStyle]}
+        source={require('../../images/login/splash1.png')}
+        style={[styles.image, logoAnimatedStyle]} // 로고 투명도 애니메이션 적용
       />
-      <Text style={styles.descriptionText}>빠르고 간편한</Text>
-      <Text style={styles.descriptionText}>신장기능 조기 진단 검사지</Text>
+      <Animated.Text style={[styles.descriptionText, textAnimatedStyle]}>
+        빠르고 간편한
+      </Animated.Text>
+      <Animated.Text style={[styles.descriptionText, textAnimatedStyle]}>
+        신장기능 조기 진단 검사지
+      </Animated.Text>
       <ActivityIndicator
         size="large"
         color="#1677FF"
@@ -100,7 +100,8 @@ const styles = StyleSheet.create({
   },
   descriptionText: {
     fontSize: 16,
-    color: 'gray',
+    textAlign: 'center',
+    marginBottom: 10,
   },
   loadingIndicator: {
     marginTop: 50,
