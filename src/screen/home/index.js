@@ -39,6 +39,10 @@ const HomeScreen = ({setSelected}) => {
   const [potassium, setPotassium] = useState(0);
   const [phosphorus, setPhosphorus] = useState(0);
 
+  const handleTestNavigation = () => {
+    setSelected('KitResult');
+  };
+
   const targets = {
     carbs: 300,
     protein: 40,
@@ -134,10 +138,6 @@ const HomeScreen = ({setSelected}) => {
     const yBase1 = 150 - (baseWidth / 2) * Math.cos(angleInRadians);
     const xBase2 = 150 - (baseWidth / 2) * Math.sin(angleInRadians);
     const yBase2 = 150 + (baseWidth / 2) * Math.cos(angleInRadians);
-
-    const handleTestNavigation = () => {
-      setSelected('KitResult');
-    };
 
     return {
       points: `${xTip},${yTip} ${xBase1},${yBase1} ${xBase2},${yBase2}`,

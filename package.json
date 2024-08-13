@@ -13,7 +13,6 @@
     "@notifee/react-native": "^7.8.2",
     "@react-native-async-storage/async-storage": "^1.24.0",
     "@react-native-community/blur": "^4.4.0",
-    "@react-native-community/push-notification-ios": "^1.11.0",
     "@react-native-google-signin/google-signin": "^12.2.1",
     "@react-native-kakao/core": "^2.2.5",
     "@react-native-kakao/user": "^2.2.5",
@@ -47,7 +46,6 @@
     "react-native-modal": "^13.0.1",
     "react-native-particles": "^0.0.8",
     "react-native-permissions": "^4.1.5",
-    "react-native-push-notification": "^8.1.1",
     "react-native-qrcode-scanner": "^1.5.5",
     "react-native-radio-buttons-group": "^3.1.0",
     "react-native-reanimated": "^3.15.0",
@@ -55,6 +53,7 @@
     "react-native-screens": "^3.32.0",
     "react-native-svg": "^15.5.0",
     "react-native-vector-icons": "^10.1.0",
+    "react-native-video": "^6.4.3",
     "react-native-webview": "^13.10.5",
     "react-native-youtube-iframe": "^2.3.0"
   },
