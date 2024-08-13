@@ -25,6 +25,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import {useEffect} from 'react';
 import LinearGradient from 'react-native-linear-gradient';
+import Video from 'react-native-video';
 
 const {width, height} = Dimensions.get('window');
 const scaleWidth = width / 390;
@@ -77,7 +78,7 @@ const Kit_checkupScreen2 = ({onPress, navigation}) => {
             </View>
           </View>
           <View style={styles.banner}>
-            <View style={styles.bannerInner}>
+            {/* <View style={styles.bannerInner}>
               <ImageBackground
                 style={styles.bannerBackgroundImage}
                 source={require('./assets/images/150b862e-e74e-485a-a1f8-73dce2fa73f4.png')}
@@ -112,7 +113,12 @@ const Kit_checkupScreen2 = ({onPress, navigation}) => {
                   source={require('./assets/images/babfae0e-3934-4e27-8cc0-b207c520f470.png')}
                 />
               </View>
-            </View>
+            </View> */}
+            <Video
+              source={require('../../../android/app/src/main/res/raw/video.mp4')} // 로컬 파일을 사용하려면 require('./path/to/video.mp4')
+              style={styles.video}
+              controls={true} // 컨트롤러 표시
+            />
           </View>
           <View style={styles.instructions}>
             {Array.from({length: 6}).map((_, index) => (
@@ -166,6 +172,11 @@ const instructionTexts = [
 export default Kit_checkupScreen2;
 
 const styles = StyleSheet.create({
+  video: {
+    width: '100%',
+    height: 200,
+    bottom: 58,
+  },
   container: {
     display: 'flex',
     width: 390 * scaleWidth,

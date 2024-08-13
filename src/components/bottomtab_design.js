@@ -54,6 +54,7 @@ const TabDesign = ({
 
 const styles = StyleSheet.create({
   button: {
+    height: 30,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
