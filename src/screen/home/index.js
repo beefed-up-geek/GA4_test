@@ -158,7 +158,7 @@ const HomeScreen = () => {
             style={styles.infoIcon}
           />
           <Text style={styles.infoTitle}>
-            최근 검사 : {lastCheckupDate ? lastCheckupDate : '검사 이력 없음'}
+            아직 검사를 하지 않았어요
           </Text>
         </View>
         {lastCheckupDate ? (
@@ -168,11 +168,11 @@ const HomeScreen = () => {
           </Text>
         ) : (
           <Text style={styles.infoSubtitle}>
-            소변검사로 간편하게 신장기능을 확인해보세요
+            빠르고 간편한 신장기능 진단키트로{"\n"}지금 검사하고 꾸준히 신장 건강을 관리해 보세요.
           </Text>
         )}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.kitButton}>
+          <TouchableOpacity style={styles.testButton}>
             <Text style={styles.buttonText}>키트 구매하기</Text>
             <Image
               source={require('../../images/home/go.png')}
@@ -264,6 +264,7 @@ const styles = StyleSheet.create({
   },
   profileContainer: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'flex-end',
     marginBottom: 16 * height_ratio,
   },
@@ -273,9 +274,10 @@ const styles = StyleSheet.create({
     height: 24 * height_ratio,
   },
   profileText: {
+    ...theme.fonts.Regular,
     marginRight: 8 * width_ratio,
-    fontSize: 16 * width_ratio,
-    color: '#4F4F4F',
+    fontSize: 14 * width_ratio,
+    color: '#72777A',
   },
   profileIcon: {
     width: 24 * width_ratio,
@@ -285,14 +287,14 @@ const styles = StyleSheet.create({
   infoBox: {
     backgroundColor: '#EBEFFE',
     borderRadius: 8 * width_ratio,
-    padding: 16 * width_ratio,
+    padding: 24 * width_ratio,
     marginBottom: 24 * height_ratio,
     width: width - 32 * width_ratio,
   },
   infoTitleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8 * height_ratio,
+    marginBottom: 20 * height_ratio,
   },
   infoIcon: {
     width: 24 * width_ratio,
@@ -302,60 +304,47 @@ const styles = StyleSheet.create({
   },
   infoTitle: {
     fontSize: 16 * width_ratio,
-    fontWeight: 'bold',
-    color: '#333',
+    ...theme.fonts.SemiBold,
+    color: '#4D495A',
   },
   infoSubtitle: {
     fontSize: 14 * width_ratio,
     color: '#666',
-    marginBottom: 16 * height_ratio,
+    marginBottom: 18 * height_ratio,
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  kitButton: {
-    backgroundColor: 'white',
-    borderColor: '#7596FF',
-    borderWidth: 1 * width_ratio,
-    paddingVertical: 12 * height_ratio,
-    paddingHorizontal: 20 * width_ratio,
-    borderRadius: 30 * width_ratio,
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    marginRight: 8 * width_ratio,
+    justifyContent: 'space-around',
   },
   testButton: {
     backgroundColor: 'white',
     borderColor: '#7596FF',
-    borderWidth: 1 * width_ratio,
     paddingVertical: 12 * height_ratio,
-    paddingHorizontal: 20 * width_ratio,
+    paddingLeft: 20 * width_ratio,
+    paddingRight: 18 * width_ratio,
     borderRadius: 30 * width_ratio,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1,
   },
   buttonText: {
     color: '#7596FF',
     fontSize: 14 * width_ratio,
-    fontWeight: 'bold',
+    ...theme.fonts.Bold,
   },
   goIcon: {
     width: 16 * width_ratio,
     height: 16 * height_ratio,
-    marginLeft: 8 * width_ratio,
+    marginLeft: 11 * width_ratio,
     resizeMode: 'contain',
   },
   dialBox: {
     backgroundColor: 'white',
     borderRadius: 8 * width_ratio,
-    padding: 16 * width_ratio,
     marginBottom: 42 * height_ratio,
-    alignItems: 'center',
+    paddingVertical: 38 * height_ratio,
+    paddingHorizontal: 32 * width_ratio,
     shadowColor: '#BFBFBF',
     shadowOffset: { width: 4 * width_ratio, height: 6 * height_ratio },  // Similar to 4px 6px in CSS
     shadowOpacity: 0.05,  // Corresponds to the rgba(0, 0, 0, 0.05)
@@ -367,16 +356,18 @@ const styles = StyleSheet.create({
     width: (width * 3) / 4,
     height: (width * 3) / 4 / 2,
     resizeMode: 'contain',
+    alignSelf: 'center',
   },
   dialText1: {
     fontSize: 14 * width_ratio,
     marginTop: 30 * height_ratio,
     marginBottom: 4 * height_ratio,
+    textAlign: 'left',
     color: '#666',
   },
   dialText2: {
+    ...theme.fonts.Regular,
     fontSize: 14 * width_ratio,
-    marginBottom: 42 * height_ratio,
     color: '#666',
   },
   nutritionContainer: {
@@ -413,10 +404,11 @@ const styles = StyleSheet.create({
   nutritionBox: {
     backgroundColor: 'white',
     borderRadius: 12 * width_ratio,
+    paddingHorizontal: 18 * width_ratio,
     width: (width - 72 * width_ratio) / 3,
     height: (width - 72 * width_ratio) / 4,
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'left',
     marginBottom: 8 * height_ratio,
     zIndex: 0, // Ensures it doesn't overlap with dialBox shadow
     shadowColor: '#BFBFBF',
@@ -432,7 +424,7 @@ const styles = StyleSheet.create({
   },
   nutritionValue: {
     fontSize: 16 * width_ratio,
-    fontWeight: 'bold',
+    ...theme.fonts.Bold,
     color: '#333',
   },
   bottomSpacer: {
