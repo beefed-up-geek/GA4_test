@@ -81,7 +81,7 @@ const HomeScreen = () => {
         },
         () => {
           // 흔들리는 효과 추가
-          rotation.value = withSpring(120, {
+          rotation.value = withSpring(110, {
             damping: 4,
             stiffness: 400,
             mass: 1,
