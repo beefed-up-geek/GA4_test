@@ -26,6 +26,7 @@ const height_ratio = Dimensions.get('screen').height / 844;
 const AnimatedPolygon = Animated.createAnimatedComponent(Polygon);
 
 const HomeScreen = () => {
+  const [userName, setUserName] = useState('');
   const [lastCheckupDate, setLastCheckupDate] = useState('');
   const [daysSinceLastCheckup, setDaysSinceLastCheckup] = useState(null);
   const rotation = useSharedValue(0);
@@ -63,8 +64,17 @@ const HomeScreen = () => {
   };
 
   useEffect(() => {
-    const fetchLastCheckupDate = async () => {
+    
+    const fetchUserInfoAndLastCheckupDate = async () => {
       try {
+        // Fetch and parse user info
+        const userInfoString = await AsyncStorage.getItem('userInfo');
+        if (userInfoString) {
+          const userInfo = JSON.parse(userInfoString);
+          setUserName(userInfo.name);
+        }
+
+        // Fetch last checkup date
         const storedDate = await AsyncStorage.getItem('last_kit_checkup');
         if (storedDate) {
           setLastCheckupDate(storedDate);
@@ -72,7 +82,7 @@ const HomeScreen = () => {
           setDaysSinceLastCheckup(daysDifference);
         }
       } catch (error) {
-        console.error('Failed to load last checkup date', error);
+        console.error('Failed to load user info or last checkup date', error);
       }
 
       rotation.value = withTiming(
@@ -94,7 +104,7 @@ const HomeScreen = () => {
       );
     };
 
-    fetchLastCheckupDate();
+    fetchUserInfoAndLastCheckupDate();
 
     incrementValues(setCarbs, targets.carbs, baseDuration, 15);
     incrementValues(setProtein, targets.protein, baseDuration, 2);
@@ -197,10 +207,10 @@ const HomeScreen = () => {
           <Circle cx="150" cy="150" r="3" fill="white" /> 
         </Svg>
         <Text style={styles.dialText1}>
-          님의 콩팥 건강은 ? 단계에요.
+          {userName}님의 콩팥 건강은 ? 단계에요.
         </Text>
         <Text style={styles.dialText2}>
-          자가진단키트로 검사하고 님의 콩팥 기능 단계를 알아보세요.
+          자가진단키트로 검사하고 {userName}님의 콩팥 기능 단계를 알아보세요.
         </Text>
       </View>
       <View style={styles.nutritionContainer}>
