@@ -57,13 +57,13 @@
 	<string>553674684367-sr2m1jems5sai07qgq710dvhdoqm6npv.apps.googleusercontent.com</string>
 	<key>GIDRedirectURI</key>
 	<string>com.googleusercontent.apps.553674684367-sr2m1jems5sai07qgq710dvhdoqm6npv:/oauth2redirect/google</string>
-    <key>LSApplicationQueriesSchemes</key>
+	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>naversearchapp</string>
-		<string>naversearchthirdlogin</string> 
+		<string>naversearchthirdlogin</string>
 		<string>kakaokompassauth</string>
 		<string>storykompassauth</string>
-		<string>kakaolink</string> 
+		<string>kakaolink</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
@@ -97,6 +97,15 @@
 		<string>SimpleLineIcons.ttf</string>
 		<string>Octicons.ttf</string>
 		<string>Zocial.ttf</string>
+		<string>Pretendard-Black.otf</string>
+		<string>Pretendard-Bold.otf</string>
+		<string>Pretendard-ExtraBold.otf</string>
+		<string>Pretendard-ExtraLight.otf</string>
+		<string>Pretendard-Light.otf</string>
+		<string>Pretendard-Medium.otf</string>
+		<string>Pretendard-Regular.otf</string>
+		<string>Pretendard-SemiBold.otf</string>
+		<string>Pretendard-Thin.otf</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
