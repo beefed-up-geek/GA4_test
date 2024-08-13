@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -15,17 +15,18 @@ import Animated, {
   Easing,
   withSpring,
 } from 'react-native-reanimated';
+import {createStackNavigator} from '@react-navigation/stack';
 import theme from '../../theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Circle, Svg, Polygon, Image as SvgImage } from 'react-native-svg';
+import {Circle, Svg, Polygon, Image as SvgImage} from 'react-native-svg';
 
-const { width } = Dimensions.get('screen');
+const {width} = Dimensions.get('screen');
 const width_ratio = Dimensions.get('screen').width / 390;
 const height_ratio = Dimensions.get('screen').height / 844;
 
 const AnimatedPolygon = Animated.createAnimatedComponent(Polygon);
 
-const HomeScreen = () => {
+const HomeScreen = ({setSelected}) => {
   const [userName, setUserName] = useState('');
   const [lastCheckupDate, setLastCheckupDate] = useState('');
   const [daysSinceLastCheckup, setDaysSinceLastCheckup] = useState(null);
@@ -53,7 +54,7 @@ const HomeScreen = () => {
     const stepTime = duration / (target / incrementStep);
 
     const interval = setInterval(() => {
-      setValue((prev) => {
+      setValue(prev => {
         if (prev >= target) {
           clearInterval(interval);
           return target;
@@ -64,7 +65,6 @@ const HomeScreen = () => {
   };
 
   useEffect(() => {
-    
     const fetchUserInfoAndLastCheckupDate = async () => {
       try {
         // Fetch and parse user info
@@ -100,7 +100,7 @@ const HomeScreen = () => {
             restDisplacementThreshold: 0.007,
             restSpeedThreshold: 0.01,
           });
-        }
+        },
       );
     };
 
@@ -114,7 +114,7 @@ const HomeScreen = () => {
     incrementValues(setPhosphorus, targets.phosphorus, baseDuration, 45);
   }, []);
 
-  const calculateDaysDifference = (dateString) => {
+  const calculateDaysDifference = dateString => {
     const checkupDate = new Date(dateString);
     const today = new Date();
     const differenceInTime = today - checkupDate;
@@ -134,6 +134,10 @@ const HomeScreen = () => {
     const yBase1 = 150 - (baseWidth / 2) * Math.cos(angleInRadians);
     const xBase2 = 150 - (baseWidth / 2) * Math.sin(angleInRadians);
     const yBase2 = 150 + (baseWidth / 2) * Math.cos(angleInRadians);
+
+    const handleTestNavigation = () => {
+      setSelected('KitResult');
+    };
 
     return {
       points: `${xTip},${yTip} ${xBase1},${yBase1} ${xBase2},${yBase2}`,
@@ -157,9 +161,7 @@ const HomeScreen = () => {
             source={require('../../images/home/exclamation.png')}
             style={styles.infoIcon}
           />
-          <Text style={styles.infoTitle}>
-            아직 검사를 하지 않았어요
-          </Text>
+          <Text style={styles.infoTitle}>아직 검사를 하지 않았어요</Text>
         </View>
         {lastCheckupDate ? (
           <Text style={styles.infoText}>
@@ -168,7 +170,8 @@ const HomeScreen = () => {
           </Text>
         ) : (
           <Text style={styles.infoText}>
-            빠르고 간편한 신장기능 진단키트로{"\n"}지금 검사하고 꾸준히 신장 건강을 관리해 보세요.
+            빠르고 간편한 신장기능 진단키트로{'\n'}지금 검사하고 꾸준히 신장
+            건강을 관리해 보세요.
           </Text>
         )}
         <View style={styles.buttonContainer}>
@@ -179,7 +182,9 @@ const HomeScreen = () => {
               style={styles.goIcon}
             />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.testButton}>
+          <TouchableOpacity
+            style={styles.testButton}
+            onPress={handleTestNavigation}>
             <Text style={styles.buttonText}>검사하러 가기</Text>
             <Image
               source={require('../../images/home/go.png')}
@@ -190,7 +195,11 @@ const HomeScreen = () => {
       </View>
 
       <View style={styles.dialBox}>
-        <Svg justifyContent="center" alignItems="center" width="300" height="180">
+        <Svg
+          justifyContent="center"
+          alignItems="center"
+          width="300"
+          height="180">
           <SvgImage
             href={require('../../images/home/state.png')}
             x="0"
@@ -199,12 +208,12 @@ const HomeScreen = () => {
             height="180"
           />
           <AnimatedPolygon
-            points="150,150 150,40 160,150"  // Initial dummy points
+            points="150,150 150,40 160,150" // Initial dummy points
             fill="#ACACAC"
             animatedProps={animatedProps}
           />
           <Circle cx="150" cy="150" r="7" fill="#ACACAC" />
-          <Circle cx="150" cy="150" r="3" fill="white" /> 
+          <Circle cx="150" cy="150" r="3" fill="white" />
         </Svg>
         <Text style={styles.dialText1}>
           {userName}님의 콩팥 건강은 ? 단계에요.
@@ -351,7 +360,7 @@ const styles = StyleSheet.create({
     // shadowOffset: { width: 4 * width_ratio, height: 6 * height_ratio },  // Similar to 4px 6px in CSS
     // shadowOpacity: 0.05,  // Corresponds to the rgba(0, 0, 0, 0.05)
     // shadowRadius: 40 * width_ratio,  // Similar to the blur effect in the shadow
-    elevation: 60,  // Low elevation for Android, as the shadow is subtle
+    elevation: 60, // Low elevation for Android, as the shadow is subtle
     zIndex: 0, // Ensures it is above other components
   },
   dialImage: {
@@ -417,7 +426,7 @@ const styles = StyleSheet.create({
     // shadowOffset: { width: 100 * width_ratio, height: 100 * height_ratio },  // Similar to 4px 6px in CSS
     // shadowOpacity: 0.05,  // only for iOS
     // shadowRadius: 40 * width_ratio,  // Similar to the blur effect in the shadow
-    elevation: 10,  // for Android
+    elevation: 10, // for Android
   },
   nutritionLabel: {
     fontSize: 14 * width_ratio,
