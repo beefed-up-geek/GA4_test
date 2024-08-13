@@ -16,6 +16,8 @@ const Get_User_Info = () => {
   const [weight, setWeight] = useState('');
   const [gender, setGender] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
+  const [nameError, setNameError] = useState('');
+  const [nicknameError, setNicknameError] = useState('');
 
   const navigation = useNavigation();
 
@@ -75,7 +77,7 @@ const Get_User_Info = () => {
     const currentYear = new Date().getFullYear();
     const [year, month, day] = birthdate.split('/').map(Number);
     let errorMessage = '';
-  
+
     if (!name) {
       errorMessage += '이름을 입력해주세요.\n';
     }
@@ -104,12 +106,12 @@ const Get_User_Info = () => {
         errorMessage += '생년월일의 일은 01에서 31 사이여야 합니다.\n';
       }
     }
-  
+
     if (errorMessage) {
       Alert.alert('입력 오류', errorMessage);
       return;
     }
-  
+
     const userInfo = { name, nickname, birthdate, height, weight, gender };
     try {
       await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
@@ -120,7 +122,6 @@ const Get_User_Info = () => {
       Alert.alert('사용자 정보 저장 실패');
     }
   };
-  
 
   const handleHeightChange = (value) => {
     const numValue = parseInt(value.replace(/[^0-9]/g, ''), 10);
@@ -155,12 +156,32 @@ const Get_User_Info = () => {
     setBirthdate(formatted);
   };
 
+  const handleNameChange = (text) => {
+    if (text.length > 6) {
+      setNameError('6자리 이내로 입력하세요');
+      setName(text.slice(0, 6)); // 6자까지만 입력
+    } else {
+      setNameError('');
+      setName(text);
+    }
+  };
+
+  const handleNicknameChange = (text) => {
+    if (text.length > 6) {
+      setNicknameError('6자리 이내로 입력하세요');
+      setNickname(text.slice(0, 6)); // 6자까지만 입력
+    } else {
+      setNicknameError('');
+      setNickname(text);
+    }
+  };
+
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <KeyboardAwareScrollView
         contentContainerStyle={styles.scrollContainer}
         enableOnAndroid={true}
-        extraScrollHeight={20}
+        extraScrollHeight={20 * height_ratio}
         scrollEnabled={true}
       >
         <View style={styles.innerContainer}>
@@ -193,8 +214,9 @@ const Get_User_Info = () => {
                 placeholder="홍길동"
                 placeholderTextColor="#828287"
                 value={name}
-                onChangeText={setName}
+                onChangeText={handleNameChange}
               />
+              {nameError ? <Text style={styles.errorText}>{nameError}</Text> : null}
             </View>
             <View style={styles.inputGroup}>
               <Text style={styles.label}>닉네임</Text>
@@ -204,8 +226,9 @@ const Get_User_Info = () => {
                 placeholder="6자리 이내로 입력"
                 placeholderTextColor="#828287"
                 value={nickname}
-                onChangeText={setNickname}
+                onChangeText={handleNicknameChange}
               />
+              {nicknameError ? <Text style={styles.errorText}>{nicknameError}</Text> : null}
             </View>
           </View>
 
@@ -279,18 +302,18 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-    paddingBottom: 100, // Ensure there's space for the button
+    paddingBottom: 100 * height_ratio,
   },
   innerContainer: {
-    paddingTop: 80,
-    paddingHorizontal: 24,
+    paddingTop: 80 * height_ratio,
+    paddingHorizontal: 24 * width_ratio,
     alignItems: 'center',
   },
   title: {
-    marginLeft: 4,
-    fontSize: 20,
+    marginLeft: 4 * width_ratio,
+    fontSize: 20 * width_ratio,
     ...theme.fonts.Bold,
-    marginBottom: 50,
+    marginBottom: 50 * height_ratio,
     color: 'black',
     alignSelf: 'flex-start',
   },
@@ -299,56 +322,56 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: '#F1F1F1',
-    borderRadius: 13,
-    paddingRight: 24,
+    borderRadius: 13 * width_ratio,
+    paddingRight: 24 * width_ratio,
   },
   inputGroup: {
     flex: 1,
-    marginHorizontal: 8,
-    marginBottom: 24,
+    marginHorizontal: 8 * width_ratio,
+    marginBottom: 24 * height_ratio,
   },
   inputGroupFullWidth: {
     width: '100%',
-    marginBottom: 24,
+    marginBottom: 24 * height_ratio,
   },
   label: {
-    fontSize: 16,
+    fontSize: 16 * width_ratio,
     ...theme.fonts.Regular,
-    marginBottom: 12,
+    marginBottom: 12 * height_ratio,
     color: 'black',
   },
   input: {
     borderWidth: 0,
     borderColor: '#ccc',
-    borderRadius: 13,
-    paddingVertical: 17,
-    paddingHorizontal: 24,
-    fontSize: 16,
+    borderRadius: 13 * width_ratio,
+    paddingVertical: 17 * height_ratio,
+    paddingHorizontal: 24 * width_ratio,
+    fontSize: 16 * width_ratio,
     ...theme.fonts.Regular,
     color: 'black',
   },
   unit: {
-    fontSize: 16,
+    fontSize: 16 * width_ratio,
     color: '#828287',
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginHorizontal: -8,
+    marginHorizontal: -8 * width_ratio,
   },
   fixedButtonContainer: {
     position: 'absolute',
     bottom: 0,
     width: '100%',
     backgroundColor: 'white',
-    paddingVertical: 20,
+    paddingVertical: 20 * height_ratio,
     alignItems: 'center',
   },
   button: {
-    paddingVertical: 17,
-    borderRadius: 24,
+    paddingVertical: 17 * height_ratio,
+    borderRadius: 24 * width_ratio,
     alignItems: 'center',
-    width: '66.67%', // 화면 너비의 2/3
+    width: '66.67%',
   },
   buttonEnabled: {
     backgroundColor: '#EBEFFE',
@@ -357,7 +380,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#CCCCCC',
   },
   buttonText: {
-    fontSize: 16,
+    fontSize: 16 * width_ratio,
     ...theme.fonts.Bold,
   },
   buttonTextEnabled: {
@@ -368,7 +391,7 @@ const styles = StyleSheet.create({
   },
   genderWrapper: {
     width: '100%',
-    marginBottom: 24,
+    marginBottom: 24 * height_ratio,
   },
   genderContainer: {
     flexDirection: 'row',
@@ -376,23 +399,28 @@ const styles = StyleSheet.create({
   },
   genderButton: {
     alignItems: 'center',
-    padding: 10,
+    padding: 10 * width_ratio,
   },
   genderImageFemale: {
-    marginLeft: 26,
-    width: 109,
-    height: 117.63,
+    marginLeft: 26 * width_ratio,
+    width: 109 * width_ratio,
+    height: 117.63 * height_ratio,
     resizeMode: 'contain',
   },
   genderImageMale: {
-    marginTop: 17,
-    marginRight: 28,
-    width: 102,
-    height: 101,
+    marginTop: 17 * height_ratio,
+    marginRight: 28 * width_ratio,
+    width: 102 * width_ratio,
+    height: 101 * height_ratio,
     resizeMode: 'contain',
   },
   desaturated: {
     opacity: 0.5,
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 12 * width_ratio,
+    marginTop: 4 * height_ratio,
   },
 });
 
