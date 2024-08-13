@@ -37,7 +37,9 @@ const Authentication3Screen = () => {
       // 저장된 값을 가져와서 출력
       const storedDate = await AsyncStorage.getItem('healthscreen_last_update');
       const storedData = await AsyncStorage.getItem('healthscreen_data');
+      console.log("<< storedDate >>");
       console.log(storedDate);
+      console.log("<< storedData >>");
       console.log(JSON.parse(storedData));
 
       navigation.navigate('Health'); // 건강검진 홈화면으로 가기
