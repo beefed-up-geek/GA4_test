@@ -1,246 +1,421 @@
-// /src/screen/medicine/index.js
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {
   View,
   Text,
+  ImageBackground,
+  SafeAreaView,
+  ScrollView,
   StyleSheet,
-  FlatList,
-  TextInput,
-  Image,
-  TouchableOpacity,
-  Alert,
-  Platform,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome5';
-import axios from 'axios';
-import {launchCamera} from 'react-native-image-picker';
-import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
+import LinearGradient from 'react-native-linear-gradient';
 
-const MedicineScreen = () => {
-  const [medicines, setMedicines] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filteredMedicines, setFilteredMedicines] = useState([]);
-
-  useEffect(() => {
-    fetchMedicines('');
-  }, []);
-
-  useEffect(() => {
-    fetchMedicines(searchQuery);
-  }, [searchQuery]);
-
-  const fetchMedicines = async query => {
-    try {
-      const response = await axios.post(
-        'https://1ab8-203-252-33-4.ngrok-free.app/medicine',
-        {
-          keyword: query,
-        },
-      );
-      const results = response.data.results.map((item, index) => ({
-        id: `${item['품목기준코드 [ITEM_SEQ] ']}_${index}`, // Composite key
-        name: item['품목명'],
-        comp: item['표시성분'] ? item['표시성분'].join(', ') : null,
-        base64_image: item['base64_img'],
-      }));
-      setMedicines(results);
-      setFilteredMedicines(results);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const requestCameraPermission = async () => {
-    const cameraPermission =
-      Platform.OS === 'android'
-        ? PERMISSIONS.ANDROID.CAMERA
-        : PERMISSIONS.IOS.CAMERA;
-    const cameraStatus = await check(cameraPermission);
-
-    if (cameraStatus !== RESULTS.GRANTED) {
-      const cameraRequestResult = await request(cameraPermission);
-      if (cameraRequestResult !== RESULTS.GRANTED) {
-        Alert.alert('Permissions Error', 'Camera permission is not granted.');
-        return false;
-      }
-    }
-
-    return true;
-  };
-
-  const handleCameraPress = async () => {
-    const hasPermission = await requestCameraPermission();
-    if (!hasPermission) return;
-
-    const options = {
-      mediaType: 'photo',
-      includeBase64: true,
-      cameraType: 'back', // Use the rear camera
-    };
-
-    launchCamera(options, response => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.errorCode) {
-        console.log('ImagePicker Error: ', response.errorCode);
-        Alert.alert('Error', `ImagePicker Error: ${response.errorCode}`);
-      } else if (response.assets && response.assets.length > 0) {
-        const base64Image = response.assets[0].base64;
-        console.log(base64Image);
-      }
-    });
-  };
-
-  const renderMedicineItem = ({item}) => (
-    <View style={styles.itemContainer}>
-      {item.base64_image ? (
-        <Image
-          source={{uri: `data:image/png;base64,${item.base64_image}`}}
-          style={styles.image}
-        />
-      ) : (
-        <View style={styles.imagePlaceholder} />
-      )}
-      <View style={styles.textContainer}>
-        <Text style={styles.name}>{item.name}</Text>
-        {item.comp && (
-          <View style={styles.tagContainer}>
-            {item.comp.split(', ').map((comp, index) => (
-              <View key={index} style={styles.tag}>
-                <Text style={styles.tagText}>{comp}</Text>
-              </View>
-            ))}
-          </View>
-        )}
-      </View>
-    </View>
-  );
-
+export default function App() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.screenInfo}>
-        지금 먹고 있는 약이 신장에 나쁜 영향을 주는지 알려드려요!
-      </Text>
-      <View style={styles.searchContainer}>
-        <Icon name="search" size={16} color="#777" style={styles.searchIcon} />
-        <TextInput
-          style={styles.searchBar}
-          placeholder="약 이름을 검색해 주세요."
-          placeholderTextColor="#777"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-        <TouchableOpacity onPress={handleCameraPress}>
-          <Icon
-            name="camera"
-            size={20}
-            color="#777"
-            style={styles.cameraIcon}
+    <SafeAreaView>
+      <ScrollView
+        scrollEnabled={true}
+        contentInsetAdjustmentBehavior="automatic">
+        <View style={styles.container}>
+          <Text style={styles.headerText}>
+            지금 먹고 있는 약에 신장에 좋지 않은 성분이 들어있는지 확인해보세요
+          </Text>
+          <View style={styles.searchContainer}>
+            <View style={styles.searchBox}>
+              <View style={styles.searchIconContainer}>
+                <ImageBackground
+                  style={styles.searchIcon}
+                  source={require('./assets/images/d4aceaa2-1524-45e8-9ca4-052749f3540d.png')}
+                />
+              </View>
+              <Text style={styles.searchText} numberOfLines={1}>
+                약 이름을 검색해 주세요.
+              </Text>
+            </View>
+          </View>
+          <View style={styles.filterContainer}>
+            <View style={styles.filterGroup}>
+              <View style={styles.filterButtonActive}>
+                <Text style={styles.filterText}>이름으로 검색</Text>
+              </View>
+              <View style={styles.filterButton}>
+                <Text style={styles.filterTextInactive}>성분으로 검색</Text>
+              </View>
+            </View>
+            <View style={styles.sortContainer}>
+              <Text style={styles.sortText} numberOfLines={1}>
+                정확도순
+              </Text>
+              <View style={styles.sortIconContainer}>
+                <ImageBackground
+                  style={styles.sortIcon}
+                  source={require('./assets/images/3f910ba0-f9dd-4275-9c02-7d4de8303d32.png')}
+                />
+              </View>
+            </View>
+          </View>
+          <View style={styles.recentSearchContainer}>
+            <View style={styles.recentSearchBox}>
+              <View style={styles.recentSearchHeader}>
+                <Text style={styles.recentSearchTitle}>최근 검색어</Text>
+              </View>
+              <View style={styles.recentSearchItems}>
+                <View style={styles.recentSearchItem}>
+                  <Text style={styles.recentSearchText}>아로나민</Text>
+                </View>
+                <View style={styles.recentSearchItem}>
+                  <Text style={styles.recentSearchText}>콜대원</Text>
+                </View>
+                <View style={styles.recentSearchItem}>
+                  <Text style={styles.recentSearchText}>어린이부루펜</Text>
+                </View>
+              </View>
+            </View>
+            <View style={styles.popularSearchBox}>
+              <View style={styles.popularSearchHeader}>
+                <Text style={styles.popularSearchTitle}>
+                  인기있는 검색어예요
+                </Text>
+                <Text style={styles.popularSearchDate}>8월 9일 기준</Text>
+              </View>
+              <View style={styles.popularSearchItems}>
+                <View style={styles.popularSearchItem}>
+                  <Text style={styles.popularSearchTextActive}>판피린</Text>
+                </View>
+                <View style={styles.popularSearchItem}>
+                  <Text style={styles.popularSearchTextActive}>판콜에스</Text>
+                </View>
+                <View style={styles.popularSearchItem}>
+                  <Text style={styles.popularSearchTextActive}>
+                    어린이부루펜
+                  </Text>
+                </View>
+                <View style={styles.popularSearchItem}>
+                  <Text style={styles.popularSearchTextActive}>겔포스</Text>
+                </View>
+                <View style={styles.popularSearchItem}>
+                  <Text style={styles.popularSearchTextActive}>탁센</Text>
+                </View>
+                <View style={styles.popularSearchItem}>
+                  <Text style={styles.popularSearchTextActive}>이지엔</Text>
+                </View>
+                <View style={styles.popularSearchItem}>
+                  <Text style={styles.popularSearchTextActive}>이가탄</Text>
+                </View>
+                <View style={styles.popularSearchItem}>
+                  <Text style={styles.popularSearchTextActive}>타이레놀</Text>
+                </View>
+                <View style={styles.popularSearchItem}>
+                  <Text style={styles.popularSearchTextActive}>아스피린</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+          <ImageBackground
+            style={styles.bottomImage}
+            source={require('./assets/images/674abcd1-91e9-4f9e-b5af-87f2b14edcfc.png')}
+            resizeMode="cover"
           />
-        </TouchableOpacity>
-      </View>
-      <Text style={styles.subheader}>자주 찾는 약</Text>
-      <FlatList
-        data={filteredMedicines}
-        renderItem={renderMedicineItem}
-        keyExtractor={item => item.id} // Use the composite key as the key extractor
-      />
-    </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: '#fff',
+    width: 390,
+    height: 844,
+    backgroundColor: '#ffffff',
+    position: 'relative',
+    overflow: 'hidden',
+    margin: 'auto',
   },
-  screenInfo: {
+  headerText: {
+    width: 310,
+    height: 38,
+    fontFamily: 'Pretendard Variable',
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000',
-    marginBottom: 16,
+    fontWeight: '500',
+    lineHeight: 19.094,
+    color: '#4f4f53',
+    position: 'relative',
+    textAlign: 'left',
+    marginTop: 131,
+    marginLeft: 31,
   },
   searchContainer: {
+    width: 342,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#f9f9f9',
+    borderRadius: 24,
+    position: 'relative',
+    zIndex: 45,
+    marginTop: 20,
+    marginLeft: 24,
+  },
+  searchBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 25, // Make the search bar more rounded
-    marginBottom: 16,
-    paddingHorizontal: 10,
-    backgroundColor: '#f2f2f2', // Light gray background
+    position: 'relative',
+    zIndex: 46,
+  },
+  searchIconContainer: {
+    width: 24,
+    height: 24,
+    position: 'relative',
+    overflow: 'hidden',
+    zIndex: 47,
   },
   searchIcon: {
-    marginRight: 10,
+    width: 19.521,
+    height: 19.521,
+    marginTop: 2.229,
+    marginLeft: 2.229,
   },
-  cameraIcon: {
-    marginLeft: 10,
+  searchText: {
+    height: 24,
+    fontFamily: 'Pretendard Variable',
+    fontSize: 16,
+    fontWeight: '400',
+    lineHeight: 24,
+    color: '#8e9097',
+    position: 'relative',
+    textAlign: 'left',
+    zIndex: 49,
   },
-  searchBar: {
-    flex: 1,
-    height: 40,
-    color: '#000',
-  },
-  subheader: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#000',
-    marginBottom: 16,
-  },
-  itemContainer: {
+  filterContainer: {
+    width: 390,
+    paddingHorizontal: 32,
     flexDirection: 'row',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 0},
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4,
-    marginBottom: 16,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    position: 'relative',
+    zIndex: 50,
+    marginTop: 16,
+    marginLeft: 1,
   },
-  image: {
-    width: 50,
-    height: 50,
-    marginRight: 16,
-    borderRadius: 10,
-  },
-  imagePlaceholder: {
-    width: 50,
-    height: 50,
-    backgroundColor: '#eee',
-    marginRight: 16,
-    borderRadius: 10,
-  },
-  textContainer: {
-    flex: 1,
+  filterGroup: {
+    width: 188,
+    flexDirection: 'row',
     justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+    zIndex: 51,
   },
-  name: {
-    color: '#000',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  tagContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: 4,
-  },
-  tag: {
-    backgroundColor: '#ffcccc',
-    borderRadius: 15,
+  filterButtonActive: {
+    width: 92,
     paddingVertical: 4,
-    paddingHorizontal: 8,
-    marginRight: 4,
-    marginTop: 4,
+    paddingHorizontal: 13,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#e4edff',
+    borderRadius: 13,
+    position: 'relative',
+    zIndex: 52,
   },
-  tagText: {
-    color: '#f00',
+  filterButton: {
+    width: 92,
+    paddingVertical: 4,
+    paddingHorizontal: 13,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f1f1f1',
+    borderRadius: 13,
+    position: 'relative',
+    zIndex: 54,
+  },
+  filterText: {
+    height: 24,
+    fontFamily: 'Pretendard Variable',
     fontSize: 12,
+    fontWeight: '500',
+    lineHeight: 24,
+    color: '#636363',
+    position: 'relative',
+    textAlign: 'left',
+    zIndex: 53,
+  },
+  filterTextInactive: {
+    color: '#5d5d62',
+  },
+  sortContainer: {
+    width: 60,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    position: 'relative',
+    zIndex: 56,
+  },
+  sortText: {
+    height: 22,
+    fontFamily: 'Pretendard Variable',
+    fontSize: 15,
+    fontWeight: '500',
+    lineHeight: 22,
+    color: '#72777a',
+    position: 'relative',
+    textAlign: 'left',
+    zIndex: 57,
+  },
+  sortIconContainer: {
+    width: 15,
+    height: 15,
+    position: 'relative',
+    overflow: 'hidden',
+    zIndex: 58,
+  },
+  sortIcon: {
+    width: 12.332,
+    height: 7.05,
+    marginTop: 4.6,
+    marginLeft: 1.334,
+  },
+  recentSearchContainer: {
+    width: 342,
+    alignItems: 'center',
+    position: 'relative',
+    zIndex: 3,
+    marginTop: 32,
+    marginLeft: 24,
+  },
+  recentSearchBox: {
+    paddingVertical: 32,
+    paddingHorizontal: 24,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    backgroundColor: '#ffffff',
+    borderRadius: 24,
+    position: 'relative',
+    zIndex: 4,
+  },
+  recentSearchHeader: {
+    width: 294,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    position: 'relative',
+    zIndex: 5,
+  },
+  recentSearchTitle: {
+    height: 21,
+    fontFamily: 'Pretendard Variable',
+    fontSize: 18,
+    fontWeight: '600',
+    lineHeight: 21,
+    color: '#72777a',
+    position: 'relative',
+    textAlign: 'left',
+    zIndex: 7,
+  },
+  recentSearchItems: {
+    height: 32,
+    alignSelf: 'stretch',
+    position: 'relative',
+    zIndex: 8,
+  },
+  recentSearchItem: {
+    flexDirection: 'row',
+    gap: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    backgroundColor: '#f1f1f1',
+    borderRadius: 24,
+    position: 'relative',
+    zIndex: 11,
+  },
+  recentSearchText: {
+    height: 24,
+    fontFamily: 'Pretendard Variable',
+    fontSize: 12,
+    fontWeight: '500',
+    lineHeight: 24,
+    color: '#5d5d62',
+    position: 'relative',
+    textAlign: 'left',
+    zIndex: 12,
+  },
+  popularSearchBox: {
+    paddingVertical: 32,
+    paddingHorizontal: 32,
+    flexDirection: 'row',
+    gap: 16,
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    backgroundColor: '#ffffff',
+    borderRadius: 24,
+    position: 'relative',
+    zIndex: 17,
+  },
+  popularSearchHeader: {
+    height: 152,
+    gap: 24,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    flexGrow: 1,
+    position: 'relative',
+    zIndex: 18,
+  },
+  popularSearchTitle: {
+    height: 21,
+    fontFamily: 'Pretendard Variable',
+    fontSize: 18,
+    fontWeight: '600',
+    lineHeight: 21,
+    color: '#72777a',
+    position: 'relative',
+    textAlign: 'left',
+    zIndex: 20,
+  },
+  popularSearchDate: {
+    height: 24,
+    fontFamily: 'Pretendard Variable',
+    fontSize: 14,
+    fontWeight: '400',
+    lineHeight: 24,
+    color: '#8e9097',
+    position: 'relative',
+    textAlign: 'left',
+    zIndex: 21,
+  },
+  popularSearchItems: {
+    gap: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    position: 'relative',
+    zIndex: 22,
+  },
+  popularSearchItem: {
+    flexDirection: 'row',
+    gap: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#deedff',
+    borderRadius: 24,
+    position: 'relative',
+    zIndex: 25,
+  },
+  popularSearchTextActive: {
+    height: 24,
+    fontFamily: 'Pretendard Variable',
+    fontSize: 12,
+    fontWeight: '500',
+    lineHeight: 24,
+    color: '#4099ff',
+    position: 'relative',
+    textAlign: 'left',
+    zIndex: 26,
+  },
+  bottomImage: {
+    width: 148,
+    height: 5,
+    position: 'relative',
+    zIndex: 2,
+    marginTop: 161,
+    marginLeft: 121,
   },
 });
-
-export default MedicineScreen;
