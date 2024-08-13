@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -15,12 +15,15 @@ import Animated, {
   Easing,
   withSpring,
 } from 'react-native-reanimated';
+import theme from '../../theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Circle, Svg, Line} from 'react-native-svg';
+import { Circle, Svg, Polygon, Image as SvgImage } from 'react-native-svg';
 
-const {width} = Dimensions.get('screen');
+const { width } = Dimensions.get('screen');
+const width_ratio = Dimensions.get('screen').width / 390;
+const height_ratio = Dimensions.get('screen').height / 844;
 
-const AnimatedLine = Animated.createAnimatedComponent(Line);
+const AnimatedPolygon = Animated.createAnimatedComponent(Polygon);
 
 const HomeScreen = () => {
   const [lastCheckupDate, setLastCheckupDate] = useState('');
@@ -43,13 +46,13 @@ const HomeScreen = () => {
     phosphorus: 900,
   };
 
-  const baseDuration = 500; // 기본 0.5초
+  const baseDuration = 500;
 
   const incrementValues = (setValue, target, duration, incrementStep = 1) => {
     const stepTime = duration / (target / incrementStep);
 
     const interval = setInterval(() => {
-      setValue(prev => {
+      setValue((prev) => {
         if (prev >= target) {
           clearInterval(interval);
           return target;
@@ -72,15 +75,13 @@ const HomeScreen = () => {
         console.error('Failed to load last checkup date', error);
       }
 
-      // 180도 회전 후에 흔들리는 효과 추가
       rotation.value = withTiming(
         180,
         {
-          duration: 200, // 0.5초에 180도 회전
+          duration: 200,
           easing: Easing.linear,
         },
         () => {
-          // 흔들리는 효과 추가
           rotation.value = withSpring(120, {
             damping: 4,
             stiffness: 400,
@@ -89,22 +90,21 @@ const HomeScreen = () => {
             restDisplacementThreshold: 0.007,
             restSpeedThreshold: 0.01,
           });
-        },
+        }
       );
     };
 
     fetchLastCheckupDate();
 
-    // 영양 성분마다 다른 incrementStep을 적용하여 증가 속도를 조절합니다.
     incrementValues(setCarbs, targets.carbs, baseDuration, 15);
-    incrementValues(setProtein, targets.protein, baseDuration, 2); // 기본
-    incrementValues(setFat, targets.fat, baseDuration, 4); // 빠르게 증가
-    incrementValues(setSodium, targets.sodium, baseDuration, 100); // 매우 빠르게 증가
-    incrementValues(setPotassium, targets.potassium, baseDuration, 125); // 매우 빠르게 증가
-    incrementValues(setPhosphorus, targets.phosphorus, baseDuration, 45); // 빠르게 증가
+    incrementValues(setProtein, targets.protein, baseDuration, 2);
+    incrementValues(setFat, targets.fat, baseDuration, 4);
+    incrementValues(setSodium, targets.sodium, baseDuration, 100);
+    incrementValues(setPotassium, targets.potassium, baseDuration, 125);
+    incrementValues(setPhosphorus, targets.phosphorus, baseDuration, 45);
   }, []);
 
-  const calculateDaysDifference = dateString => {
+  const calculateDaysDifference = (dateString) => {
     const checkupDate = new Date(dateString);
     const today = new Date();
     const differenceInTime = today - checkupDate;
@@ -114,13 +114,19 @@ const HomeScreen = () => {
 
   const animatedProps = useAnimatedProps(() => {
     const angleInRadians = (rotation.value * Math.PI) / 180;
-    const radius = 110;
-    const x2 = 150 - radius * Math.cos(angleInRadians);
-    const y2 = 150 - radius * Math.sin(angleInRadians);
+    const radius = 100;
+    const xTip = 150 - radius * Math.cos(angleInRadians);
+    const yTip = 150 - radius * Math.sin(angleInRadians);
+
+    // Define the width of the base of the needle
+    const baseWidth = 7;
+    const xBase1 = 150 + (baseWidth / 2) * Math.sin(angleInRadians);
+    const yBase1 = 150 - (baseWidth / 2) * Math.cos(angleInRadians);
+    const xBase2 = 150 - (baseWidth / 2) * Math.sin(angleInRadians);
+    const yBase2 = 150 + (baseWidth / 2) * Math.cos(angleInRadians);
 
     return {
-      x2: `${x2}`,
-      y2: `${y2}`,
+      points: `${xTip},${yTip} ${xBase1},${yBase1} ${xBase2},${yBase2}`,
     };
   });
 
@@ -147,7 +153,7 @@ const HomeScreen = () => {
         </View>
         {lastCheckupDate ? (
           <Text style={styles.infoSubtitle}>
-            마지막 검사자 {daysSinceLastCheckup}일 전이에요. 지금 검사하고
+            마지막 검사가 {daysSinceLastCheckup}일 전이에요. 지금 검사하고
             꾸준히 콩팥 건강을 관리해 보세요.
           </Text>
         ) : (
@@ -174,29 +180,27 @@ const HomeScreen = () => {
       </View>
 
       <View style={styles.dialBox}>
-        <Svg
-          justifyContent="center"
-          alignItems="center"
-          width="300"
-          height="180">
-          <Image
-            source={require('../../images/home/state.png')}
-            style={styles.dialImage}
+        <Svg justifyContent="center" alignItems="center" width="300" height="180">
+          <SvgImage
+            href={require('../../images/home/state.png')}
+            x="0"
+            y="0"
+            width="300"
+            height="180"
           />
-          <Circle cx="150" cy="150" r="3" fill="blue" />
-          <AnimatedLine
-            x1="150"
-            y1="150"
-            x2="40"
-            y2="150"
-            stroke="blue"
-            strokeWidth="4"
+          <AnimatedPolygon
+            points="150,150 150,40 160,150"  // Initial dummy points
+            fill="#ACACAC"
             animatedProps={animatedProps}
           />
+          <Circle cx="150" cy="150" r="7" fill="#ACACAC" />
+          <Circle cx="150" cy="150" r="3" fill="white" /> 
         </Svg>
-        <Text style={styles.dialText}>
-          콩팥 기능의 콩팥 건강은? 단계에요. 자가진단키트로 검사하고 콩팥 기능
-          단계를 알아보세요.
+        <Text style={styles.dialText1}>
+          님의 콩팥 건강은 ? 단계에요.
+        </Text>
+        <Text style={styles.dialText2}>
+          자가진단키트로 검사하고 님의 콩팥 기능 단계를 알아보세요.
         </Text>
       </View>
       <View style={styles.nutritionContainer}>
@@ -245,56 +249,56 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     backgroundColor: 'white',
-    paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingHorizontal: 16 * width_ratio,
+    paddingTop: 16 * height_ratio,
   },
   profileContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    marginBottom: 16,
+    marginBottom: 16 * height_ratio,
   },
   profileButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 24,
+    height: 24 * height_ratio,
   },
   profileText: {
-    marginRight: 8,
-    fontSize: 16,
+    marginRight: 8 * width_ratio,
+    fontSize: 16 * width_ratio,
     color: '#4F4F4F',
   },
   profileIcon: {
-    width: 24,
-    height: 24,
+    width: 24 * width_ratio,
+    height: 24 * height_ratio,
     resizeMode: 'contain',
   },
   infoBox: {
     backgroundColor: '#EBEFFE',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 16,
-    width: width - 32,
+    borderRadius: 8 * width_ratio,
+    padding: 16 * width_ratio,
+    marginBottom: 24 * height_ratio,
+    width: width - 32 * width_ratio,
   },
   infoTitleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 8 * height_ratio,
   },
   infoIcon: {
-    width: 24,
-    height: 24,
-    marginRight: 8,
+    width: 24 * width_ratio,
+    height: 24 * height_ratio,
+    marginRight: 8 * width_ratio,
     resizeMode: 'contain',
   },
   infoTitle: {
-    fontSize: 16,
+    fontSize: 16 * width_ratio,
     fontWeight: 'bold',
     color: '#333',
   },
   infoSubtitle: {
-    fontSize: 14,
+    fontSize: 14 * width_ratio,
     color: '#666',
-    marginBottom: 16,
+    marginBottom: 16 * height_ratio,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -303,23 +307,23 @@ const styles = StyleSheet.create({
   kitButton: {
     backgroundColor: 'white',
     borderColor: '#7596FF',
-    borderWidth: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 30,
+    borderWidth: 1 * width_ratio,
+    paddingVertical: 12 * height_ratio,
+    paddingHorizontal: 20 * width_ratio,
+    borderRadius: 30 * width_ratio,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
-    marginRight: 8,
+    marginRight: 8 * width_ratio,
   },
   testButton: {
     backgroundColor: 'white',
     borderColor: '#7596FF',
-    borderWidth: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 30,
+    borderWidth: 1 * width_ratio,
+    paddingVertical: 12 * height_ratio,
+    paddingHorizontal: 20 * width_ratio,
+    borderRadius: 30 * width_ratio,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -327,70 +331,67 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#7596FF',
-    fontSize: 14,
+    fontSize: 14 * width_ratio,
     fontWeight: 'bold',
   },
   goIcon: {
-    width: 16,
-    height: 16,
-    marginLeft: 8,
+    width: 16 * width_ratio,
+    height: 16 * height_ratio,
+    marginLeft: 8 * width_ratio,
     resizeMode: 'contain',
   },
   dialBox: {
     backgroundColor: 'white',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 16,
+    borderRadius: 8 * width_ratio,
+    padding: 16 * width_ratio,
+    marginBottom: 42 * height_ratio,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowColor: '#BFBFBF',
+    shadowOffset: { width: 4 * width_ratio, height: 6 * height_ratio },  // Similar to 4px 6px in CSS
+    shadowOpacity: 0.05,  // Corresponds to the rgba(0, 0, 0, 0.05)
+    shadowRadius: 40 * width_ratio,  // Similar to the blur effect in the shadow
+    elevation: 60,  // Low elevation for Android, as the shadow is subtle
+    zIndex: 0, // Ensures it is above other components
   },
   dialImage: {
     width: (width * 3) / 4,
     height: (width * 3) / 4 / 2,
     resizeMode: 'contain',
-    marginBottom: 16,
   },
-  needleImage: {
-    position: 'absolute',
-    width: 10,
-    height: (width * 3) / 8, // 바늘의 길이를 조정하세요
-    resizeMode: 'contain',
-    bottom: '50%',
-    left: '50%',
-    transform: [{translateX: -5}, {translateY: 0}], // 바늘의 중심을 기준으로 위치 조정
-  },
-  dialText: {
-    fontSize: 14,
+  dialText1: {
+    fontSize: 14 * width_ratio,
+    marginTop: 30 * height_ratio,
+    marginBottom: 4 * height_ratio,
     color: '#666',
-    textAlign: 'center',
+  },
+  dialText2: {
+    fontSize: 14 * width_ratio,
+    marginBottom: 42 * height_ratio,
+    color: '#666',
   },
   nutritionContainer: {
-    marginBottom: 16,
-    backgroundColor: 'white',
-    padding: 16,
-    borderRadius: 16,
+    marginBottom: 16 * height_ratio,
+    padding: 16 * width_ratio,
+    borderRadius: 16 * width_ratio,
+    zIndex: 1, // Ensures it stays below dialBox in stacking order
   },
   nutritionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 20 * height_ratio,
   },
   nutritionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginRight: 4,
+    fontSize: 18 * width_ratio,
+    ...theme.fonts.Bold,
+    color: '#5D5D62',
+    marginRight: 4 * width_ratio,
   },
   nutritionInfoButton: {
-    padding: 4,
+    padding: 4 * width_ratio,
   },
   nutritionIcon: {
-    width: 24,
-    height: 24,
+    width: 20 * width_ratio,
+    height: 20 * height_ratio,
     resizeMode: 'contain',
   },
   nutritionBoxContainer: {
@@ -401,30 +402,31 @@ const styles = StyleSheet.create({
   },
   nutritionBox: {
     backgroundColor: 'white',
-    borderRadius: 12,
-    width: (width - 72) / 3,
-    height: (width - 72) / 4,
+    borderRadius: 12 * width_ratio,
+    width: (width - 72 * width_ratio) / 3,
+    height: (width - 72 * width_ratio) / 4,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 5,
+    marginBottom: 8 * height_ratio,
+    zIndex: 0, // Ensures it doesn't overlap with dialBox shadow
+    shadowColor: '#BFBFBF',
+    // shadowOffset: { width: 100 * width_ratio, height: 100 * height_ratio },  // Similar to 4px 6px in CSS
+    // shadowOpacity: 0.05,  // only for iOS
+    // shadowRadius: 40 * width_ratio,  // Similar to the blur effect in the shadow
+    elevation: 10,  // for Android
   },
   nutritionLabel: {
-    fontSize: 14,
+    fontSize: 14 * width_ratio,
     color: '#666',
-    marginBottom: 4,
+    marginBottom: 4 * height_ratio,
   },
   nutritionValue: {
-    fontSize: 16,
+    fontSize: 16 * width_ratio,
     fontWeight: 'bold',
     color: '#333',
   },
   bottomSpacer: {
-    height: 100,
+    height: 100 * height_ratio,
   },
 });
 
