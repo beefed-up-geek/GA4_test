@@ -19,6 +19,8 @@ import {createStackNavigator} from '@react-navigation/stack';
 import theme from '../../theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Circle, Svg, Polygon, Image as SvgImage} from 'react-native-svg';
+import LottieView from 'lottie-react-native'; // LottieView import
+import animationData from '../../images/home/click.json'; // JSON 파일 경로
 
 const {width} = Dimensions.get('screen');
 const width_ratio = Dimensions.get('screen').width / 390;
