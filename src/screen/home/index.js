@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -15,20 +15,20 @@ import Animated, {
   Easing,
   withSpring,
 } from 'react-native-reanimated';
+import {createStackNavigator} from '@react-navigation/stack';
 import theme from '../../theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Circle, Svg, Line} from 'react-native-svg';
+import {Circle, Svg, Polygon, Image as SvgImage} from 'react-native-svg';
 import LottieView from 'lottie-react-native'; // LottieView import
 import animationData from '../../images/home/click.json'; // JSON 파일 경로
-import { Circle, Svg, Polygon, Image as SvgImage } from 'react-native-svg';
 
-const { width } = Dimensions.get('screen');
+const {width} = Dimensions.get('screen');
 const width_ratio = Dimensions.get('screen').width / 390;
 const height_ratio = Dimensions.get('screen').height / 844;
 
 const AnimatedPolygon = Animated.createAnimatedComponent(Polygon);
 
-const HomeScreen = () => {
+const HomeScreen = ({setSelected}) => {
   const [userName, setUserName] = useState('');
   const [lastCheckupDate, setLastCheckupDate] = useState('');
   const [daysSinceLastCheckup, setDaysSinceLastCheckup] = useState(null);
@@ -40,6 +40,10 @@ const HomeScreen = () => {
   const [sodium, setSodium] = useState(0);
   const [potassium, setPotassium] = useState(0);
   const [phosphorus, setPhosphorus] = useState(0);
+
+  const handleTestNavigation = () => {
+    setSelected('KitResult');
+  };
 
   const targets = {
     carbs: 300,
@@ -56,7 +60,7 @@ const HomeScreen = () => {
     const stepTime = duration / (target / incrementStep);
 
     const interval = setInterval(() => {
-      setValue((prev) => {
+      setValue(prev => {
         if (prev >= target) {
           clearInterval(interval);
           return target;
@@ -67,7 +71,6 @@ const HomeScreen = () => {
   };
 
   useEffect(() => {
-    
     const fetchUserInfoAndLastCheckupDate = async () => {
       try {
         // Fetch and parse user info
@@ -103,7 +106,7 @@ const HomeScreen = () => {
             restDisplacementThreshold: 0.007,
             restSpeedThreshold: 0.01,
           });
-        }
+        },
       );
     };
 
@@ -117,7 +120,7 @@ const HomeScreen = () => {
     incrementValues(setPhosphorus, targets.phosphorus, baseDuration, 45);
   }, []);
 
-  const calculateDaysDifference = (dateString) => {
+  const calculateDaysDifference = dateString => {
     const checkupDate = new Date(dateString);
     const today = new Date();
     const differenceInTime = today - checkupDate;
@@ -160,18 +163,17 @@ const HomeScreen = () => {
             source={require('../../images/home/exclamation.png')}
             style={styles.infoIcon}
           />
-          <Text style={styles.infoTitle}>
-            아직 검사를 하지 않았어요
-          </Text>
+          <Text style={styles.infoTitle}>아직 검사를 하지 않았어요</Text>
         </View>
         {lastCheckupDate ? (
-          <Text style={styles.infoSubtitle}>
+          <Text style={styles.infoText}>
             마지막 검사가 {daysSinceLastCheckup}일 전이에요. 지금 검사하고
             꾸준히 콩팥 건강을 관리해 보세요.
           </Text>
         ) : (
-          <Text style={styles.infoSubtitle}>
-            빠르고 간편한 신장기능 진단키트로{"\n"}지금 검사하고 꾸준히 신장 건강을 관리해 보세요.
+          <Text style={styles.infoText}>
+            빠르고 간편한 신장기능 진단키트로{'\n'}지금 검사하고 꾸준히 신장
+            건강을 관리해 보세요.
           </Text>
         )}
         <View style={styles.buttonContainer}>
@@ -190,7 +192,9 @@ const HomeScreen = () => {
               style={styles.goIcon}
             />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.testButton}>
+          <TouchableOpacity
+            style={styles.testButton}
+            onPress={handleTestNavigation}>
             <Text style={styles.buttonText}>검사하러 가기</Text>
             <Image
               source={require('../../images/home/go.png')}
@@ -201,7 +205,11 @@ const HomeScreen = () => {
       </View>
 
       <View style={styles.dialBox}>
-        <Svg justifyContent="center" alignItems="center" width="300" height="180">
+        <Svg
+          justifyContent="center"
+          alignItems="center"
+          width="300"
+          height="180">
           <SvgImage
             href={require('../../images/home/state.png')}
             x="0"
@@ -210,12 +218,12 @@ const HomeScreen = () => {
             height="180"
           />
           <AnimatedPolygon
-            points="150,150 150,40 160,150"  // Initial dummy points
+            points="150,150 150,40 160,150" // Initial dummy points
             fill="#ACACAC"
             animatedProps={animatedProps}
           />
           <Circle cx="150" cy="150" r="7" fill="#ACACAC" />
-          <Circle cx="150" cy="150" r="3" fill="white" /> 
+          <Circle cx="150" cy="150" r="3" fill="white" />
         </Svg>
         <Text style={styles.dialText1}>
           {userName}님의 콩팥 건강은 ? 단계에요.
@@ -318,26 +326,16 @@ const styles = StyleSheet.create({
     ...theme.fonts.SemiBold,
     color: '#4D495A',
   },
-  infoSubtitle: {
+  infoText: {
     fontSize: 14 * width_ratio,
+    ...theme.fonts.Medium,
     color: '#666',
     marginBottom: 18 * height_ratio,
+    marginLeft: 6 * width_ratio,
   },
   buttonContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    marginRight: 8,
-    position: 'relative', // Lottie 애니메이션 위치를 조정하기 위해 position을 relative로 설정
-  },
-  lottieAnimation: {
-    width: 80, // 애니메이션 크기 조정
-    height: 80,
-    position: 'absolute', // Lottie 애니메이션을 버튼 내부에 배치
-    top: -10, // 애니메이션을 버튼 위로 올림
-    left: '100%',
-    transform: [{translateX: -40}], // 가운데 정렬을 위해 X축 위치 조정
     justifyContent: 'space-around',
   },
   testButton: {
@@ -345,7 +343,7 @@ const styles = StyleSheet.create({
     borderColor: '#7596FF',
     paddingVertical: 12 * height_ratio,
     paddingLeft: 22 * width_ratio,
-    paddingRight: 18 * width_ratio,
+    paddingRight: 20 * width_ratio,
     borderRadius: 30 * width_ratio,
     flexDirection: 'row',
     alignItems: 'center',
@@ -369,10 +367,10 @@ const styles = StyleSheet.create({
     paddingVertical: 38 * height_ratio,
     paddingHorizontal: 32 * width_ratio,
     shadowColor: '#BFBFBF',
-    shadowOffset: { width: 4 * width_ratio, height: 6 * height_ratio },  // Similar to 4px 6px in CSS
-    shadowOpacity: 0.05,  // Corresponds to the rgba(0, 0, 0, 0.05)
-    shadowRadius: 40 * width_ratio,  // Similar to the blur effect in the shadow
-    elevation: 60,  // Low elevation for Android, as the shadow is subtle
+    // shadowOffset: { width: 4 * width_ratio, height: 6 * height_ratio },  // Similar to 4px 6px in CSS
+    // shadowOpacity: 0.05,  // Corresponds to the rgba(0, 0, 0, 0.05)
+    // shadowRadius: 40 * width_ratio,  // Similar to the blur effect in the shadow
+    elevation: 60, // Low elevation for Android, as the shadow is subtle
     zIndex: 0, // Ensures it is above other components
   },
   dialImage: {
@@ -380,15 +378,6 @@ const styles = StyleSheet.create({
     height: (width * 3) / 4 / 2,
     resizeMode: 'contain',
     alignSelf: 'center',
-  },
-  needleImage: {
-    position: 'absolute',
-    width: 10,
-    height: (width * 3) / 8,
-    resizeMode: 'contain',
-    bottom: '50%',
-    left: '50%',
-    transform: [{translateX: -5}, {translateY: 0}],
   },
   dialText1: {
     fontSize: 14 * width_ratio,
@@ -447,7 +436,7 @@ const styles = StyleSheet.create({
     // shadowOffset: { width: 100 * width_ratio, height: 100 * height_ratio },  // Similar to 4px 6px in CSS
     // shadowOpacity: 0.05,  // only for iOS
     // shadowRadius: 40 * width_ratio,  // Similar to the blur effect in the shadow
-    elevation: 10,  // for Android
+    elevation: 10, // for Android
   },
   nutritionLabel: {
     fontSize: 14 * width_ratio,

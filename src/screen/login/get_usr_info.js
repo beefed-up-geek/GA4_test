@@ -1,8 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { Dimensions, View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, Platform, KeyboardAvoidingView } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {
+  Dimensions,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  Alert,
+  Platform,
+  KeyboardAvoidingView,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {useNavigation} from '@react-navigation/native';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import theme from '../../theme';
 
 const width_ratio = Dimensions.get('screen').width / 390;
@@ -102,7 +113,9 @@ const Get_User_Info = () => {
       errorMessage += '생년월일 형식이 잘못되었습니다.\n';
     } else {
       if (year < currentYear - 150 || year > currentYear) {
-        errorMessage += `생년월일의 연도는 ${currentYear - 150}년에서 ${currentYear}년 사이여야 합니다.\n`;
+        errorMessage += `생년월일의 연도는 ${
+          currentYear - 150
+        }년에서 ${currentYear}년 사이여야 합니다.\n`;
       }
       if (month < 1 || month > 12) {
         errorMessage += '생년월일의 월은 01에서 12 사이여야 합니다.\n';
@@ -117,18 +130,18 @@ const Get_User_Info = () => {
       return;
     }
 
-    const userInfo = { name, nickname, birthdate, height, weight, gender };
+    const userInfo = {name, nickname, birthdate, height, weight, gender};
     try {
       await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
-      console.log("<<< Get_User_Info화면 사용자 정보 저장됨 >>>");
+      console.log('<<< Get_User_Info화면 사용자 정보 저장됨 >>>');
       console.log(await AsyncStorage.getItem('userInfo'));
-      navigation.navigate('GetKidneyInfo');  // Navigate to GetKidneyInfo screen
+      navigation.navigate('GetKidneyInfo'); // Navigate to GetKidneyInfo screen
     } catch (error) {
       Alert.alert('사용자 정보 저장 실패');
     }
   };
 
-  const handleHeightChange = (value) => {
+  const handleHeightChange = value => {
     const numValue = parseInt(value.replace(/[^0-9]/g, ''), 10);
     if (!isNaN(numValue)) {
       setHeight(numValue > 250 ? '250' : numValue.toString());
@@ -137,7 +150,7 @@ const Get_User_Info = () => {
     }
   };
 
-  const handleWeightChange = (value) => {
+  const handleWeightChange = value => {
     const regex = /^[0-9]{1,3}(\.[0-9]?)?$/;
     if (regex.test(value) || value === '') {
       const numValue = parseFloat(value);
@@ -149,7 +162,7 @@ const Get_User_Info = () => {
     }
   };
 
-  const handleBirthdateChange = (value) => {
+  const handleBirthdateChange = value => {
     const cleaned = value.replace(/[^0-9]/g, '');
     let formatted = cleaned;
     if (cleaned.length > 4) {
@@ -161,7 +174,7 @@ const Get_User_Info = () => {
     setBirthdate(formatted);
   };
 
-  const handleNameChange = (text) => {
+  const handleNameChange = text => {
     if (text.length > 6) {
       setNameError('6자리 이내로 입력하세요');
       setName(text.slice(0, 6)); // 6자까지만 입력
@@ -171,7 +184,7 @@ const Get_User_Info = () => {
     }
   };
 
-  const handleNicknameChange = (text) => {
+  const handleNicknameChange = text => {
     if (text.length > 6) {
       setNicknameError('6자리 이내로 입력하세요');
       setNickname(text.slice(0, 6)); // 6자까지만 입력
@@ -182,29 +195,42 @@ const Get_User_Info = () => {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <KeyboardAwareScrollView
         contentContainerStyle={styles.scrollContainer}
         enableOnAndroid={true}
         extraScrollHeight={20 * height_ratio}
-        scrollEnabled={true}
-      >
+        scrollEnabled={true}>
         <View style={styles.innerContainer}>
-          <Text style={styles.title}>더 정확한 건강 관리를 위해 {"\n"}기본 정보를 알려주세요</Text>
+          <Text style={styles.title}>
+            더 정확한 건강 관리를 위해 {'\n'}기본 정보를 알려주세요
+          </Text>
 
           <View style={styles.genderWrapper}>
             <Text style={styles.label}>성별</Text>
             <View style={styles.genderContainer}>
-              <TouchableOpacity onPress={() => setGender('female')} style={styles.genderButton}>
+              <TouchableOpacity
+                onPress={() => setGender('female')}
+                style={styles.genderButton}>
                 <Image
                   source={require('../../images/login/female.png')}
-                  style={[styles.genderImageFemale, gender === 'male' && styles.desaturated]}
+                  style={[
+                    styles.genderImageFemale,
+                    gender === 'male' && styles.desaturated,
+                  ]}
                 />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => setGender('male')} style={styles.genderButton}>
+              <TouchableOpacity
+                onPress={() => setGender('male')}
+                style={styles.genderButton}>
                 <Image
                   source={require('../../images/login/male.png')}
-                  style={[styles.genderImageMale, gender === 'female' && styles.desaturated]}
+                  style={[
+                    styles.genderImageMale,
+                    gender === 'female' && styles.desaturated,
+                  ]}
                 />
               </TouchableOpacity>
             </View>
@@ -220,11 +246,13 @@ const Get_User_Info = () => {
                 placeholderTextColor="#828287"
                 value={name}
                 onChangeText={setName}
-                textAlign={name ? "left" : nameTextAlign} // Placeholder centered, text left
+                textAlign={name ? 'left' : nameTextAlign} // Placeholder centered, text left
                 onFocus={() => setNameTextAlign('left')}
                 onBlur={() => !name && setNameTextAlign('center')}
               />
-              {nameError ? <Text style={styles.errorText}>{nameError}</Text> : null}
+              {nameError ? (
+                <Text style={styles.errorText}>{nameError}</Text>
+              ) : null}
             </View>
             <View style={styles.inputGroup}>
               <Text style={styles.label}>닉네임</Text>
@@ -235,11 +263,13 @@ const Get_User_Info = () => {
                 placeholderTextColor="#828287"
                 value={nickname}
                 onChangeText={setNickname}
-                textAlign={nickname ? "left" : nicknameTextAlign} // Placeholder centered, text left
+                textAlign={nickname ? 'left' : nicknameTextAlign} // Placeholder centered, text left
                 onFocus={() => setNicknameTextAlign('left')}
                 onBlur={() => !nickname && setNicknameTextAlign('center')}
               />
-              {nicknameError ? <Text style={styles.errorText}>{nicknameError}</Text> : null}
+              {nicknameError ? (
+                <Text style={styles.errorText}>{nicknameError}</Text>
+              ) : null}
             </View>
           </View>
 
@@ -254,7 +284,7 @@ const Get_User_Info = () => {
               onChangeText={handleBirthdateChange}
               keyboardType="numeric"
               maxLength={10}
-              textAlign={birthdate ? "left" : birthdateTextAlign} // Placeholder centered, text left
+              textAlign={birthdate ? 'left' : birthdateTextAlign} // Placeholder centered, text left
               onFocus={() => setBirthdateTextAlign('left')}
               onBlur={() => !birthdate && setBirthdateTextAlign('center')}
             />
@@ -273,7 +303,7 @@ const Get_User_Info = () => {
                   onChangeText={handleHeightChange}
                   keyboardType="numeric"
                   maxLength={3}
-                  textAlign={height ? "left" : heightTextAlign} // Placeholder centered, text left
+                  textAlign={height ? 'left' : heightTextAlign} // Placeholder centered, text left
                   onFocus={() => setHeightTextAlign('left')}
                   onBlur={() => !height && setHeightTextAlign('center')}
                 />
@@ -292,7 +322,7 @@ const Get_User_Info = () => {
                   onChangeText={handleWeightChange}
                   keyboardType="numeric"
                   maxLength={5}
-                  textAlign={weight ? "left" : weightTextAlign} // Placeholder centered, text left
+                  textAlign={weight ? 'left' : weightTextAlign} // Placeholder centered, text left
                   onFocus={() => setWeightTextAlign('left')}
                   onBlur={() => !weight && setWeightTextAlign('center')}
                 />
@@ -305,10 +335,28 @@ const Get_User_Info = () => {
 
       <View style={styles.fixedButtonContainer}>
         <TouchableOpacity
-          onPress={isFormValid ? handleSave : () => Alert.alert('입력 오류', '모든 필드를 형식에 맞게 입력해주세요.')}
-          style={[styles.button, isFormValid ? styles.buttonEnabled : styles.buttonDisabled]}
-        >
-          <Text style={[styles.buttonText, isFormValid ? styles.buttonTextEnabled : styles.buttonTextDisabled]}>다음</Text>
+          onPress={
+            isFormValid
+              ? handleSave
+              : () =>
+                  Alert.alert(
+                    '입력 오류',
+                    '모든 필드를 형식에 맞게 입력해주세요.',
+                  )
+          }
+          style={[
+            styles.button,
+            isFormValid ? styles.buttonEnabled : styles.buttonDisabled,
+          ]}>
+          <Text
+            style={[
+              styles.buttonText,
+              isFormValid
+                ? styles.buttonTextEnabled
+                : styles.buttonTextDisabled,
+            ]}>
+            다음
+          </Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -327,9 +375,13 @@ const styles = StyleSheet.create({
   innerContainer: {
     paddingTop: 80 * height_ratio,
     paddingHorizontal: 24 * width_ratio,
+    paddingTop: 80 * height_ratio,
+    paddingHorizontal: 24 * width_ratio,
     alignItems: 'center',
   },
   title: {
+    marginLeft: 4 * width_ratio,
+    fontSize: 20 * width_ratio,
     marginLeft: 4 * width_ratio,
     fontSize: 20 * width_ratio,
     ...theme.fonts.Bold,
@@ -344,25 +396,36 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F1F1',
     borderRadius: 13 * width_ratio,
     paddingRight: 24 * width_ratio,
+    borderRadius: 13 * width_ratio,
+    paddingRight: 24 * width_ratio,
   },
   inputGroup: {
     flex: 1,
+    marginHorizontal: 8 * width_ratio,
+    marginBottom: 24 * height_ratio,
     marginHorizontal: 8 * width_ratio,
     marginBottom: 24 * height_ratio,
   },
   inputGroupFullWidth: {
     width: '100%',
     marginBottom: 24 * height_ratio,
+    marginBottom: 24 * height_ratio,
   },
   label: {
     fontSize: 16 * width_ratio,
+    fontSize: 16 * width_ratio,
     ...theme.fonts.Regular,
+    marginBottom: 12 * height_ratio,
     marginBottom: 12 * height_ratio,
     color: 'black',
   },
   input: {
     borderWidth: 0,
     borderColor: '#ccc',
+    borderRadius: 13 * width_ratio,
+    paddingVertical: 17 * height_ratio,
+    paddingHorizontal: 24 * width_ratio,
+    fontSize: 16 * width_ratio,
     borderRadius: 13 * width_ratio,
     paddingVertical: 17 * height_ratio,
     paddingHorizontal: 24 * width_ratio,
@@ -379,6 +442,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginHorizontal: -8 * width_ratio,
+    marginHorizontal: -8 * width_ratio,
   },
   fixedButtonContainer: {
     position: 'absolute',
@@ -392,6 +456,8 @@ const styles = StyleSheet.create({
   button: {
     paddingVertical: 17 * height_ratio,
     borderRadius: 24 * width_ratio,
+    paddingVertical: 17 * height_ratio,
+    borderRadius: 24 * width_ratio,
     alignItems: 'center',
     width: '66.67%',
   },
@@ -402,6 +468,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#CCCCCC',
   },
   buttonText: {
+    fontSize: 16 * width_ratio,
     fontSize: 16 * width_ratio,
     ...theme.fonts.Bold,
   },
@@ -414,6 +481,7 @@ const styles = StyleSheet.create({
   genderWrapper: {
     width: '100%',
     marginBottom: 24 * height_ratio,
+    marginBottom: 24 * height_ratio,
   },
   genderContainer: {
     flexDirection: 'row',
@@ -422,14 +490,22 @@ const styles = StyleSheet.create({
   genderButton: {
     alignItems: 'center',
     padding: 10 * width_ratio,
+    padding: 10 * width_ratio,
   },
   genderImageFemale: {
+    marginLeft: 26 * width_ratio,
+    width: 109 * width_ratio,
+    height: 117.63 * height_ratio,
     marginLeft: 26 * width_ratio,
     width: 109 * width_ratio,
     height: 117.63 * height_ratio,
     resizeMode: 'contain',
   },
   genderImageMale: {
+    marginTop: 17 * height_ratio,
+    marginRight: 28 * width_ratio,
+    width: 102 * width_ratio,
+    height: 101 * height_ratio,
     marginTop: 17 * height_ratio,
     marginRight: 28 * width_ratio,
     width: 102 * width_ratio,
@@ -445,6 +521,5 @@ const styles = StyleSheet.create({
     marginTop: 4 * height_ratio,
   },
 });
-
 
 export default Get_User_Info;
