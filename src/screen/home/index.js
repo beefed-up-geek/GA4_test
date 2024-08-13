@@ -1,3 +1,4 @@
+// /src/screen/home/index.js
 import React, {useEffect, useState} from 'react';
 import {
   View,
@@ -7,6 +8,7 @@ import {
   Dimensions,
   Image,
   ScrollView,
+  Linking, 
 } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -120,6 +122,10 @@ const HomeScreen = ({setSelected}) => {
     incrementValues(setPhosphorus, targets.phosphorus, baseDuration, 45);
   }, []);
 
+  const handleKitPurchase = () => {
+    Linking.openURL('https://smartstore.naver.com/cym702');
+  };
+
   const calculateDaysDifference = dateString => {
     const checkupDate = new Date(dateString);
     const today = new Date();
@@ -185,7 +191,7 @@ const HomeScreen = ({setSelected}) => {
               style={styles.lottieAnimation} // 스타일 수정
             />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.testButton}>
+          <TouchableOpacity style={styles.testButton} onPress={handleKitPurchase}>
             <Text style={styles.buttonText}>키트 구매하기</Text>
             <Image
               source={require('../../images/home/go.png')}
