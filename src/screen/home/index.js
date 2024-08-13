@@ -175,6 +175,14 @@ const HomeScreen = ({setSelected}) => {
           </Text>
         )}
         <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.kitButton}>
+            <LottieView
+              source={animationData}
+              autoPlay
+              loop
+              style={styles.lottieAnimation} // 스타일 수정
+            />
+          </TouchableOpacity>
           <TouchableOpacity style={styles.testButton}>
             <Text style={styles.buttonText}>키트 구매하기</Text>
             <Image
