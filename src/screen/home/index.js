@@ -17,7 +17,6 @@ import Animated, {
 } from 'react-native-reanimated';
 import theme from '../../theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Circle, Svg, Line} from 'react-native-svg';
 import LottieView from 'lottie-react-native'; // LottieView import
 import animationData from '../../images/home/click.json'; // JSON 파일 경로
 import { Circle, Svg, Polygon, Image as SvgImage } from 'react-native-svg';
@@ -165,12 +164,12 @@ const HomeScreen = () => {
           </Text>
         </View>
         {lastCheckupDate ? (
-          <Text style={styles.infoSubtitle}>
+          <Text style={styles.infoText}>
             마지막 검사가 {daysSinceLastCheckup}일 전이에요. 지금 검사하고
             꾸준히 콩팥 건강을 관리해 보세요.
           </Text>
         ) : (
-          <Text style={styles.infoSubtitle}>
+          <Text style={styles.infoText}>
             빠르고 간편한 신장기능 진단키트로{"\n"}지금 검사하고 꾸준히 신장 건강을 관리해 보세요.
           </Text>
         )}
@@ -318,18 +317,17 @@ const styles = StyleSheet.create({
     ...theme.fonts.SemiBold,
     color: '#4D495A',
   },
-  infoSubtitle: {
+  infoText: {
     fontSize: 14 * width_ratio,
+    ...theme.fonts.Medium,
     color: '#666',
     marginBottom: 18 * height_ratio,
+    marginLeft: 6 * width_ratio,
   },
   buttonContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    marginRight: 8,
-    position: 'relative', // Lottie 애니메이션 위치를 조정하기 위해 position을 relative로 설정
+    justifyContent: 'space-between',
   },
   lottieAnimation: {
     width: 80, // 애니메이션 크기 조정
@@ -345,7 +343,7 @@ const styles = StyleSheet.create({
     borderColor: '#7596FF',
     paddingVertical: 12 * height_ratio,
     paddingLeft: 22 * width_ratio,
-    paddingRight: 18 * width_ratio,
+    paddingRight: 20 * width_ratio,
     borderRadius: 30 * width_ratio,
     flexDirection: 'row',
     alignItems: 'center',
@@ -369,9 +367,9 @@ const styles = StyleSheet.create({
     paddingVertical: 38 * height_ratio,
     paddingHorizontal: 32 * width_ratio,
     shadowColor: '#BFBFBF',
-    shadowOffset: { width: 4 * width_ratio, height: 6 * height_ratio },  // Similar to 4px 6px in CSS
-    shadowOpacity: 0.05,  // Corresponds to the rgba(0, 0, 0, 0.05)
-    shadowRadius: 40 * width_ratio,  // Similar to the blur effect in the shadow
+    // shadowOffset: { width: 4 * width_ratio, height: 6 * height_ratio },  // Similar to 4px 6px in CSS
+    // shadowOpacity: 0.05,  // Corresponds to the rgba(0, 0, 0, 0.05)
+    // shadowRadius: 40 * width_ratio,  // Similar to the blur effect in the shadow
     elevation: 60,  // Low elevation for Android, as the shadow is subtle
     zIndex: 0, // Ensures it is above other components
   },
