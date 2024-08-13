@@ -5,7 +5,7 @@
  *
  * @format
  */
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   View,
   Text,
@@ -14,16 +14,40 @@ import {
   ScrollView,
   StyleSheet,
   Dimensions,
-  Button,
   TouchableOpacity,
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withRepeat,
+  Easing,
+} from 'react-native-reanimated';
 const {width, height} = Dimensions.get('window');
 const scaleWidth = width / 390;
 const scaleHeight = height / 844;
 
 const Kit_checkupScreen1 = ({navigation, onPress}) => {
+  const opacity = useSharedValue(1);
+
+  useEffect(() => {
+    // 페이드인 페이드아웃 애니메이션 설정
+    opacity.value = withRepeat(
+      withTiming(0, {
+        duration: 1000,
+        easing: Easing.ease,
+      }),
+      -1, // 무한 반복
+      true, // 요요 효과 (반대로 애니메이션 반복)
+    );
+  }, [opacity]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+    };
+  });
+
   return (
     <SafeAreaView>
       <ScrollView
@@ -137,11 +161,12 @@ const Kit_checkupScreen1 = ({navigation, onPress}) => {
             <TouchableOpacity
               style={styles.confirmButton}
               onPress={() => navigation.navigate('Kit_checkup2')}>
-              <View style={styles.confirmButtonTextWrapper}>
+              <Animated.View
+                style={[styles.confirmButtonTextWrapper, animatedStyle]}>
                 <Text style={styles.confirmButtonText} numberOfLines={1}>
                   확인했어요
                 </Text>
-              </View>
+              </Animated.View>
             </TouchableOpacity>
           </View>
           <View style={styles.footerSpacer} />
@@ -299,13 +324,13 @@ const styles = StyleSheet.create({
     zIndex: 8,
   },
   headerTitle: {
-    height: 16 * scaleHeight,
+    height: 20 * scaleHeight,
     flexShrink: 0,
     flexBasis: 'auto',
     fontFamily: 'Pretendard Variable',
     fontSize: 16 * scaleWidth,
     fontWeight: '600',
-    lineHeight: 16 * scaleHeight,
+    lineHeight: 20 * scaleHeight,
     color: '#000000',
     position: 'relative',
     textAlign: 'left',
@@ -422,8 +447,8 @@ const styles = StyleSheet.create({
   },
   tipText: {
     display: 'flex',
-    width: 185 * scaleWidth,
-    height: 14 * scaleHeight,
+    width: 270 * scaleWidth,
+    height: 18 * scaleHeight,
     justifyContent: 'center',
     alignItems: 'flex-start',
     flexShrink: 0,
@@ -431,7 +456,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Pretendard Variable',
     fontSize: 12 * scaleWidth,
     fontWeight: '400',
-    lineHeight: 14 * scaleHeight,
+    lineHeight: 18 * scaleHeight,
     color: '#49494f',
     position: 'relative',
     textAlign: 'center',
@@ -461,29 +486,24 @@ const styles = StyleSheet.create({
   confirmButtonTextWrapper: {
     width: 86 * scaleWidth,
     height: 18 * scaleHeight,
+    justifyContent: 'center', // 중앙 정렬 추가
+    alignItems: 'center', // 중앙 정렬 추가
     flexShrink: 0,
     position: 'relative',
     zIndex: 56,
   },
   confirmButtonText: {
-    display: 'flex',
-    width: 67 * scaleWidth,
-    height: 12 * scaleHeight,
-    justifyContent: 'center',
-    alignItems: 'center',
     fontFamily: 'DM Sans',
     fontSize: 14 * scaleWidth,
     fontWeight: '700',
-    lineHeight: 12 * scaleHeight,
+    lineHeight: 18 * scaleHeight,
     color: '#7595ff',
     letterSpacing: 0.56 * scaleWidth,
-    position: 'absolute',
-    top: 3 * scaleHeight,
-    left: 9 * scaleWidth,
     textAlign: 'center',
     textTransform: 'uppercase',
     zIndex: 57,
   },
+
   footerSpacer: {
     height: 110 * scaleHeight,
     alignSelf: 'stretch',

@@ -18,8 +18,11 @@ import {
 } from 'react-native';
 import {BlurView} from '@react-native-community/blur';
 import LinearGradient from 'react-native-linear-gradient';
+import {Dimensions} from 'react-native';
 
-const HomeScreen = ({onPress, navigation}) => {
+const {width, height} = Dimensions.get('window');
+
+const KitScreen = ({onPress, navigation}) => {
   const openLink = async () => {
     const url =
       'https://smartstore.naver.com/cym702/products/9217837478?nl-au=73c2ac322de14178b4db815f1b00dbc4&NaPm=ct%3Dlzkvph4w%7Cci%3Da28ea338064677d9373a161b9f50241a7019560c%7Ctr%3Dslsl%7Csn%3D3885899%7Chk%3Dbddd970f228d1383600f842947968760acf39ee6';
@@ -102,7 +105,9 @@ const HomeScreen = ({onPress, navigation}) => {
                   <View style={styles.analysisCardContent}>
                     <View style={styles.analysisCardRow}>
                       <View style={styles.analysisCardRowInner}>
-                        <Text style={styles.analysisCardRowText}>키트 검사 분석이 제공되는 곳입니다. </Text>
+                        <Text style={styles.analysisCardRowText}>
+                          키트 검사 분석이 제공되는 곳입니다.{' '}
+                        </Text>
                       </View>
                     </View>
                   </View>
@@ -273,7 +278,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexWrap: 'nowrap',
     position: 'relative',
-    marginTop: 96,
+    marginTop: -20, // 기존 96에서 80으로 수정
     marginRight: 0,
     marginBottom: 0,
     marginLeft: 29,
@@ -379,7 +384,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Pretendard Variable',
     fontSize: 18,
     fontWeight: '700',
-    lineHeight: 24,
+    lineHeight: 27,
     color: '#353535',
     position: 'relative',
     textAlign: 'left',
@@ -393,11 +398,11 @@ const styles = StyleSheet.create({
     zIndex: 8,
   },
   cardDateText: {
-    height: 12,
+    height: 18,
     fontFamily: 'Pretendard Variable',
     fontSize: 12,
     fontWeight: '500',
-    lineHeight: 12,
+    lineHeight: 18,
     color: '#545359',
     position: 'relative',
     textAlign: 'left',
@@ -580,13 +585,14 @@ const styles = StyleSheet.create({
     zIndex: 25,
   },
   analysisCardHeaderText: {
-    height: 24,
+    height: 28,
+    width: width * 0.7,
     flexShrink: 0,
     flexBasis: 'auto',
     fontFamily: 'Pretendard Variable',
     fontSize: 16,
     fontWeight: '700',
-    lineHeight: 24,
+    lineHeight: 20,
     color: '#5d5d62',
     position: 'relative',
     textAlign: 'left',
@@ -630,13 +636,14 @@ const styles = StyleSheet.create({
     zIndex: 29,
   },
   analysisCardRowText: {
-    height: 16,
+    height: 18,
+    width: width * 0.7,
     flexShrink: 0,
     flexBasis: 'auto',
     fontFamily: 'Pretendard Variable',
     fontSize: 12,
     fontWeight: '500',
-    lineHeight: 16,
+    lineHeight: 14,
     color: '#72777a',
     position: 'relative',
     textAlign: 'left',
@@ -645,7 +652,7 @@ const styles = StyleSheet.create({
   resultsContainer: {
     display: 'flex',
     width: 326,
-    paddingTop: 66,
+    paddingTop: 30, // 기존 66에서 50으로 수정
     paddingRight: 0,
     paddingBottom: 60,
     paddingLeft: 0,
@@ -1008,4 +1015,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default KitScreen;

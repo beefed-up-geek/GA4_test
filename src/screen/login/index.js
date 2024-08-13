@@ -1,25 +1,40 @@
-// /src/screen/login/index.js
-import React, { useEffect } from 'react';
-import { View, Text, Image, StyleSheet, ActivityIndicator } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, {useEffect} from 'react';
+import {View, Text, StyleSheet, ActivityIndicator} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withRepeat,
+  withDelay,
+} from 'react-native-reanimated';
 import splashImage from '../../images/login/splash1.png';
 
 const Login1 = () => {
   const navigation = useNavigation();
+  const rotationY = useSharedValue(0);
 
   useEffect(() => {
+    // 이미지 회전 애니메이션
+    rotationY.value = withRepeat(
+      withTiming(360, {duration: 1000}), // 1초 동안 360도 회전
+      -1, // 무한 반복
+      true, // 역방향 반복
+    );
+
     const checkLoginMethod = async () => {
       const loginMethod = await AsyncStorage.getItem('loginMethod');
       const userInfo = await AsyncStorage.getItem('userInfo');
-      console.log("<<< loginMethod >>>");
+      console.log('<<< loginMethod >>>');
       console.log(loginMethod);
-      console.log("<<< userId >>>");
+      console.log('<<< userId >>>');
       console.log(await AsyncStorage.getItem('userId'));
-      console.log("<<< username >>>");
-      console.log(await AsyncStorage.getItem('username')); 
-      console.log("<<< userInfo >>>");
+      console.log('<<< username >>>');
+      console.log(await AsyncStorage.getItem('username'));
+      console.log('<<< userInfo >>>');
       console.log(userInfo);
+
       if (loginMethod) {
         const timer = setTimeout(() => {
           if (userInfo) {
@@ -38,14 +53,34 @@ const Login1 = () => {
     };
 
     checkLoginMethod();
-  }, [navigation]);
+
+    setTimeout(() => {
+      rotationY.value = withTiming(0, {duration: 500}); // 애니메이션 종료 후 회전 멈춤
+    }, 2000); // 2.5초 후에 회전을 멈추도록 설정
+  }, [navigation, rotationY]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {perspective: 1000}, // 입체감을 위한 perspective 설정
+        {rotateY: `${rotationY.value}deg`}, // Y축 기준 3D 회전
+      ],
+    };
+  });
 
   return (
     <View style={styles.container}>
-      <Image source={splashImage} style={styles.image} />
+      <Animated.Image
+        source={splashImage}
+        style={[styles.image, animatedStyle]}
+      />
       <Text style={styles.descriptionText}>빠르고 간편한</Text>
       <Text style={styles.descriptionText}>신장기능 조기 진단 검사지</Text>
-      <ActivityIndicator size="large" color="#1677FF" style={styles.loadingIndicator} />
+      <ActivityIndicator
+        size="large"
+        color="#1677FF"
+        style={styles.loadingIndicator}
+      />
       <Text style={styles.footerText}>HNSBio.lab</Text>
     </View>
   );

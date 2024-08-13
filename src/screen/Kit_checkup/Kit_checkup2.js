@@ -16,6 +16,14 @@ import {
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withRepeat,
+  Easing,
+} from 'react-native-reanimated';
+import {useEffect} from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 
 const {width, height} = Dimensions.get('window');
@@ -23,6 +31,26 @@ const scaleWidth = width / 390;
 const scaleHeight = height / 844;
 
 const Kit_checkupScreen2 = ({onPress, navigation}) => {
+  const opacity = useSharedValue(1);
+
+  useEffect(() => {
+    // 페이드인 페이드아웃 애니메이션 설정
+    opacity.value = withRepeat(
+      withTiming(0, {
+        duration: 1000,
+        easing: Easing.ease,
+      }),
+      -1, // 무한 반복
+      true, // 요요 효과 (반대로 애니메이션 반복)
+    );
+  }, [opacity]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+    };
+  });
+
   return (
     <SafeAreaView>
       <ScrollView
@@ -101,14 +129,16 @@ const Kit_checkupScreen2 = ({onPress, navigation}) => {
           <TouchableOpacity onPress={() => navigation.navigate('Camera')}>
             <View style={styles.captureButton}>
               <View style={styles.captureButtonTextContainer}>
-                <ImageBackground
-                  style={styles.captureButtonIcon}
-                  source={require('./assets/images/f8bca994-9ff5-46f4-96b3-d7420314c9b5.png')}
-                  resizeMode="cover"
-                />
-                <Text style={styles.captureButtonText} numberOfLines={1}>
-                  촬영하러 가기
-                </Text>
+                <Animated.View style={animatedStyle}>
+                  <ImageBackground
+                    style={styles.captureButtonIcon}
+                    source={require('./assets/images/f8bca994-9ff5-46f4-96b3-d7420314c9b5.png')}
+                    resizeMode="cover"
+                  />
+                  <Text style={styles.captureButtonText} numberOfLines={1}>
+                    촬영하러 가기
+                  </Text>
+                </Animated.View>
               </View>
             </View>
           </TouchableOpacity>
@@ -175,13 +205,13 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   headerTitle: {
-    height: 16 * scaleHeight,
+    height: 20 * scaleHeight,
     flexShrink: 0,
     flexBasis: 'auto',
     fontFamily: 'Pretendard Variable',
     fontSize: 16 * scaleWidth,
     fontWeight: '600',
-    lineHeight: 16 * scaleHeight,
+    lineHeight: 20 * scaleHeight,
     color: '#000000',
     position: 'relative',
     textAlign: 'left',
@@ -462,18 +492,18 @@ const styles = StyleSheet.create({
   },
   captureButtonText: {
     display: 'flex',
-    width: 84 * scaleWidth,
-    height: 12 * scaleHeight,
+    width: 112 * scaleWidth,
+    height: 18 * scaleHeight,
     justifyContent: 'center',
     alignItems: 'center',
     fontFamily: 'DM Sans',
     fontSize: 14 * scaleWidth,
     fontWeight: '700',
-    lineHeight: 15 * scaleHeight,
+    lineHeight: 18 * scaleHeight,
     color: '#ffffff',
     letterSpacing: 0.56 * scaleWidth,
     position: 'absolute',
-    top: 3 * scaleHeight,
+    top: 2 * scaleHeight,
     left: 0,
     textAlign: 'center',
     textTransform: 'uppercase',
