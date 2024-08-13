@@ -17,8 +17,6 @@ import Animated, {
 } from 'react-native-reanimated';
 import theme from '../../theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import LottieView from 'lottie-react-native'; // LottieView import
-import animationData from '../../images/home/click.json'; // JSON 파일 경로
 import { Circle, Svg, Polygon, Image as SvgImage } from 'react-native-svg';
 
 const { width } = Dimensions.get('screen');
@@ -174,14 +172,6 @@ const HomeScreen = () => {
           </Text>
         )}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.kitButton}>
-            <LottieView
-              source={animationData}
-              autoPlay
-              loop
-              style={styles.lottieAnimation} // 스타일 수정
-            />
-          </TouchableOpacity>
           <TouchableOpacity style={styles.testButton}>
             <Text style={styles.buttonText}>키트 구매하기</Text>
             <Image
@@ -325,18 +315,6 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    marginRight: 8,
-    position: 'relative', // Lottie 애니메이션 위치를 조정하기 위해 position을 relative로 설정
-  },
-  lottieAnimation: {
-    width: 80, // 애니메이션 크기 조정
-    height: 80,
-    position: 'absolute', // Lottie 애니메이션을 버튼 내부에 배치
-    top: -10, // 애니메이션을 버튼 위로 올림
-    left: '100%',
-    transform: [{translateX: -40}], // 가운데 정렬을 위해 X축 위치 조정
     justifyContent: 'space-around',
   },
   testButton: {
@@ -379,15 +357,6 @@ const styles = StyleSheet.create({
     height: (width * 3) / 4 / 2,
     resizeMode: 'contain',
     alignSelf: 'center',
-  },
-  needleImage: {
-    position: 'absolute',
-    width: 10,
-    height: (width * 3) / 8,
-    resizeMode: 'contain',
-    bottom: '50%',
-    left: '50%',
-    transform: [{translateX: -5}, {translateY: 0}],
   },
   dialText1: {
     fontSize: 14 * width_ratio,
