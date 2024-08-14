@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -12,13 +12,13 @@ import {
 } from 'react-native';
 import theme from '../../theme';
 import LinearGradient from 'react-native-linear-gradient';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import splashImage from '../../images/login/splash2.png';
 import naverIcon from '../../images/login/naver.png';
 import kakaoIcon from '../../images/login/kakao.png';
 import googleIcon from '../../images/login/google.png';
-import { login as kakaoLogin, me } from '@react-native-kakao/user';
+import {login as kakaoLogin, me} from '@react-native-kakao/user';
 import {
   GoogleSignin,
   statusCodes,
@@ -34,14 +34,17 @@ const appName = 'HS바이오랩';
 const serviceUrlScheme = 'com.apple';
 
 GoogleSignin.configure({
-  webClientId: '553674684367-g30th1q22jbqjs30jgad63i95vdntcmu.apps.googleusercontent.com',
-  androidClientId: '553674684367-emj97ff7kjitq1qbn03ok9hebps9ijsg.apps.googleusercontent.com',
-  iosClientId: '553674684367-sr2m1jems5sai07qgq710dvhdoqm6npv.apps.googleusercontent.com',
+  webClientId:
+    '553674684367-g30th1q22jbqjs30jgad63i95vdntcmu.apps.googleusercontent.com',
+  androidClientId:
+    '553674684367-emj97ff7kjitq1qbn03ok9hebps9ijsg.apps.googleusercontent.com',
+  iosClientId:
+    '553674684367-sr2m1jems5sai07qgq710dvhdoqm6npv.apps.googleusercontent.com',
   scopes: ['profile', 'email'],
 });
 
-const Gap = () => <View style={{ marginTop: 24 * height_ratio }} />;
-const ResponseJsonText = ({ json = {}, name }) => (
+const Gap = () => <View style={{marginTop: 24 * height_ratio}} />;
+const ResponseJsonText = ({json = {}, name}) => (
   <View style={styles.responseContainer}>
     <Text style={styles.responseTitle}>{name}</Text>
     <Text style={styles.responseText}>{JSON.stringify(json, null, 4)}</Text>
@@ -80,18 +83,20 @@ const Login2 = () => {
     setLoading(true);
     try {
       const response = await GoogleSignin.signIn();
-      const { user } = response;
+      const {user} = response;
       if (user) {
-        const { id, name } = user; // 구글 사용자 정보 추출
+        const {id, name} = user; // 구글 사용자 정보 추출
         await AsyncStorage.setItem('loginMethod', 'google');
         await AsyncStorage.setItem('userId', id.toString());
         await AsyncStorage.setItem('c', name);
-        
+
         handlePostLoginNavigation(); // 로그인 후 화면 전환
       }
       setUser(user);
     } catch (apiError) {
-      setError(apiError?.response?.data?.error?.message || 'Something went wrong');
+      setError(
+        apiError?.response?.data?.error?.message || 'Something went wrong',
+      );
     } finally {
       setLoading(false);
     }
@@ -99,7 +104,7 @@ const Login2 = () => {
 
   const handleNaverLogin = async () => {
     try {
-      const { failureResponse, successResponse } = await NaverLogin.login();
+      const {failureResponse, successResponse} = await NaverLogin.login();
       if (successResponse) {
         // Get the access token
         const accessToken = successResponse.accessToken;
@@ -107,7 +112,7 @@ const Login2 = () => {
         // Fetch user profile
         const profileResult = await NaverLogin.getProfile(accessToken);
         if (profileResult) {
-          const { id, name } = profileResult.response;
+          const {id, name} = profileResult.response;
           await AsyncStorage.setItem('loginMethod', 'naver');
           await AsyncStorage.setItem('userId', id.toString());
           await AsyncStorage.setItem('username', name);
@@ -171,7 +176,9 @@ const Login2 = () => {
   };
 
   return (
-    <LinearGradient colors={['#7596FF', '#ffffff']} style={styles.linearGradient}>
+    <LinearGradient
+      colors={['#7596FF', '#ffffff']}
+      style={styles.linearGradient}>
       <SafeAreaView style={styles.safeArea}>
         <ScrollView
           style={styles.scrollView}
@@ -191,24 +198,24 @@ const Login2 = () => {
               ]}
               onPress={handleGoogleLogin}>
               <Image source={googleIcon} style={styles.icon} />
-              <Text style={[styles.buttonText, { color: '#222322' }]}>
+              <Text style={[styles.buttonText, {color: '#222322'}]}>
                 구글로 로그인
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.loginButton, { backgroundColor: '#03C75A' }]}
+              style={[styles.loginButton, {backgroundColor: '#03C75A'}]}
               onPress={handleNaverLogin}>
               <Image source={naverIcon} style={styles.icon} />
-              <Text style={[styles.buttonText, { color: '#FFFFFF' }]}>
+              <Text style={[styles.buttonText, {color: '#FFFFFF'}]}>
                 네이버로 로그인
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.loginButton, { backgroundColor: '#FEE500' }]}
+              style={[styles.loginButton, {backgroundColor: '#FEE500'}]}
               onPress={handleKakaoLogin}>
               <Image source={kakaoIcon} style={styles.icon} />
-              <Text style={[styles.buttonText, { color: '#2A1C11' }]}>
+              <Text style={[styles.buttonText, {color: '#2A1C11'}]}>
                 카카오로 로그인
               </Text>
             </TouchableOpacity>
@@ -290,7 +297,7 @@ const styles = StyleSheet.create({
     height: 60 * height_ratio,
     borderRadius: 30 * width_ratio,
     marginBottom: 12 * height_ratio,
-    paddingLeft: 28 * width_ratio, 
+    paddingLeft: 28 * width_ratio,
     paddingRight: 52 * width_ratio,
   },
   icon: {
