@@ -1,4 +1,5 @@
-import React, {useEffect, useState} from 'react';
+// /src/screen/home/index.js
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,6 +8,7 @@ import {
   Dimensions,
   Image,
   ScrollView,
+  Linking,
 } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -15,57 +17,30 @@ import Animated, {
   Easing,
   withSpring,
 } from 'react-native-reanimated';
-import {createStackNavigator} from '@react-navigation/stack';
-import theme from '../../theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Circle, Svg, Polygon, Image as SvgImage} from 'react-native-svg';
+import { Circle, Svg, Polygon, Image as SvgImage } from 'react-native-svg';
+import LottieView from 'lottie-react-native'; // LottieView import
+import animationData from '../../images/home/click.json'; // JSON 파일 경로
+import theme from '../../theme';
 
-const {width} = Dimensions.get('screen');
+const { width } = Dimensions.get('screen');
 const width_ratio = Dimensions.get('screen').width / 390;
 const height_ratio = Dimensions.get('screen').height / 844;
 
 const AnimatedPolygon = Animated.createAnimatedComponent(Polygon);
 
-const HomeScreen = ({setSelected}) => {
+const HomeScreen = ({ setSelected }) => {
   const [userName, setUserName] = useState('');
   const [lastCheckupDate, setLastCheckupDate] = useState('');
   const [daysSinceLastCheckup, setDaysSinceLastCheckup] = useState(null);
   const rotation = useSharedValue(0);
 
-  const [carbs, setCarbs] = useState(0);
-  const [protein, setProtein] = useState(0);
-  const [fat, setFat] = useState(0);
-  const [sodium, setSodium] = useState(0);
-  const [potassium, setPotassium] = useState(0);
-  const [phosphorus, setPhosphorus] = useState(0);
-
   const handleTestNavigation = () => {
     setSelected('KitResult');
   };
 
-  const targets = {
-    carbs: 300,
-    protein: 40,
-    fat: 80,
-    sodium: 2000,
-    potassium: 2500,
-    phosphorus: 900,
-  };
-
-  const baseDuration = 500;
-
-  const incrementValues = (setValue, target, duration, incrementStep = 1) => {
-    const stepTime = duration / (target / incrementStep);
-
-    const interval = setInterval(() => {
-      setValue(prev => {
-        if (prev >= target) {
-          clearInterval(interval);
-          return target;
-        }
-        return prev + incrementStep;
-      });
-    }, stepTime);
+  const handleKitPurchase = () => {
+    Linking.openURL('https://smartstore.naver.com/cym702');
   };
 
   useEffect(() => {
@@ -109,16 +84,9 @@ const HomeScreen = ({setSelected}) => {
     };
 
     fetchUserInfoAndLastCheckupDate();
-
-    incrementValues(setCarbs, targets.carbs, baseDuration, 15);
-    incrementValues(setProtein, targets.protein, baseDuration, 2);
-    incrementValues(setFat, targets.fat, baseDuration, 4);
-    incrementValues(setSodium, targets.sodium, baseDuration, 100);
-    incrementValues(setPotassium, targets.potassium, baseDuration, 125);
-    incrementValues(setPhosphorus, targets.phosphorus, baseDuration, 45);
   }, []);
 
-  const calculateDaysDifference = dateString => {
+  const calculateDaysDifference = (dateString) => {
     const checkupDate = new Date(dateString);
     const today = new Date();
     const differenceInTime = today - checkupDate;
@@ -144,6 +112,14 @@ const HomeScreen = ({setSelected}) => {
     };
   });
 
+  // Set the values directly
+  const carbs = 300;
+  const protein = 40;
+  const fat = 80;
+  const sodium = 2000;
+  const potassium = 2500;
+  const phosphorus = 900;
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.profileContainer}>
@@ -165,8 +141,8 @@ const HomeScreen = ({setSelected}) => {
         </View>
         {lastCheckupDate ? (
           <Text style={styles.infoText}>
-            마지막 검사가 {daysSinceLastCheckup}일 전이에요. 지금 검사하고
-            꾸준히 콩팥 건강을 관리해 보세요.
+            마지막 검사가 {daysSinceLastCheckup}일 전이에요. 지금 검사하고 꾸준히
+            콩팥 건강을 관리해 보세요.
           </Text>
         ) : (
           <Text style={styles.infoText}>
@@ -175,7 +151,15 @@ const HomeScreen = ({setSelected}) => {
           </Text>
         )}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.testButton}>
+          <TouchableOpacity style={styles.kitButton}>
+            <LottieView
+              source={animationData}
+              autoPlay
+              loop
+              style={styles.lottieAnimation} // 스타일 수정
+            />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.testButton} onPress={handleKitPurchase}>
             <Text style={styles.buttonText}>키트 구매하기</Text>
             <Image
               source={require('../../images/home/go.png')}
@@ -195,11 +179,7 @@ const HomeScreen = ({setSelected}) => {
       </View>
 
       <View style={styles.dialBox}>
-        <Svg
-          justifyContent="center"
-          alignItems="center"
-          width="300"
-          height="180">
+        <Svg justifyContent="center" alignItems="center" width="300" height="180">
           <SvgImage
             href={require('../../images/home/state.png')}
             x="0"
@@ -357,9 +337,6 @@ const styles = StyleSheet.create({
     paddingVertical: 38 * height_ratio,
     paddingHorizontal: 32 * width_ratio,
     shadowColor: '#BFBFBF',
-    // shadowOffset: { width: 4 * width_ratio, height: 6 * height_ratio },  // Similar to 4px 6px in CSS
-    // shadowOpacity: 0.05,  // Corresponds to the rgba(0, 0, 0, 0.05)
-    // shadowRadius: 40 * width_ratio,  // Similar to the blur effect in the shadow
     elevation: 60, // Low elevation for Android, as the shadow is subtle
     zIndex: 0, // Ensures it is above other components
   },
@@ -423,9 +400,6 @@ const styles = StyleSheet.create({
     marginBottom: 8 * height_ratio,
     zIndex: 0, // Ensures it doesn't overlap with dialBox shadow
     shadowColor: '#BFBFBF',
-    // shadowOffset: { width: 100 * width_ratio, height: 100 * height_ratio },  // Similar to 4px 6px in CSS
-    // shadowOpacity: 0.05,  // only for iOS
-    // shadowRadius: 40 * width_ratio,  // Similar to the blur effect in the shadow
     elevation: 10, // for Android
   },
   nutritionLabel: {

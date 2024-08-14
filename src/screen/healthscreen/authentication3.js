@@ -23,7 +23,7 @@ const Authentication3Screen = () => {
         jti: jti,
         twoWayTimestamp: twoWayTimestamp
       };
-      const response = await axios.post('https://35b4-203-252-33-1.ngrok-free.app/health_checkup/step2', request_data);
+      const response = await axios.post('https://27f0-203-252-33-4.ngrok-free.app/health_checkup/step2', request_data);
       Alert.alert('성공', '인증이 완료되었습니다.');
       
       // 오늘 날짜를 AsyncStorage에 저장
@@ -37,7 +37,9 @@ const Authentication3Screen = () => {
       // 저장된 값을 가져와서 출력
       const storedDate = await AsyncStorage.getItem('healthscreen_last_update');
       const storedData = await AsyncStorage.getItem('healthscreen_data');
+      console.log("<< storedDate >>");
       console.log(storedDate);
+      console.log("<< storedData >>");
       console.log(JSON.parse(storedData));
 
       navigation.navigate('Health'); // 건강검진 홈화면으로 가기

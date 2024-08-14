@@ -41,9 +41,12 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        /*
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
+        버그가 나서 잠깐 주석처리
+        */
         missingDimensionStrategy 'react-native-camera', 'general'
         missingDimensionStrategy 'react-native-camera', 'mlkit'
         manifestPlaceholders = [appAuthRedirectScheme: "sanhak2"]

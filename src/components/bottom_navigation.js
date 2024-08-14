@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import React, {useState} from 'react';
+import {View, StyleSheet} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
 import HealthScreen from '../screen/healthscreen';
 import HomeScreen from '../screen/home';
 import MedicineScreen from '../screen/medicine';
@@ -17,12 +17,16 @@ import QRCodeScreen from '../screen/Kit_checkup/QRcode';
 import TabDesign from './bottomtab_design';
 import CameraScreen from '../screen/Kit_checkup/Camera';
 import HospitalScreen from '../screen/hospital';
+import searchResult from '../screen/medicine/searchResult';
 
 const Stack = createStackNavigator();
 
 const stackScreenOptions = {
   headerTitle: () => <Header />,
   headerLeft: () => null,
+  headerStyle: {
+    height: 64, // 기본적으로 56px이므로 60px로 조정했습니다. 더 줄일 수도 있습니다.
+  },
 };
 
 const HealthStack = () => (
@@ -34,11 +38,11 @@ const HealthStack = () => (
   </Stack.Navigator>
 );
 
-const HomeStack = ({ setSelected }) => (
+const HomeStack = ({setSelected}) => (
   <Stack.Navigator screenOptions={stackScreenOptions}>
-    <Stack.Screen 
-      name="Home" 
-      children={(props) => <HomeScreen {...props} setSelected={setSelected} />} 
+    <Stack.Screen
+      name="Home"
+      children={props => <HomeScreen {...props} setSelected={setSelected} />}
     />
   </Stack.Navigator>
 );
@@ -46,6 +50,7 @@ const HomeStack = ({ setSelected }) => (
 const MedicineStack = () => (
   <Stack.Navigator screenOptions={stackScreenOptions}>
     <Stack.Screen name="Medicine" component={MedicineScreen} />
+    <Stack.Screen name="searchResult" component={searchResult} />
   </Stack.Navigator>
 );
 
@@ -89,8 +94,8 @@ const BottomNavigation = () => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#fff' }}>
-      <View style={{ flex: 1 }}>
+    <View style={{flex: 1, backgroundColor: '#fff'}}>
+      <View style={{flex: 1}}>
         {selected === 'Home' && <HomeStack setSelected={setSelected} />}
         {selected === 'HealthCheck' && <HealthStack />}
         {selected === 'KitResult' && <KitStack />}
@@ -160,7 +165,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     left: '50%',
-    transform: [{ translateX: -175 }],
+    transform: [{translateX: -175}],
     backgroundColor: 'transparent',
   },
   container: {
