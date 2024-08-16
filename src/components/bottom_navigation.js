@@ -1,3 +1,4 @@
+// /src/components/bottom_navigation.js
 import React, {useState} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
@@ -32,9 +33,6 @@ const stackScreenOptions = {
 const HealthStack = () => (
   <Stack.Navigator screenOptions={stackScreenOptions}>
     <Stack.Screen name="Health" component={HealthScreen} />
-    <Stack.Screen name="Authentication1" component={Authentication1Screen} />
-    <Stack.Screen name="Authentication2" component={Authentication2Screen} />
-    <Stack.Screen name="Authentication3" component={Authentication3Screen} />
   </Stack.Navigator>
 );
 

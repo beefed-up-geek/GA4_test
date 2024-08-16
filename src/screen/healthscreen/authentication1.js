@@ -1,3 +1,4 @@
+// /src/screen/healthscreen/authentication1.js
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';

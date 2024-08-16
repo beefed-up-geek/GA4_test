@@ -24,7 +24,7 @@ const SearchResult = ({route, navigation}) => {
         selectedOption === 'name' ? 'medicine_name' : 'ingredient_name';
       try {
         const response = await axios.post(
-          'https://27f0-203-252-33-4.ngrok-free.app/medicine',
+          'https://2d75-203-252-33-3.ngrok-free.app/medicine',
           {
             [searchField]: searchTerm, // 동적으로 필드를 설정
           },

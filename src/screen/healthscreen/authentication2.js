@@ -1,3 +1,4 @@
+// /src/screen/healthscreen/authentication2.js
 import React, { useState, useEffect } from 'react';
 import { View, Image, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, Modal, Dimensions } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';

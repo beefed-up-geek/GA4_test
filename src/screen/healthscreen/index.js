@@ -126,7 +126,7 @@ const HealthScreen = () => {
           />
           <TouchableOpacity
             style={styles.arrowButton}
-            onPress={() => navigation.navigate('Authentication1')}>
+            onPress={() => navigation.navigate('NoTabs', { screen: 'Authentication1' })}>
             <FontAwesome5 name="chevron-right" size={24} color="white" />
           </TouchableOpacity>
         </View>

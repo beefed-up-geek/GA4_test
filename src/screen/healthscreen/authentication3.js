@@ -1,5 +1,4 @@
 // /src/screen/health_screen/authentication3.js
-
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
