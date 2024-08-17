@@ -1,3 +1,4 @@
+// src/screen/healthscreen/index.js
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -98,9 +99,13 @@ const HealthScreen = () => {
         <Text style={styles.headerText}>건강검진</Text>
       </View>
       <View style={styles.boxContainer}>
-        <View style={styles.box}>
+        {/* TouchableOpacity wrapping the entire box */}
+        <TouchableOpacity
+          style={styles.box}
+          onPress={() => navigation.navigate('NoTabs', { screen: 'Authentication1' })}
+        >
           <View style={styles.textContainer}>
-          <Text style={styles.boxTitle}>건강검진 불러오기</Text>
+            <Text style={styles.boxTitle}>건강검진 불러오기</Text>
             {lastUpdate ? (
               <>
                 <View style={styles.row}>
@@ -124,12 +129,10 @@ const HealthScreen = () => {
             source={require('../../images/health_screen/running.png')}
             style={styles.image}
           />
-          <TouchableOpacity
-            style={styles.arrowButton}
-            onPress={() => navigation.navigate('NoTabs', { screen: 'Authentication1' })}>
+          <View style={styles.arrowButtonContainer}>
             <FontAwesome5 name="chevron-right" size={24} color="white" />
-          </TouchableOpacity>
-        </View>
+          </View>
+        </TouchableOpacity>
       </View>
 
       {/* New Tab View Component */}
@@ -211,7 +214,7 @@ const styles = StyleSheet.create({
     right: 10,
     bottom: 40,
   },
-  arrowButton: {
+  arrowButtonContainer: {
     position: 'absolute',
     right: 20,
     bottom: 20,

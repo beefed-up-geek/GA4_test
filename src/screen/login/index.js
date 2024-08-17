@@ -26,6 +26,8 @@ const Login1 = () => {
     const checkLoginMethod = async () => {
       const loginMethod = await AsyncStorage.getItem('loginMethod');
       const userInfo = await AsyncStorage.getItem('userInfo');
+      const storedDate = await AsyncStorage.getItem('healthscreen_last_update');
+      const storedData = await AsyncStorage.getItem('healthscreen_data');
       console.log('<<< loginMethod >>>');
       console.log(loginMethod);
       console.log('<<< userId >>>');
@@ -34,6 +36,10 @@ const Login1 = () => {
       console.log(await AsyncStorage.getItem('username'));
       console.log('<<< userInfo >>>');
       console.log(userInfo);
+      console.log("<< healthscreen_last_update >>");
+      console.log(storedDate);
+      console.log("<< healthscreen_data >>");
+      console.log(JSON.parse(storedData));
 
       if (loginMethod) {
         const timer = setTimeout(() => {

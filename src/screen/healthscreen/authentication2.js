@@ -1,6 +1,6 @@
 // /src/screen/healthscreen/authentication2.js
 import React, { useState, useEffect } from 'react';
-import { View, Image, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, Modal, Dimensions } from 'react-native';
+import { View, Image, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, Modal, Dimensions, Alert } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import theme from '../../theme';
@@ -14,7 +14,7 @@ const Authentication2Screen = () => {
   const [name, setName] = useState(''); // 이름
   const [birthdate, setBirthdate] = useState(''); // 생년월일
   const [phoneNumber, setPhoneNumber] = useState(''); // 전화번호
-  const [selectedTelecom, setSelectedTelecom] = useState(''); // Selected Telecom
+  const [selectedTelecom, setSelectedTelecom] = useState(''); // Selected Telecom을 빈 문자열로 초기화
   const [nameFocused, setNameFocused] = useState(false);
   const [birthdateFocused, setBirthdateFocused] = useState(false);
   const [phoneNumberFocused, setPhoneNumberFocused] = useState(false);
@@ -32,10 +32,10 @@ const Authentication2Screen = () => {
     if (
       name.length > 0 && // Name can be less than 8 characters
       birthdate.length === 8 &&
-      phoneNumber.length === 10 &&
+      phoneNumber.length === 11 && // 11자리로 변경
       !birthdateError &&
       !phoneNumberError &&
-      selectedTelecom.length > 0
+      selectedTelecom.length > 0 // selectedTelecom이 비어있지 않은지 확인
     ) {
       setFormValid(true);
     } else {
@@ -46,12 +46,22 @@ const Authentication2Screen = () => {
   const handleAuthentication = async () => {
     if (!formValid) return;
 
+    let telecom = "";
+    if (selectedTelecom === "KT" || selectedTelecom === "알뜰폰 (KT)") {
+      telecom = "1";
+    } else if (selectedTelecom === "SKT" || selectedTelecom === "알뜰폰 (SKT)") {
+      telecom = "0";
+    } else if (selectedTelecom === "LGU+" || selectedTelecom === "알뜰폰 (LGU+)") {
+      telecom = "2";
+    }
+
     try {
       const request_data = {
         userName: name,
         identity: birthdate,
         phoneNo: phoneNumber,
-        telecom: selectedValue,
+        telecom: telecom,
+        loginTypeLevel: selectedValue.toString(), // loginTypeLevel을 문자열로 변환
       };
       console.log(request_data);
       const response = await axios.post('https://27f0-203-252-33-4.ngrok-free.app/health_checkup/step1', request_data);
@@ -64,14 +74,28 @@ const Authentication2Screen = () => {
           name: name,
           birthdate: birthdate,
           phoneNo: phoneNumber,
-          telecom: selectedValue
+          telecom: telecom,
+          loginTypeLevel: selectedValue.toString(), // loginTypeLevel을 문자열로 변환
         });
       } else {
         setBirthdateError(true);
         setPhoneNumberError(true);
       }
     } catch (error) {
-      console.error(error);
+      if (error.response && error.response.status === 404) {
+        Alert.alert("API 호출 에러", "더미 데이터로 대체합니다.");
+        navigation.navigate('Authentication3', {
+          jti: "dummyJti",
+          twoWayTimestamp: Date.now().toString(),
+          name: name,
+          birthdate: birthdate,
+          phoneNo: phoneNumber,
+          telecom: telecom,
+          loginTypeLevel: selectedValue.toString(), // loginTypeLevel을 문자열로 변환
+        });
+      } else {
+        console.error(error);
+      }
     }
   };
 
@@ -153,7 +177,7 @@ const Authentication2Screen = () => {
               onPress={() => setTelecomModalVisible(true)}
             >
               <Text style={styles.telecomButtonText}>
-                {selectedTelecom || "KT"}
+                {selectedTelecom || "통신사"}
               </Text>
               <Image
                 source={require('../../images/login/underTriangle.png')}
@@ -163,18 +187,18 @@ const Authentication2Screen = () => {
             <TextInput
               style={styles.input}
               value={phoneNumber}
-              onChangeText={(text) => setPhoneNumber(text.slice(0, 10))}
+              onChangeText={(text) => setPhoneNumber(text.slice(0, 11))} // Set max length to 11
               placeholder={!phoneNumberFocused ? '휴대폰번호 입력' : ''}
               keyboardType="phone-pad"
               placeholderTextColor="#777"
-              maxLength={10} // Set max length to 10
+              maxLength={11} // Set max length to 11
               onFocus={() => {
                 setPhoneNumberFocused(true);
                 setPhoneNumberError(false);
               }}
               onBlur={() => {
                 setPhoneNumberFocused(false);
-                if (phoneNumber.length !== 10) {
+                if (phoneNumber.length !== 11) {
                   setPhoneNumberError(true);
                 }
               }}

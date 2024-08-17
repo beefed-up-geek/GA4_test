@@ -72,7 +72,7 @@ const HomeScreen = () => {
           easing: Easing.linear,
         },
         () => {
-          rotation.value = withSpring(120, {
+          rotation.value = withSpring(20, {
             damping: 4,
             stiffness: 400,
             mass: 1,

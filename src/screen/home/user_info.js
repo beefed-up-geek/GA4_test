@@ -131,7 +131,7 @@ const Get_User_Info_Two = () => {
       console.log(await AsyncStorage.getItem('userInfo'));
 
       // Navigate back to the HomeScreen
-      navigation.goBack();;
+      navigation.goBack();
     } catch (error) {
       Alert.alert('사용자 정보 저장 실패');
     }
@@ -196,6 +196,15 @@ const Get_User_Info_Two = () => {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <View style={styles.customHeaderContainer}>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+          <Image
+            source={require('../../images/chevronArrowLeft.png')}
+            style={styles.backButtonImage}
+          />
+        </TouchableOpacity>
+        <Text style={styles.title}>내 프로필</Text>
+      </View>
       <KeyboardAwareScrollView
         contentContainerStyle={styles.scrollContainer}
         enableOnAndroid={true}
@@ -384,19 +393,17 @@ const Get_User_Info_Two = () => {
               </Text>
             </TouchableOpacity>
           </View>
-
-          <View style={styles.fixedButtonContainer}>
-            <TouchableOpacity
-              onPress={isFormValid ? handleSave : () => Alert.alert('입력 오류', '모든 필드를 형식에 맞게 입력해주세요.')}
-              style={[styles.button, isFormValid ? styles.buttonEnabled : styles.buttonDisabled]}
-            >
-              <Text style={[styles.buttonText, isFormValid ? styles.buttonTextEnabled : styles.buttonTextDisabled]}>저장</Text>
-            </TouchableOpacity>
-          </View>
         </View>
-
-        <View style={styles.bottomSpacer} />
       </KeyboardAwareScrollView>
+      {/* 하단에 고정된 컨테이너 */}
+      <View style={styles.fixedButtonContainer}>
+        <TouchableOpacity
+          onPress={isFormValid ? handleSave : () => Alert.alert('입력 오류', '모든 필드를 형식에 맞게 입력해주세요.')}
+          style={[styles.button, isFormValid ? styles.buttonEnabled : styles.buttonDisabled]}
+        >
+          <Text style={[styles.buttonText, isFormValid ? styles.buttonTextEnabled : styles.buttonTextDisabled]}>저장</Text>
+        </TouchableOpacity>
+      </View>
     </KeyboardAvoidingView>
   );
 };
@@ -411,17 +418,31 @@ const styles = StyleSheet.create({
     paddingBottom: 100 * height_ratio,
   },
   innerContainer: {
-    paddingTop: 80 * height_ratio,
+    paddingTop: 20 * height_ratio,
     paddingHorizontal: 24 * width_ratio,
     alignItems: 'center',
   },
+  customHeaderContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 20 * height_ratio, // Adjusted for space at the top
+    paddingBottom: 10 * height_ratio, // Ensure there's enough space below
+    backgroundColor: 'white',
+  },
+  backButton: {
+    position: 'absolute',
+    left: 20, // Ensure the button is positioned correctly on the left
+  },
+  backButtonImage: {
+    width: 24 * width_ratio,
+    height: 24 * width_ratio,
+  },
   title: {
-    marginLeft: 4 * width_ratio,
     fontSize: 20 * width_ratio,
     ...theme.fonts.Bold,
-    marginBottom: 50 * height_ratio,
     color: 'black',
-    alignSelf: 'flex-start',
+    textAlign: 'center',
   },
   inputWithUnit: {
     flexDirection: 'row',
@@ -467,14 +488,17 @@ const styles = StyleSheet.create({
   },
   fixedButtonContainer: {
     paddingVertical: 20 * height_ratio,
-    alignItems: 'center',
+    paddingHorizontal: 24 * width_ratio,
+    backgroundColor: 'white',
+    borderTopWidth: 1,
+    borderColor: '#EDEDED',
     width: '100%',
   },
   button: {
     paddingVertical: 17 * height_ratio,
     borderRadius: 24 * width_ratio,
     alignItems: 'center',
-    width: '66.67%',
+    width: '100%',
   },
   buttonEnabled: {
     backgroundColor: '#EBEFFE',
@@ -546,11 +570,6 @@ const styles = StyleSheet.create({
   },
   selectedText: {
     color: '#FFFFFF',
-  },
-  bottomSpacer: {
-    height: 100 * height_ratio,
-    backgroundColor: 'white',
-    width: '100%',
   },
 });
 
