@@ -1,8 +1,9 @@
-// /src/components/bottom_navigation.js
-import React, {useState} from 'react';
-import {View, StyleSheet} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+// src/components/bottom_navigation.js
+// src/components/bottom_navigation.js
+import React, { useState } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import HealthScreen from '../screen/healthscreen';
 import HomeScreen from '../screen/home';
 import MedicineScreen from '../screen/medicine';
@@ -26,22 +27,22 @@ const stackScreenOptions = {
   headerTitle: () => <Header />,
   headerLeft: () => null,
   headerStyle: {
-    height: 64, // 기본적으로 56px이므로 60px로 조정했습니다. 더 줄일 수도 있습니다.
+    height: 64, // 기본적으로 56px이므로 60px로 조정했습니다.
   },
 };
 
 const HealthStack = () => (
   <Stack.Navigator screenOptions={stackScreenOptions}>
     <Stack.Screen name="Health" component={HealthScreen} />
+    <Stack.Screen name="Authentication1" component={Authentication1Screen} />
+    <Stack.Screen name="Authentication2" component={Authentication2Screen} />
+    <Stack.Screen name="Authentication3" component={Authentication3Screen} />
   </Stack.Navigator>
 );
 
-const HomeStack = ({setSelected}) => (
+const HomeStack = () => (
   <Stack.Navigator screenOptions={stackScreenOptions}>
-    <Stack.Screen
-      name="Home"
-      children={props => <HomeScreen {...props} setSelected={setSelected} />}
-    />
+    <Stack.Screen name="Home" component={HomeScreen} />
   </Stack.Navigator>
 );
 
@@ -73,7 +74,7 @@ const BottomNavigation = () => {
   const [selected, setSelected] = useState('Home');
   const navigation = useNavigation();
 
-  // 아이콘 경로 정의
+  // Icon paths
   const iconSources = {
     home: require('../images/bottm_navigation/home.png'),
     kit: require('../images/bottm_navigation/kit.png'),
@@ -82,7 +83,7 @@ const BottomNavigation = () => {
     drug: require('../images/bottm_navigation/drug.png'),
   };
 
-  // 선택된 상태의 아이콘 경로 정의
+  // Selected state icon paths
   const selectedIconSources = {
     home: require('../images/bottm_navigation/homewhite.png'),
     kit: require('../images/bottm_navigation/kitwhite.png'),
@@ -92,9 +93,9 @@ const BottomNavigation = () => {
   };
 
   return (
-    <View style={{flex: 1, backgroundColor: '#fff'}}>
-      <View style={{flex: 1}}>
-        {selected === 'Home' && <HomeStack setSelected={setSelected} />}
+    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+      <View style={{ flex: 1 }}>
+        {selected === 'Home' && <HomeStack />}
         {selected === 'HealthCheck' && <HealthStack />}
         {selected === 'KitResult' && <KitStack />}
         {selected === 'HospitalSearch' && <HospitalStack />}
@@ -163,7 +164,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     left: '50%',
-    transform: [{translateX: -175}],
+    transform: [{ translateX: -175 }],
     backgroundColor: 'transparent',
   },
   container: {

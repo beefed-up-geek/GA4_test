@@ -1,5 +1,6 @@
 // /src/screen/home/index.js
 import React, { useEffect, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -19,8 +20,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Circle, Svg, Polygon, Image as SvgImage } from 'react-native-svg';
-import LottieView from 'lottie-react-native'; // LottieView import
-import animationData from '../../images/home/click.json'; // JSON 파일 경로
+import LottieView from 'lottie-react-native';
+import animationData from '../../images/home/click.json';
 import theme from '../../theme';
 
 const { width } = Dimensions.get('screen');
@@ -29,15 +30,17 @@ const height_ratio = Dimensions.get('screen').height / 844;
 
 const AnimatedPolygon = Animated.createAnimatedComponent(Polygon);
 
-const HomeScreen = ({ setSelected }) => {
+const HomeScreen = () => {
   const [userName, setUserName] = useState('');
   const [lastCheckupDate, setLastCheckupDate] = useState('');
   const [daysSinceLastCheckup, setDaysSinceLastCheckup] = useState(null);
   const rotation = useSharedValue(0);
+  const navigation = useNavigation();
 
-  const handleTestNavigation = () => {
-    setSelected('KitResult');
+  const handleProfileNavigation = () => {
+    navigation.navigate('NoTabs', { screen: 'UserInfo' });
   };
+
 
   const handleKitPurchase = () => {
     Linking.openURL('https://smartstore.naver.com/cym702');
@@ -46,14 +49,12 @@ const HomeScreen = ({ setSelected }) => {
   useEffect(() => {
     const fetchUserInfoAndLastCheckupDate = async () => {
       try {
-        // Fetch and parse user info
         const userInfoString = await AsyncStorage.getItem('userInfo');
         if (userInfoString) {
           const userInfo = JSON.parse(userInfoString);
           setUserName(userInfo.name);
         }
 
-        // Fetch last checkup date
         const storedDate = await AsyncStorage.getItem('last_kit_checkup');
         if (storedDate) {
           setLastCheckupDate(storedDate);
@@ -100,7 +101,6 @@ const HomeScreen = ({ setSelected }) => {
     const xTip = 150 - radius * Math.cos(angleInRadians);
     const yTip = 150 - radius * Math.sin(angleInRadians);
 
-    // Define the width of the base of the needle
     const baseWidth = 7;
     const xBase1 = 150 + (baseWidth / 2) * Math.sin(angleInRadians);
     const yBase1 = 150 - (baseWidth / 2) * Math.cos(angleInRadians);
@@ -112,7 +112,6 @@ const HomeScreen = ({ setSelected }) => {
     };
   });
 
-  // Set the values directly
   const carbs = 300;
   const protein = 40;
   const fat = 80;
@@ -123,7 +122,7 @@ const HomeScreen = ({ setSelected }) => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.profileContainer}>
-        <TouchableOpacity style={styles.profileButton}>
+        <TouchableOpacity style={styles.profileButton} onPress={handleProfileNavigation}>
           <Text style={styles.profileText}>내 프로필</Text>
           <Image
             source={require('../../images/home/user.png')}
@@ -156,7 +155,7 @@ const HomeScreen = ({ setSelected }) => {
               source={animationData}
               autoPlay
               loop
-              style={styles.lottieAnimation} // 스타일 수정
+              style={styles.lottieAnimation}
             />
           </TouchableOpacity>
           <TouchableOpacity style={styles.testButton} onPress={handleKitPurchase}>
@@ -167,8 +166,7 @@ const HomeScreen = ({ setSelected }) => {
             />
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.testButton}
-            onPress={handleTestNavigation}>
+            style={styles.testButton}>
             <Text style={styles.buttonText}>검사하러 가기</Text>
             <Image
               source={require('../../images/home/go.png')}
@@ -188,7 +186,7 @@ const HomeScreen = ({ setSelected }) => {
             height="180"
           />
           <AnimatedPolygon
-            points="150,150 150,40 160,150" // Initial dummy points
+            points="150,150 150,40 160,150"
             fill="#ACACAC"
             animatedProps={animatedProps}
           />
@@ -337,14 +335,8 @@ const styles = StyleSheet.create({
     paddingVertical: 38 * height_ratio,
     paddingHorizontal: 32 * width_ratio,
     shadowColor: '#BFBFBF',
-    elevation: 60, // Low elevation for Android, as the shadow is subtle
-    zIndex: 0, // Ensures it is above other components
-  },
-  dialImage: {
-    width: (width * 3) / 4,
-    height: (width * 3) / 4 / 2,
-    resizeMode: 'contain',
-    alignSelf: 'center',
+    elevation: 60,
+    zIndex: 0,
   },
   dialText1: {
     fontSize: 14 * width_ratio,
@@ -362,7 +354,7 @@ const styles = StyleSheet.create({
     marginBottom: 16 * height_ratio,
     padding: 16 * width_ratio,
     borderRadius: 16 * width_ratio,
-    zIndex: 1, // Ensures it stays below dialBox in stacking order
+    zIndex: 1,
   },
   nutritionHeader: {
     flexDirection: 'row',
@@ -398,9 +390,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'left',
     marginBottom: 8 * height_ratio,
-    zIndex: 0, // Ensures it doesn't overlap with dialBox shadow
+    zIndex: 0,
     shadowColor: '#BFBFBF',
-    elevation: 10, // for Android
+    elevation: 10,
   },
   nutritionLabel: {
     fontSize: 14 * width_ratio,

@@ -4,19 +4,19 @@ import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import BottomNavigation from './src/components/bottom_navigation';
+import NavigationWithoutTabs from './src/components/navigation_without_tabs';
 import Login1 from './src/screen/login/index';
 import Login2 from './src/screen/login/login';
 import GetKidneyInfo from './src/screen/login/get_kidney_info';
 import GetUserInfo from './src/screen/login/get_usr_info';
 import { initializeKakaoSDK } from '@react-native-kakao/core';
 import { LogBox } from 'react-native';
-import NavigationWithoutTabs from './src/components/navigation_without_tabs';
 
 const Stack = createStackNavigator();
 
 const App = () => {
   useEffect(() => {
-    initializeKakaoSDK('1f96718a8d259618eec427c10f31719c');
+    initializeKakaoSDK('your_kakao_sdk_key_here');
     LogBox.ignoreAllLogs();
   }, []);
 
@@ -24,7 +24,7 @@ const App = () => {
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{
-          headerShown: false, // 기본 헤더를 숨김
+          headerShown: false,
         }}>
         <Stack.Screen name="Login1" component={Login1} />
         <Stack.Screen name="Login2" component={Login2} />
