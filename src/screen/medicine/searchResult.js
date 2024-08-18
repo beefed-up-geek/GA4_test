@@ -12,6 +12,53 @@ import {
 } from 'react-native';
 import axios from 'axios';
 
+// 더미 이미지 파일을 import합니다.
+const dummyImage = require('./assets/images/dummyImage.png');
+
+const dummyData = Array.from({length: 100}, (_, index) => {
+  const medicineNames = [
+    '아로나민',
+    '콜대원',
+    '어린이부루펜',
+    '판피린',
+    '판콜에스',
+    '겔포스',
+    '탁센',
+    '이지엔',
+    '이가탄',
+    '타이레놀',
+    '아스피린',
+  ];
+
+  const ingredients = [
+    '이부프로펜',
+    '아세트아미노펜',
+    '덱시부프로펜',
+    '산화마그네슘',
+    '파마브롬',
+    '나프록센',
+    'L-아르기닌',
+    '덱스판테놀',
+  ];
+
+  return {
+    품목명: medicineNames[index % medicineNames.length],
+    업소명: `더미제약회사 ${index + 1}`,
+    성상: `${index % 2 === 0 ? '타원형' : '원형'} 정제`,
+    큰제품이미지: dummyImage, // 더미 이미지 파일을 사용
+    의약품제형: `${
+      index % 3 === 0 ? '정제' : index % 3 === 1 ? '캡슐' : '필름코팅정'
+    }`,
+    색상앞: index % 2 === 0 ? '흰색' : '붉은색',
+    색상뒤: index % 2 === 0 ? '흰색' : '붉은색',
+    표시성분: [
+      ingredients[index % ingredients.length],
+      ingredients[(index + 1) % ingredients.length],
+    ],
+    Base64: '', // Base64 이미지 데이터가 있으면 이곳에 추가
+  };
+});
+
 const SearchResult = ({route, navigation}) => {
   const {query, selectedOption: initialSelectedOption} = route.params; // 선택된 옵션을 초기값으로 받음
   const [searchTerm, setSearchTerm] = useState(query);
@@ -47,9 +94,18 @@ const SearchResult = ({route, navigation}) => {
           ...item, // 다른 필드도 마찬가지로 처리
         }));
 
-        setResults(sanitizedResults.slice(0, 20)); // 최대 20개의 결과만 표시
+        setResults(sanitizedResults.slice(0, 100)); // 최대 100개의 결과만 표시
       } catch (error) {
         console.error('Error fetching data:', error);
+        const filteredData =
+          selectedOption === 'name'
+            ? dummyData.filter(item => item.품목명.includes(searchTerm))
+            : dummyData.filter(item =>
+                item.표시성분.some(ingredient =>
+                  ingredient.includes(searchTerm),
+                ),
+              );
+        setResults(filteredData); // 오류 발생 시 더미 데이터를 설정
       }
     }
   };
@@ -68,6 +124,9 @@ const SearchResult = ({route, navigation}) => {
         return null; // 예상치 못한 데이터가 있을 경우 무시
       }
 
+      // 더미 데이터인지 확인하기 위해 더미 데이터의 업소명 패턴을 체크합니다.
+      const isDummyData = item.업소명.startsWith('더미제약회사');
+
       return (
         <View key={index} style={styles.resultContainer}>
           <Image
@@ -75,7 +134,9 @@ const SearchResult = ({route, navigation}) => {
             source={{
               uri: item.Base64
                 ? `data:image/jpg;base64,${item.Base64}`
-                : item.큰제품이미지 || 'default_image_uri', // Base64가 있으면 사용, 없으면 큰제품이미지 사용, 그것도 없으면 기본 이미지 URI 사용
+                : isDummyData
+                ? Image.resolveAssetSource(dummyImage).uri // 더미 데이터일 경우 dummyImage 사용
+                : item.큰제품이미지 || 'default_image_uri', // 실제 데이터일 경우 큰제품이미지 사용
             }}
           />
           <View style={styles.resultTextContainer}>
