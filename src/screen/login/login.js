@@ -88,7 +88,7 @@ const Login2 = () => {
         const {id, name} = user; // 구글 사용자 정보 추출
         await AsyncStorage.setItem('loginMethod', 'google');
         await AsyncStorage.setItem('userId', id.toString());
-        await AsyncStorage.setItem('c', name);
+        await AsyncStorage.setItem('username', name);
 
         handlePostLoginNavigation(); // 로그인 후 화면 전환
       }

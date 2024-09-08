@@ -15,6 +15,7 @@ import {
 import {useRoute, useNavigation} from '@react-navigation/native';
 import axios from 'axios';
 import theme from '../../theme';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const width_ratio = Dimensions.get('screen').width / 390;
 const height_ratio = Dimensions.get('screen').height / 844;
@@ -45,6 +46,26 @@ const Authentication2Screen = () => {
   const {selectedValue} = route.params;
   const navigation = useNavigation();
 
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const getUserId = async () => {
+      try {
+        const storedUserId = await AsyncStorage.getItem('userId');
+        if (storedUserId) {
+          console.log('userId를 성공적으로 가져옴:', storedUserId);
+          setUserId(storedUserId);
+        } else {
+          console.log('userId가 존재하지 않음');
+        }
+      } catch (error) {
+        console.error('userId를 가져오는 중 오류 발생:', error);
+      }
+    };
+
+    getUserId();
+  }, []);
+
   useEffect(() => {
     // Check if all inputs are valid
     if (
@@ -60,6 +81,7 @@ const Authentication2Screen = () => {
       setFormValid(false);
     }
   }, [
+    userId,
     name,
     birthdate,
     phoneNumber,
@@ -69,6 +91,11 @@ const Authentication2Screen = () => {
   ]);
 
   const handleAuthentication = async () => {
+    console.log('인증 요청 함수가 호출되었습니다.');
+
+    if (!formValid) {
+      console.log('폼이 유효하지 않음.');
+    }
     if (!formValid) return;
 
     let telecom = '';
@@ -88,6 +115,7 @@ const Authentication2Screen = () => {
 
     try {
       const request_data = {
+        providerId: userId,
         userName: name,
         identity: birthdate,
         phoneNo: phoneNumber,
@@ -96,13 +124,14 @@ const Authentication2Screen = () => {
       };
       console.log(request_data);
       const response = await axios.post(
-        'https://8e74-203-252-33-3.ngrok-free.app/health_checkup/step1',
+        'http://13.238.161.156/health_checkup/step1',
         request_data,
       );
       console.log(response.data);
       const {result, data} = response.data;
       if (result.code === 'CF-03002') {
         navigation.navigate('Authentication3', {
+          providerId: userId,
           jti: data.jti,
           twoWayTimestamp: data.twoWayTimestamp,
           name: name,
@@ -119,6 +148,7 @@ const Authentication2Screen = () => {
       if (error.response && error.response.status === 404) {
         Alert.alert('API 호출 에러', '더미 데이터로 대체합니다.');
         navigation.navigate('Authentication3', {
+          providerId: userId,
           jti: 'dummyJti',
           twoWayTimestamp: Date.now().toString(),
           name: name,
