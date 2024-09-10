@@ -70,12 +70,9 @@ const SearchResult = ({route, navigation}) => {
       const searchField =
         selectedOption === 'name' ? 'medicine_name' : 'ingredient_name';
       try {
-        const response = await axios.post(
-          'https://2d75-203-252-33-3.ngrok-free.app/medicine',
-          {
-            [searchField]: searchTerm, // 동적으로 필드를 설정
-          },
-        );
+        const response = await axios.post('http://13.238.161.156/medicine', {
+          [searchField]: searchTerm, // 동적으로 필드를 설정
+        });
 
         console.log(response.data);
         const results = response.data.results || []; // results가 null인 경우 빈 배열로 처리
