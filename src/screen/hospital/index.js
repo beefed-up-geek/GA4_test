@@ -199,10 +199,11 @@ export default function HospitalScreen({navigation}) {
         <Icon name="location-on" size={20} color="#000" />
         <Text style={styles.locationText}>{address}</Text>
       </View>
-      <ScrollView style={styles.scrollView}>
+
         <View style={styles.section}>
-          <View style={styles.sectionHeader1}>
-            <View style={styles.pickerContainer}>
+
+          <View style={styles.pickerWrapper}>
+            <View style={styles.distancePicker}>
               <DropDownPicker
                 open={openDistance}
                 value={valueDistance}
@@ -217,7 +218,8 @@ export default function HospitalScreen({navigation}) {
                 dropDownDirection="BOTTOM"
               />
             </View>
-            <View style={styles.pickerContainer1}>
+
+            <View style={styles.gradePicker}>
               <DropDownPicker
                 open={openNearby}
                 value={valueNearby}
@@ -233,6 +235,7 @@ export default function HospitalScreen({navigation}) {
               />
             </View>
           </View>
+
           <View style={styles.buttonContainer}>
             {Object.keys(hospitalStatus).map(hospital => (
               <TouchableOpacity
@@ -246,23 +249,25 @@ export default function HospitalScreen({navigation}) {
               </TouchableOpacity>
             ))}
           </View>
-          <View style={styles.section}>
-            {filteredHospitals.length === 0 ? (
-              <View style={styles.noHospital}>
-                <Text style={styles.noHospitalText}>병원을 검색하세요!</Text>
-              </View>
-            ) : (
-              <>
-                {filteredHospitals.map((hospital, index) => (
-                  <HospitalCard key={index} hospital={hospital} />
-                ))}
-                <View style={styles.placeholder}></View>
-              </>
-            )}
-          </View>
-          <View style={styles.whiteBox}></View>
         </View>
-      </ScrollView>
+
+        <ScrollView style={styles.scrollView}>
+          {filteredHospitals.length === 0 ? (
+            <View>
+              <Text style={styles.noHospitalText}>병원을 검색하세요!</Text>
+            </View>
+          ) : (
+            <>
+              {filteredHospitals.map((hospital, index) => (
+                <HospitalCard key={index} hospital={hospital} />
+              ))}
+              <View style={styles.placeholder}></View>
+            </>
+          )}
+        </ScrollView> 
+
+        <View style={styles.whiteBox}></View>
+
     </View>
   );
 }
@@ -326,7 +331,7 @@ function HospitalCard({hospital}) {
   };
 
   return (
-    <View style={styles.card1}>
+    <View style={styles.card}>
       <View style={styles.cardHeader}>
         <Text
           style={[

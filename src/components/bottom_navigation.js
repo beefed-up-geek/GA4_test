@@ -1,7 +1,7 @@
 // src/components/bottom_navigation.js
 // src/components/bottom_navigation.js
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import HealthScreen from '../screen/healthscreen';
@@ -20,6 +20,9 @@ import TabDesign from './bottomtab_design';
 import CameraScreen from '../screen/Kit_checkup/Camera';
 import HospitalScreen from '../screen/hospital';
 import searchResult from '../screen/medicine/searchResult';
+
+const width_ratio = Dimensions.get('screen').width / 390;
+const height_ratio = Dimensions.get('screen').height / 844;
 
 const Stack = createStackNavigator();
 
