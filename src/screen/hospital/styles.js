@@ -83,6 +83,16 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     marginTop: -20,
   },
+  addressContainer1: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  locationImage: {
+    width: 20,
+    height: 20,
+    marginRight: 5,
+    marginTop: 5,
+  },
   mapButtonText: {
     color: '#fff',
   },

@@ -141,7 +141,7 @@ const Login2 = () => {
       if (userInfo && userInfo.id) {
         await AsyncStorage.setItem('userId', userInfo.id.toString());
         await AsyncStorage.setItem('loginMethod', 'kakao');
-        await AsyncStorage.setItem('username', userInfo.nickname);
+        // await AsyncStorage.setItem('username', userInfo.nickname);
         console.log('User data stored in AsyncStorage');
 
         handlePostLoginNavigation();
