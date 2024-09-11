@@ -1,14 +1,32 @@
 // /src/screen/healthscreen/authentication2.js
-import React, { useState, useEffect } from 'react';
-import { View, Image, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, Modal, Dimensions, Alert } from 'react-native';
-import { useRoute, useNavigation } from '@react-navigation/native';
+import React, {useState, useEffect} from 'react';
+import {
+  View,
+  Image,
+  Text,
+  StyleSheet,
+  TextInput,
+  ScrollView,
+  TouchableOpacity,
+  Modal,
+  Dimensions,
+  Alert,
+} from 'react-native';
+import {useRoute, useNavigation} from '@react-navigation/native';
 import axios from 'axios';
 import theme from '../../theme';
 
 const width_ratio = Dimensions.get('screen').width / 390;
 const height_ratio = Dimensions.get('screen').height / 844;
 
-const telecomOptions = ["SKT", "KT", "LGU+", "알뜰폰 (SKT)", "알뜰폰 (KT)", "알뜰폰 (LGU+)"];
+const telecomOptions = [
+  'SKT',
+  'KT',
+  'LGU+',
+  '알뜰폰 (SKT)',
+  '알뜰폰 (KT)',
+  '알뜰폰 (LGU+)',
+];
 
 const Authentication2Screen = () => {
   const [name, setName] = useState(''); // 이름
@@ -24,7 +42,7 @@ const Authentication2Screen = () => {
   const [telecomModalVisible, setTelecomModalVisible] = useState(false);
 
   const route = useRoute();
-  const { selectedValue } = route.params;
+  const {selectedValue} = route.params;
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -41,22 +59,36 @@ const Authentication2Screen = () => {
     } else {
       setFormValid(false);
     }
-  }, [name, birthdate, phoneNumber, birthdateError, phoneNumberError, selectedTelecom]);
+  }, [
+    name,
+    birthdate,
+    phoneNumber,
+    birthdateError,
+    phoneNumberError,
+    selectedTelecom,
+  ]);
 
   const handleAuthentication = async () => {
     if (!formValid) return;
 
-    let telecom = "";
-    if (selectedTelecom === "KT" || selectedTelecom === "알뜰폰 (KT)") {
-      telecom = "1";
-    } else if (selectedTelecom === "SKT" || selectedTelecom === "알뜰폰 (SKT)") {
-      telecom = "0";
-    } else if (selectedTelecom === "LGU+" || selectedTelecom === "알뜰폰 (LGU+)") {
-      telecom = "2";
+    let telecom = '';
+    if (selectedTelecom === 'KT' || selectedTelecom === '알뜰폰 (KT)') {
+      telecom = '1';
+    } else if (
+      selectedTelecom === 'SKT' ||
+      selectedTelecom === '알뜰폰 (SKT)'
+    ) {
+      telecom = '0';
+    } else if (
+      selectedTelecom === 'LGU+' ||
+      selectedTelecom === '알뜰폰 (LGU+)'
+    ) {
+      telecom = '2';
     }
 
     try {
       const request_data = {
+        providerId: '1234567890abcdef',
         userName: name,
         identity: birthdate,
         phoneNo: phoneNumber,
@@ -64,10 +96,13 @@ const Authentication2Screen = () => {
         loginTypeLevel: selectedValue.toString(), // loginTypeLevel을 문자열로 변환
       };
       console.log(request_data);
-      const response = await axios.post('https://27f0-203-252-33-4.ngrok-free.app/health_checkup/step1', request_data);
+      const response = await axios.post(
+        'http://13.238.161.156/health_checkup/step1',
+        request_data,
+      );
       console.log(response.data);
-      const { result, data } = response.data;
-      if (result.code === "CF-03002") {
+      const {result, data} = response.data;
+      if (result.code === 'CF-03002') {
         navigation.navigate('Authentication3', {
           jti: data.jti,
           twoWayTimestamp: data.twoWayTimestamp,
@@ -83,9 +118,9 @@ const Authentication2Screen = () => {
       }
     } catch (error) {
       if (error.response && error.response.status === 404) {
-        Alert.alert("API 호출 에러", "더미 데이터로 대체합니다.");
+        Alert.alert('API 호출 에러', '더미 데이터로 대체합니다.');
         navigation.navigate('Authentication3', {
-          jti: "dummyJti",
+          jti: 'dummyJti',
           twoWayTimestamp: Date.now().toString(),
           name: name,
           birthdate: birthdate,
@@ -99,34 +134,37 @@ const Authentication2Screen = () => {
     }
   };
 
-  const handleTelecomSelect = (provider) => {
+  const handleTelecomSelect = provider => {
     setSelectedTelecom(provider);
     setTelecomModalVisible(false);
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.goBack()}>
         <Image
           source={require('../../images/chevronArrowLeft.png')}
           style={styles.backButtonImage}
         />
       </TouchableOpacity>
       <Text style={styles.title}>개인정보 입력</Text>
-      <Text style={styles.subtitle}>본인인증을 진행하기 위해 개인정보를 입력해주세요.</Text>
-      
+      <Text style={styles.subtitle}>
+        본인인증을 진행하기 위해 개인정보를 입력해주세요.
+      </Text>
+
       <View style={styles.inputContainer}>
-        <View style={[
-          styles.inputWrapper, 
-          nameFocused && styles.inputWrapperFocused
-        ]}>
-          <Text style={styles.floatingLabel}>
-            이름
-          </Text>
+        <View
+          style={[
+            styles.inputWrapper,
+            nameFocused && styles.inputWrapperFocused,
+          ]}>
+          <Text style={styles.floatingLabel}>이름</Text>
           <TextInput
             style={styles.input}
             value={name}
-            onChangeText={(text) => setName(text.slice(0, 8))}
+            onChangeText={text => setName(text.slice(0, 8))}
             placeholder={!nameFocused ? '이름 입력' : ''}
             placeholderTextColor="#777"
             maxLength={8} // Set max length to 8
@@ -135,18 +173,17 @@ const Authentication2Screen = () => {
           />
         </View>
 
-        <View style={[
-          styles.inputWrapper, 
-          birthdateFocused && styles.inputWrapperFocused, 
-          birthdateError && styles.inputWrapperError
-        ]}>
-          <Text style={styles.floatingLabel}>
-            생년월일 8자리
-          </Text>
+        <View
+          style={[
+            styles.inputWrapper,
+            birthdateFocused && styles.inputWrapperFocused,
+            birthdateError && styles.inputWrapperError,
+          ]}>
+          <Text style={styles.floatingLabel}>생년월일 8자리</Text>
           <TextInput
             style={styles.input}
             value={birthdate}
-            onChangeText={(text) => setBirthdate(text.slice(0, 8))}
+            onChangeText={text => setBirthdate(text.slice(0, 8))}
             placeholder={!birthdateFocused ? '생년월일' : ''}
             keyboardType="numeric"
             placeholderTextColor="#777"
@@ -163,21 +200,23 @@ const Authentication2Screen = () => {
             }}
           />
         </View>
-        {!birthdateFocused && birthdateError && <Text style={styles.errorText}>입력한 정보를 확인해주세요</Text>}
+        {!birthdateFocused && birthdateError && (
+          <Text style={styles.errorText}>입력한 정보를 확인해주세요</Text>
+        )}
 
-        <View style={[
-          styles.inputWrapper, 
-          phoneNumberFocused && styles.inputWrapperFocused, 
-          phoneNumberError && styles.inputWrapperError,
-        ]}>
+        <View
+          style={[
+            styles.inputWrapper,
+            phoneNumberFocused && styles.inputWrapperFocused,
+            phoneNumberError && styles.inputWrapperError,
+          ]}>
           <Text style={styles.floatingLabel}>휴대폰번호</Text>
           <View style={styles.phoneInputRow}>
             <TouchableOpacity
               style={styles.telecomButton}
-              onPress={() => setTelecomModalVisible(true)}
-            >
+              onPress={() => setTelecomModalVisible(true)}>
               <Text style={styles.telecomButtonText}>
-                {selectedTelecom || "통신사"}
+                {selectedTelecom || '통신사'}
               </Text>
               <Image
                 source={require('../../images/login/underTriangle.png')}
@@ -187,7 +226,7 @@ const Authentication2Screen = () => {
             <TextInput
               style={styles.input}
               value={phoneNumber}
-              onChangeText={(text) => setPhoneNumber(text.slice(0, 11))} // Set max length to 11
+              onChangeText={text => setPhoneNumber(text.slice(0, 11))} // Set max length to 11
               placeholder={!phoneNumberFocused ? '휴대폰번호 입력' : ''}
               keyboardType="phone-pad"
               placeholderTextColor="#777"
@@ -213,15 +252,25 @@ const Authentication2Screen = () => {
             )}
           </View>
         </View>
-        {!phoneNumberFocused && phoneNumberError && <Text style={styles.errorText}>입력한 정보를 확인해주세요</Text>}
+        {!phoneNumberFocused && phoneNumberError && (
+          <Text style={styles.errorText}>입력한 정보를 확인해주세요</Text>
+        )}
       </View>
 
       <TouchableOpacity
-        style={[styles.authButton, formValid ? styles.authButtonEnabled : styles.authButtonDisabled]}
+        style={[
+          styles.authButton,
+          formValid ? styles.authButtonEnabled : styles.authButtonDisabled,
+        ]}
         onPress={handleAuthentication}
-        disabled={!formValid}
-      >
-        <Text style={[styles.authButtonText, formValid ? styles.authButtonTextEnabled : styles.authButtonTextDisabled]}>
+        disabled={!formValid}>
+        <Text
+          style={[
+            styles.authButtonText,
+            formValid
+              ? styles.authButtonTextEnabled
+              : styles.authButtonTextDisabled,
+          ]}>
           인증 요청
         </Text>
       </TouchableOpacity>
@@ -231,28 +280,25 @@ const Authentication2Screen = () => {
         visible={telecomModalVisible}
         transparent={true}
         animationType="slide"
-        onRequestClose={() => setTelecomModalVisible(false)}
-      >
+        onRequestClose={() => setTelecomModalVisible(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <View style={styles.modalTop}>
               <Text style={styles.modalTitle}>통신사 선택</Text>
               <TouchableOpacity
                 style={styles.xButton}
-                onPress={() => setTelecomModalVisible(false)}
-              >
+                onPress={() => setTelecomModalVisible(false)}>
                 <Image
                   source={require('../../images/xButton.png')}
                   style={styles.xButtonImage}
                 />
               </TouchableOpacity>
             </View>
-            {telecomOptions.map((option) => (
+            {telecomOptions.map(option => (
               <TouchableOpacity
                 key={option}
                 style={styles.telecomOption}
-                onPress={() => handleTelecomSelect(option)}
-              >
+                onPress={() => handleTelecomSelect(option)}>
                 <Text style={styles.telecomOptionText}>{option}</Text>
               </TouchableOpacity>
             ))}
@@ -268,7 +314,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingTop: 20 * height_ratio,
     paddingBottom: 100 * height_ratio,
-    paddingHorizontal: 24 * width_ratio, 
+    paddingHorizontal: 24 * width_ratio,
     backgroundColor: 'white',
   },
   backButton: {
@@ -283,7 +329,7 @@ const styles = StyleSheet.create({
     fontSize: 24 * height_ratio,
     ...theme.fonts.SemiBold,
     marginBottom: 10 * height_ratio,
-    color: '#000'
+    color: '#000',
   },
   subtitle: {
     textAlign: 'left',

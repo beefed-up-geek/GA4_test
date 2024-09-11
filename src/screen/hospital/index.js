@@ -132,7 +132,7 @@ export default function HospitalScreen({navigation}) {
   const fetchHospitalData = async query => {
     try {
       const response = await axios.post(
-        `https://1ab8-203-252-33-4.ngrok-free.app/hospital`,
+        `https://efb3-203-252-33-3.ngrok-free.app/hospital`,
         {
           hospitalName: query,
           user_latitude: latitude,
@@ -349,7 +349,13 @@ function HospitalCard({hospital}) {
         </TouchableOpacity>
       </View>
       <Text style={styles.hospitalName}>{hospital.요양기관명}</Text>
-      <Text style={styles.hospitalAddress}>{hospital.주소}</Text>
+      <View style={styles.addressContainer1}>
+        <Image
+          source={require('./assets/location.png')}
+          style={styles.locationImage}
+        />
+        <Text style={styles.hospitalAddress}>{hospital.주소}</Text>
+      </View>
       <Text style={styles.phone}>{hospital.전화번호}</Text>
     </View>
   );
