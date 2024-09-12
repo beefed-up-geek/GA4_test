@@ -124,7 +124,7 @@ const Authentication2Screen = () => {
       };
       console.log(request_data);
       const response = await axios.post(
-        'http://13.238.161.156/health_checkup/step1',
+        'https://13.238.161.156/health_checkup/step1',
         request_data,
       );
       console.log(response.data);
