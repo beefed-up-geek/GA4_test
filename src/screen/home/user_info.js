@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import theme from '../../theme';
+import axios from 'axios'; // axios to handle HTTP requests
 
 const width_ratio = Dimensions.get('screen').width / 390;
 const height_ratio = Dimensions.get('screen').height / 844;
@@ -77,7 +78,7 @@ const Get_User_Info_Two = () => {
     const currentYear = new Date().getFullYear();
     const [year, month, day] = birthdate.split('/').map(Number);
     let errorMessage = '';
-
+  
     if (!name) {
       errorMessage += '이름을 입력해주세요.\n';
     }
@@ -109,31 +110,55 @@ const Get_User_Info_Two = () => {
         errorMessage += '생년월일의 일은 01에서 31 사이여야 합니다.\n';
       }
     }
-
+  
     if (errorMessage) {
       Alert.alert('입력 오류', errorMessage);
       return;
     }
-
-    const userInfo = { 
-      name, 
-      nickname, 
-      birthdate, 
-      height, 
-      weight, 
-      gender, 
-      kidneyDisease: selectedKidneyDisease 
-    };
-
+  
     try {
-      await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
-      console.log("<<< Get_User_Info_Two화면 사용자 정보 저장됨 >>>");
-      console.log(await AsyncStorage.getItem('userInfo'));
-
-      // Navigate back to the HomeScreen
-      navigation.goBack();
+      // AsyncStorage에서 providerId 가져오기
+      const providerId = await AsyncStorage.getItem('userId');
+      const loginMethod = await AsyncStorage.getItem('loginMethod');
+      if (!providerId) {
+        Alert.alert('오류', '사용자 ID를 찾을 수 없습니다.');
+        return;
+      }
+      
+      let provider = -1;
+      if (loginMethod === 'kakao') {
+        provider = 2;
+      } else if (loginMethod === 'naver') {
+        provider = 1;
+      } else if (loginMethod === 'google') {
+        provider = 0;
+      }
+      const userInfo = { 
+        providerId,  // AsyncStorage에서 불러온 providerId 사용
+        provider,
+        name, 
+        nickname, 
+        birthdate, 
+        height, 
+        weight, 
+        gender, 
+        kidneyInfo: selectedKidneyDisease,
+        email: 'your_email@example.com'  // 고정된 이메일 사용
+      };
+  
+      // 서버에 업데이트 요청
+      const response = await axios.post('http://13.238.161.156/login/update', userInfo);
+      
+      if (response.status === 200) {
+        Alert.alert('성공', '사용자 정보가 성공적으로 업데이트되었습니다.');
+        // 정보 저장 후 화면 이동 (뒤로 가기 등)
+        navigation.goBack();
+      } else {
+        Alert.alert('실패', '사용자 정보 업데이트에 실패했습니다.');
+      }
     } catch (error) {
-      Alert.alert('사용자 정보 저장 실패');
+      console.error('사용자 정보 업데이트 오류:', error);
+      Alert.alert('오류', '서버와 통신 중 문제가 발생했습니다.');
     }
   };
 

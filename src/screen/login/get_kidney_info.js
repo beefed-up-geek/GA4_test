@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios'; // axios를 사용하여 API 요청 처리
+import axios from 'axios'; // axios to handle HTTP requests
 
 const width_ratio = Dimensions.get('screen').width / 390;
 const height_ratio = Dimensions.get('screen').height / 844;
@@ -82,21 +82,14 @@ const GetKidneyInfo = () => {
           name: userInfo.name,
           nickname: userInfo.nickname,
           birthdate: userInfo.birthdate.replace(/\//g, ''),
-          gender: userInfo.gender === 'male' ? 0 : 1,
+          gender: userInfo.gender === 'male' ? 1 : 0,
           height: parseInt(userInfo.height, 10),
           weight: parseInt(userInfo.weight, 10),
           kidneyInfo: userInfo.kidneyDisease,
         };
 
-        // Create a custom axios instance that disables SSL validation
-        const axiosInstance = axios.create({
-          httpsAgent: new https.Agent({
-            rejectUnauthorized: false, // Disable SSL verification
-          }),
-        });
-
-        const response = await axiosInstance.post(
-          'https://13.238.161.156:443/login/register/',
+        const response = await axios.post(
+          'http://13.238.161.156/login/register/',
           apiPayload,
           {
             headers: {
