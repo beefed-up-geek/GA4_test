@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import theme from '../../theme';
+import axios from 'axios'; // axios를 사용하여 API 요청 처리
 
 const width_ratio = Dimensions.get('screen').width / 390;
 const height_ratio = Dimensions.get('screen').height / 844;
@@ -11,30 +11,112 @@ const GetKidneyInfo = () => {
   const [selectedOption, setSelectedOption] = useState(null);
   const navigation = useNavigation();
 
-  const handleOptionSelect = (option) => {
-    setSelectedOption(option);
+  const options = [
+    '해당사항 없음',
+    '만성콩팥병 (투석 전)',
+    '혈액투석 중',
+    '복막투석 중',
+    '신장 이식 받음',
+  ];
+
+  const handleOptionSelect = (optionIndex) => {
+    setSelectedOption(optionIndex);
+  };
+
+  const printAllAsyncStorageData = async () => {
+    try {
+      const keys = await AsyncStorage.getAllKeys();
+      if (keys.length === 0) {
+        console.log('AsyncStorage에 저장된 데이터가 없습니다.');
+        return;
+      }
+
+      const result = await AsyncStorage.multiGet(keys);
+      result.forEach(([key, value]) => {
+        console.log(`Key: ${key}, Value: ${value}`);
+      });
+
+      return result;
+    } catch (error) {
+      console.error('AsyncStorage 데이터를 불러오는 중 에러가 발생했습니다:', error);
+    }
   };
 
   const handleNext = async () => {
-    if (!selectedOption) {
+    console.log(selectedOption);
+    if (selectedOption === null) {
       Alert.alert('선택 오류', '하나의 옵션을 선택해주세요.');
       return;
     }
 
     try {
       const storedUserInfo = await AsyncStorage.getItem('userInfo');
+      const loginMethod = await AsyncStorage.getItem('loginMethod');
+      const providerID = await AsyncStorage.getItem('userId');
       if (storedUserInfo !== null) {
         const userInfo = JSON.parse(storedUserInfo);
-        userInfo.kidneyDisease = selectedOption;  // Add the selected kidney disease info
+        userInfo.kidneyDisease = selectedOption;
         await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
         Alert.alert('정보 저장 완료', '사용자 정보가 성공적으로 저장되었습니다.');
         console.log("<<< GetKidneyInfo화면 사용자 정보 저장됨 >>>");
-        const temp = await AsyncStorage.getItem('userInfo');
-        console.log(temp);
+
+        const asyncData = await printAllAsyncStorageData();
+
+        let provider = -1;
+        if (loginMethod === 'kakao') {
+          provider = 2;
+        } else if (loginMethod === 'naver') {
+          provider = 1;
+        } else if (loginMethod === 'google') {
+          provider = 0;
+        }
+
+        if (provider === -1) {
+          Alert.alert('로그인 오류', '유효하지 않은 로그인 방법입니다.');
+          return;
+        }
+
+        const apiPayload = {
+          providerId: providerID,
+          provider,
+          name: userInfo.name,
+          nickname: userInfo.nickname,
+          birthdate: userInfo.birthdate.replace(/\//g, ''),
+          gender: userInfo.gender === 'male' ? 0 : 1,
+          height: parseInt(userInfo.height, 10),
+          weight: parseInt(userInfo.weight, 10),
+          kidneyInfo: userInfo.kidneyDisease,
+        };
+
+        // Create a custom axios instance that disables SSL validation
+        const axiosInstance = axios.create({
+          httpsAgent: new https.Agent({
+            rejectUnauthorized: false, // Disable SSL verification
+          }),
+        });
+
+        const response = await axiosInstance.post(
+          'https://13.238.161.156:443/login/register/',
+          apiPayload,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        );
+
+        console.log('API 응답 성공:', response.data);
         navigation.navigate('BottomNavigation');
       }
     } catch (error) {
-      Alert.alert('저장 오류', '사용자 정보를 저장하는 데 실패했습니다.');
+      if (error.response) {
+        console.error('API 응답 에러:', error.response.data);
+      } else if (error.request) {
+        console.error('요청 실패:', error.request);
+      } else {
+        console.error('에러 메시지:', error.message);
+      }
+      Alert.alert('API 오류', '서버와의 통신 중 오류가 발생했습니다.');
     }
   };
 
@@ -42,95 +124,19 @@ const GetKidneyInfo = () => {
     <View style={styles.container}>
       <Text style={styles.title}>만성콩팥병 진단을 받으셨나요?</Text>
 
-      <TouchableOpacity
-        style={[
-          styles.optionButton,
-          selectedOption === '해당사항 없음' && styles.selectedButton,
-        ]}
-        onPress={() => handleOptionSelect('해당사항 없음')}
-      >
-        <Text
-          style={[
-            styles.optionText,
-            selectedOption === '해당사항 없음' && styles.selectedText,
-          ]}
+      {options.map((option, index) => (
+        <TouchableOpacity
+          key={index}
+          style={[styles.optionButton, selectedOption === index && styles.selectedButton]}
+          onPress={() => handleOptionSelect(index)}
         >
-          해당사항 없음
-        </Text>
-      </TouchableOpacity>
+          <Text style={[styles.optionText, selectedOption === index && styles.selectedText]}>
+            {option}
+          </Text>
+        </TouchableOpacity>
+      ))}
 
-      <TouchableOpacity
-        style={[
-          styles.optionButton,
-          selectedOption === '만성콩팥병 (투석 전)' && styles.selectedButton,
-        ]}
-        onPress={() => handleOptionSelect('만성콩팥병 (투석 전)')}
-      >
-        <Text
-          style={[
-            styles.optionText,
-            selectedOption === '만성콩팥병 (투석 전)' && styles.selectedText,
-          ]}
-        >
-          만성콩팥병 (투석 전)
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[
-          styles.optionButton,
-          selectedOption === '혈액투석 중' && styles.selectedButton,
-        ]}
-        onPress={() => handleOptionSelect('혈액투석 중')}
-      >
-        <Text
-          style={[
-            styles.optionText,
-            selectedOption === '혈액투석 중' && styles.selectedText,
-          ]}
-        >
-          혈액투석 중
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[
-          styles.optionButton,
-          selectedOption === '복막투석 중' && styles.selectedButton,
-        ]}
-        onPress={() => handleOptionSelect('복막투석 중')}
-      >
-        <Text
-          style={[
-            styles.optionText,
-            selectedOption === '복막투석 중' && styles.selectedText,
-          ]}
-        >
-          복막투석 중
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[
-          styles.optionButton,
-          selectedOption === '신장 이식 받음' && styles.selectedButton,
-        ]}
-        onPress={() => handleOptionSelect('신장 이식 받음')}
-      >
-        <Text
-          style={[
-            styles.optionText,
-            selectedOption === '신장 이식 받음' && styles.selectedText,
-          ]}
-        >
-          신장 이식 받음
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.nextButton}
-        onPress={handleNext} // Handle the next button press
-      >
+      <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
         <Text style={styles.nextButtonText}>다음</Text>
       </TouchableOpacity>
     </View>
@@ -145,7 +151,6 @@ const styles = StyleSheet.create({
     padding: 24 * width_ratio,
   },
   title: {
-    ...theme.fonts.Bold,
     fontSize: 20 * width_ratio,
     marginLeft: 2 * width_ratio,
     marginTop: 80 * height_ratio,
@@ -163,7 +168,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#E4EDFF',
   },
   optionText: {
-    ...theme.fonts.Regular,
     fontSize: 16 * width_ratio,
     color: '#646464',
     textAlign: 'center',
@@ -179,7 +183,6 @@ const styles = StyleSheet.create({
     borderRadius: 24 * width_ratio,
   },
   nextButtonText: {
-    ...theme.fonts.SemiBold,
     fontSize: 14 * width_ratio,
     color: '#4A61ED',
     textAlign: 'center',

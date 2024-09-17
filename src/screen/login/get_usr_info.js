@@ -88,16 +88,19 @@ const Get_User_Info = () => {
       setIsFormValid(false);
     }
   };
-
   const handleSave = async () => {
     const currentYear = new Date().getFullYear();
     const [year, month, day] = birthdate.split('/').map(Number);
     let errorMessage = '';
-
-    if (!name) {
+  
+    // 이름과 닉네임의 앞뒤 공백 및 줄바꿈 제거
+    const trimmedName = name.trim();
+    const trimmedNickname = nickname.trim();
+  
+    if (!trimmedName) {
       errorMessage += '이름을 입력해주세요.\n';
     }
-    if (!nickname) {
+    if (!trimmedNickname) {
       errorMessage += '닉네임을 입력해주세요.\n';
     }
     if (!height) {
@@ -113,9 +116,7 @@ const Get_User_Info = () => {
       errorMessage += '생년월일 형식이 잘못되었습니다.\n';
     } else {
       if (year < currentYear - 150 || year > currentYear) {
-        errorMessage += `생년월일의 연도는 ${
-          currentYear - 150
-        }년에서 ${currentYear}년 사이여야 합니다.\n`;
+        errorMessage += `생년월일의 연도는 ${currentYear - 150}년에서 ${currentYear}년 사이여야 합니다.\n`;
       }
       if (month < 1 || month > 12) {
         errorMessage += '생년월일의 월은 01에서 12 사이여야 합니다.\n';
@@ -124,13 +125,13 @@ const Get_User_Info = () => {
         errorMessage += '생년월일의 일은 01에서 31 사이여야 합니다.\n';
       }
     }
-
+  
     if (errorMessage) {
       Alert.alert('입력 오류', errorMessage);
       return;
     }
-
-    const userInfo = {name, nickname, birthdate, height, weight, gender};
+  
+    const userInfo = { name: trimmedName, nickname: trimmedNickname, birthdate, height, weight, gender };
     try {
       await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
       console.log('<<< Get_User_Info화면 사용자 정보 저장됨 >>>');
