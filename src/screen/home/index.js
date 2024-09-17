@@ -41,14 +41,34 @@ const HomeScreen = () => {
     navigation.navigate('NoTabs', { screen: 'UserInfo' });
   };
 
+  const printAllAsyncStorageData = async () => {
+    try {
+      const keys = await AsyncStorage.getAllKeys();
+      if (keys.length === 0) {
+        console.log('AsyncStorage에 저장된 데이터가 없습니다.');
+        return;
+      }
+
+      const result = await AsyncStorage.multiGet(keys);
+      result.forEach(([key, value]) => {
+        console.log(`Key: ${key}, Value: ${value}`);
+      });
+
+      return result;
+    } catch (error) {
+      console.error('AsyncStorage 데이터를 불러오는 중 에러가 발생했습니다:', error);
+    }
+  };
 
   const handleKitPurchase = () => {
     Linking.openURL('https://smartstore.naver.com/cym702');
   };
 
   useEffect(() => {
+    
     const fetchUserInfoAndLastCheckupDate = async () => {
       try {
+        await printAllAsyncStorageData()
         const userInfoString = await AsyncStorage.getItem('userInfo');
         if (userInfoString) {
           const userInfo = JSON.parse(userInfoString);

@@ -5,6 +5,26 @@ import FastImage from 'react-native-fast-image';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
+const printAllAsyncStorageData = async () => {
+  try {
+    const keys = await AsyncStorage.getAllKeys();
+    if (keys.length === 0) {
+      console.log('AsyncStorage에 저장된 데이터가 없습니다.');
+      return;
+    }
+
+    const result = await AsyncStorage.multiGet(keys);
+    result.forEach(([key, value]) => {
+      console.log(`Key: ${key}, Value: ${value}`);
+    });
+
+    return result;
+  } catch (error) {
+    console.error('AsyncStorage 데이터를 불러오는 중 에러가 발생했습니다:', error);
+  }
+};
+
 const Authentication3Screen = () => {
   const route = useRoute();
   const navigation = useNavigation();
@@ -72,10 +92,7 @@ const Authentication3Screen = () => {
       // 저장된 값을 가져와서 출력
       const storedDate = await AsyncStorage.getItem('healthscreen_last_update');
       const storedData = await AsyncStorage.getItem('healthscreen_data');
-      console.log('<< storedDate >>');
-      console.log(storedDate);
-      console.log('<< storedData >>');
-      console.log(JSON.parse(storedData));
+      await printAllAsyncStorageData();
 
       navigation.navigate('Health'); // 건강검진 홈화면으로 가기
     } catch (error) {

@@ -24,6 +24,7 @@ import {
   statusCodes,
 } from '@react-native-google-signin/google-signin';
 import NaverLogin from '@react-native-seoul/naver-login';
+import axios from 'axios'; // axios to handle HTTP requests
 
 const width_ratio = Dimensions.get('screen').width / 390;
 const height_ratio = Dimensions.get('screen').height / 844;
@@ -50,6 +51,42 @@ const ResponseJsonText = ({json = {}, name}) => (
     <Text style={styles.responseText}>{JSON.stringify(json, null, 4)}</Text>
   </View>
 );
+
+const ifExistUser = async(providerId, provider)=>{
+  const apiPayload = {
+    providerId,
+    provider
+  };
+
+  const response = await axios.post(
+    'http://13.238.161.156/login/checkExistingUser/',
+    apiPayload,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  );
+  return response.data.exists;
+};
+
+const loginExist = async(providerId, provider)=>{
+  const apiPayload = {
+    providerId,
+    provider
+  };
+
+  const response = await axios.post(
+    'http://13.238.161.156/login/',
+    apiPayload,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  );
+  return response.data;
+};
 
 const Login2 = () => {
   const navigation = useNavigation();
@@ -89,7 +126,43 @@ const Login2 = () => {
         await AsyncStorage.setItem('loginMethod', 'google');
         await AsyncStorage.setItem('userId', id.toString());
         await AsyncStorage.setItem('username', name);
+        const userExists = await ifExistUser(providerId, provider); // Check if user exists
 
+      if (userExists === 1) {
+        console.log('Existing user found, logging in...');
+        const loginResponse = await loginExist(providerId, provider);
+        console.log('Login successful:', loginResponse); // Print login result to console
+
+        // Extracting the user information from the response
+        const { user } = loginResponse;
+
+        // Storing the healthCheckup data in AsyncStorage
+        
+        if (user.healthCheckup) {
+          await AsyncStorage.setItem('healthscreen_data', JSON.stringify(user.healthCheckup));
+          // Storing the last update date in YYYY-MM-DD format using Date
+          const today = new Date();
+          const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+          await AsyncStorage.setItem('healthscreen_last_update', formattedDate);
+        }
+
+        // Formatting the user info for AsyncStorage
+        const formattedUserInfo = {
+          name: user.name,
+          nickname: user.nickname,
+          birthdate: user.birthdate,
+          height: user.height,
+          weight: user.weight,
+          gender: user.gender,
+          kidneyDisease: user.kidneyInfo, // Assuming this is a placeholder value
+        };
+        await AsyncStorage.setItem('userInfo', JSON.stringify(formattedUserInfo));
+
+        console.log('User data and health information stored successfully in AsyncStorage.');
+        navigation.replace('BottomNavigation');
+      } else {
+        console.log('No existing user found. Additional registration required.');
+      }
         handlePostLoginNavigation(); // 로그인 후 화면 전환
       }
       setUser(user);
@@ -116,7 +189,44 @@ const Login2 = () => {
           await AsyncStorage.setItem('loginMethod', 'naver');
           await AsyncStorage.setItem('userId', id.toString());
           await AsyncStorage.setItem('username', name);
+          const userExists = await ifExistUser(providerId, provider); // Check if user exists
 
+      if (userExists === 1) {
+        console.log('Existing user found, logging in...');
+        const loginResponse = await loginExist(providerId, provider);
+        console.log('Login successful:', loginResponse); // Print login result to console
+
+        // Extracting the user information from the response
+        const { user } = loginResponse;
+
+        // Storing the healthCheckup data in AsyncStorage
+        
+        if (user.healthCheckup) {
+          await AsyncStorage.setItem('healthscreen_data', JSON.stringify(user.healthCheckup));
+          // Storing the last update date in YYYY-MM-DD format using Date
+        const today = new Date();
+        const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        await AsyncStorage.setItem('healthscreen_last_update', formattedDate);
+        }
+
+        // Formatting the user info for AsyncStorage
+        const formattedUserInfo = {
+          name: user.name,
+          nickname: user.nickname,
+          birthdate: user.birthdate,
+          height: user.height,
+          weight: user.weight,
+          gender: user.gender,
+          kidneyDisease: user.kidneyInfo, // Assuming this is a placeholder value
+        };
+        await AsyncStorage.setItem('userInfo', JSON.stringify(formattedUserInfo));
+
+       
+        console.log('User data and health information stored successfully in AsyncStorage.');
+        navigation.replace('BottomNavigation');
+      } else {
+        console.log('No existing user found. Additional registration required.');
+      }
           handlePostLoginNavigation();
         } else {
           console.error('Failed to fetch user profile.');
@@ -129,31 +239,68 @@ const Login2 = () => {
     }
   };
 
-  const handleKakaoLogin = async () => {
-    try {
-      console.log('Starting Kakao login...');
-      await kakaoLogin();
-      console.log('Kakao login successful. Fetching user information...');
+const handleKakaoLogin = async () => {
+  try {
+    console.log('Starting Kakao login...');
+    await kakaoLogin();
+    console.log('Kakao login successful. Fetching user information...');
 
-      const userInfo = await me();
-      console.log('User information fetched:', userInfo);
+    const userInfo = await me();
+    console.log('User information fetched:', userInfo);
 
-      if (userInfo && userInfo.id) {
-        await AsyncStorage.setItem('userId', userInfo.id.toString());
-        await AsyncStorage.setItem('loginMethod', 'kakao');
-        // await AsyncStorage.setItem('username', userInfo.nickname);
-        console.log('User data stored in AsyncStorage');
+    if (userInfo && userInfo.id) {
+      const providerId = userInfo.id.toString(); // Convert to string
+      const provider = 2; // Kakao provider identifier
 
-        handlePostLoginNavigation();
-        console.log('Navigation to BottomNavigation');
+      await AsyncStorage.setItem('userId', providerId);
+      await AsyncStorage.setItem('loginMethod', 'kakao');
+
+      const userExists = await ifExistUser(providerId, provider); // Check if user exists
+
+      if (userExists === 1) {
+        console.log('Existing user found, logging in...');
+        const loginResponse = await loginExist(providerId, provider);
+        console.log('Login successful:', loginResponse); // Print login result to console
+
+        // Extracting the user information from the response
+        const { user } = loginResponse;
+
+        // Storing the healthCheckup data in AsyncStorage
+        
+        if (user.healthCheckup) {
+          await AsyncStorage.setItem('healthscreen_data', JSON.stringify(user.healthCheckup));
+          // Storing the last update date in YYYY-MM-DD format using Date
+        const today = new Date();
+        const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        await AsyncStorage.setItem('healthscreen_last_update', formattedDate);
+        }
+
+        // Formatting the user info for AsyncStorage
+        const formattedUserInfo = {
+          name: user.name,
+          nickname: user.nickname,
+          birthdate: user.birthdate,
+          height: user.height,
+          weight: user.weight,
+          gender: user.gender,
+          kidneyDisease: user.kidneyInfo, // Assuming this is a placeholder value
+        };
+        await AsyncStorage.setItem('userInfo', JSON.stringify(formattedUserInfo));
+
+        console.log('User data and health information stored successfully in AsyncStorage.');
       } else {
-        throw new Error('User information is missing.');
+        console.log('No existing user found. Additional registration required.');
       }
-    } catch (error) {
-      console.error('Kakao login error:', error.message || error);
-      console.error('Error details:', error); // 추가적인 오류 정보 출력
+
+      handlePostLoginNavigation(); // Proceed with navigation after login or check
+    } else {
+      throw new Error('User information is missing.');
     }
-  };
+  } catch (error) {
+    console.error('Kakao login error:', error.message || error);
+  }
+};
+
 
   const logout = async () => {
     try {
