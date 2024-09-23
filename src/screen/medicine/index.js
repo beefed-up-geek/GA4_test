@@ -47,9 +47,18 @@ const Medicine = ({navigation}) => {
     if (searchTerm) {
       navigation.navigate('searchResult', {
         query: searchTerm,
-        selectedOption: selectedOption, // 선택된 옵션을 함께 전달
+        selectedOption: selectedOption,
       });
     }
+  };
+
+  // 새로운 함수: 검색어를 설정하고 검색 실행
+  const handleRecentOrPopularSearch = term => {
+    setSearchTerm(term);
+    navigation.navigate('searchResult', {
+      query: term,
+      selectedOption: selectedOption,
+    });
   };
 
   return (
@@ -127,6 +136,8 @@ const Medicine = ({navigation}) => {
               </View>
             </View>
           </View>
+
+          {/* 최근 검색어 */}
           <View style={styles.recentSearchContainer}>
             <View style={styles.recentSearchInnerContainer}>
               <View style={styles.recentSearchHeader}>
@@ -138,17 +149,23 @@ const Medicine = ({navigation}) => {
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                   <View style={styles.searchItemHorizontalContainer}>
                     {recentSearches.map((item, index) => (
-                      <View key={index} style={styles.searchItem}>
+                      <TouchableOpacity
+                        key={index}
+                        style={styles.searchItem}
+                        onPress={() => handleRecentOrPopularSearch(item)} // 최근 검색어 클릭 시
+                      >
                         <Text style={styles.searchItemText} numberOfLines={1}>
                           {item}
                         </Text>
-                      </View>
+                      </TouchableOpacity>
                     ))}
                   </View>
                 </ScrollView>
               </View>
             </View>
           </View>
+
+          {/* 인기 검색어 */}
           <View style={styles.popularSearchContainer}>
             <View style={styles.popularSearchInnerContainer}>
               <View style={styles.popularSearchHeader}>
@@ -162,46 +179,53 @@ const Medicine = ({navigation}) => {
               <View style={styles.popularSearchList}>
                 <View style={styles.searchItemRow}>
                   {popularSearches.slice(0, 3).map((item, index) => (
-                    <View
+                    <TouchableOpacity
                       key={index}
-                      style={[styles.popularSearchItem, {width: 'auto'}]}>
+                      style={styles.popularSearchItem}
+                      onPress={() => handleRecentOrPopularSearch(item)} // 인기 검색어 클릭 시
+                    >
                       <Text
                         style={styles.popularSearchItemText}
                         numberOfLines={1}>
                         {item}
                       </Text>
-                    </View>
+                    </TouchableOpacity>
                   ))}
                 </View>
                 <View style={styles.searchItemRow}>
                   {popularSearches.slice(3, 6).map((item, index) => (
-                    <View
+                    <TouchableOpacity
                       key={index}
-                      style={[styles.popularSearchItem, {width: 'auto'}]}>
+                      style={styles.popularSearchItem}
+                      onPress={() => handleRecentOrPopularSearch(item)} // 인기 검색어 클릭 시
+                    >
                       <Text
                         style={styles.popularSearchItemText}
                         numberOfLines={1}>
                         {item}
                       </Text>
-                    </View>
+                    </TouchableOpacity>
                   ))}
                 </View>
                 <View style={styles.searchItemRow}>
                   {popularSearches.slice(6).map((item, index) => (
-                    <View
+                    <TouchableOpacity
                       key={index}
-                      style={[styles.popularSearchItem, {width: 'auto'}]}>
+                      style={styles.popularSearchItem}
+                      onPress={() => handleRecentOrPopularSearch(item)} // 인기 검색어 클릭 시
+                    >
                       <Text
                         style={styles.popularSearchItemText}
                         numberOfLines={1}>
                         {item}
                       </Text>
-                    </View>
+                    </TouchableOpacity>
                   ))}
                 </View>
               </View>
             </View>
           </View>
+
           <ImageBackground
             style={styles.bottomImage}
             source={require('./assets/images/3e1af27e-24dd-4bff-97db-926dd1c13bbe.png')}
