@@ -11,6 +11,7 @@ import GetKidneyInfo from './src/screen/login/get_kidney_info';
 import GetUserInfo from './src/screen/login/get_usr_info';
 import {initializeKakaoSDK} from '@react-native-kakao/core';
 import {LogBox} from 'react-native';
+import PushNotification from './src/pushnotification';
 
 const Stack = createStackNavigator();
 
@@ -22,6 +23,7 @@ const App = () => {
 
   return (
     <NavigationContainer>
+      <PushNotification />
       <Stack.Navigator
         screenOptions={{
           headerShown: false,

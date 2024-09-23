@@ -28,6 +28,9 @@ allprojects {
             url("$rootDir/../node_modules/react-native/android")
             url("https://devrepo.kakao.com/nexus/content/groups/public/")
         }
+        maven{
+            url("$rootDir/../node-module/@notifee/react-native/android/libs")
+        }
         google()
         jcenter()
     }
