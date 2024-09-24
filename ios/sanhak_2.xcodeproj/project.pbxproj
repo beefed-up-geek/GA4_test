@@ -18,7 +18,6 @@
 		452057F739A84931957A1CD1 /* Pretendard-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4E3671F01B3E49D0966396BA /* Pretendard-Black.otf */; };
 		4F0A0DA16673427682F40CC9 /* Pretendard-ExtraLight.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA0B1D57260146C09E02D7D2 /* Pretendard-ExtraLight.otf */; };
 		6D270F67664D413EA7F65984 /* Pretendard-ExtraBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 1A67CE6EC5B94980A6995EA7 /* Pretendard-ExtraBold.otf */; };
-		7699B88040F8A987B510C191 /* libPods-sanhak_2-sanhak_2Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-sanhak_2-sanhak_2Tests.a */; };
 		77FF19F4CBA34B0989B416CE /* Pretendard-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2ED04293D8444444AD7777A7 /* Pretendard-Medium.otf */; };
 		7856CF2D2EB44B3091B59241 /* Pretendard-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 588EF1BBA03F477F9E29415C /* Pretendard-SemiBold.otf */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
@@ -54,26 +53,19 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = sanhak_2/main.m; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = sanhak_2/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		1A67CE6EC5B94980A6995EA7 /* Pretendard-ExtraBold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Pretendard-ExtraBold.otf"; path = "../assets/fonts/Pretendard-ExtraBold.otf"; sourceTree = "<group>"; };
-		1A67CE6EC5B94980A6995EA7 /* Pretendard-ExtraBold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Pretendard-ExtraBold.otf"; path = "../assets/fonts/Pretendard-ExtraBold.otf"; sourceTree = "<group>"; };
-		2ED04293D8444444AD7777A7 /* Pretendard-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Pretendard-Medium.otf"; path = "../assets/fonts/Pretendard-Medium.otf"; sourceTree = "<group>"; };
 		2ED04293D8444444AD7777A7 /* Pretendard-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Pretendard-Medium.otf"; path = "../assets/fonts/Pretendard-Medium.otf"; sourceTree = "<group>"; };
-		4E3671F01B3E49D0966396BA /* Pretendard-Black.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Pretendard-Black.otf"; path = "../assets/fonts/Pretendard-Black.otf"; sourceTree = "<group>"; };
 		4E3671F01B3E49D0966396BA /* Pretendard-Black.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Pretendard-Black.otf"; path = "../assets/fonts/Pretendard-Black.otf"; sourceTree = "<group>"; };
-		588EF1BBA03F477F9E29415C /* Pretendard-SemiBold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Pretendard-SemiBold.otf"; path = "../assets/fonts/Pretendard-SemiBold.otf"; sourceTree = "<group>"; };
 		52C2B725AB1E5F84C53701B7 /* Pods-sanhak_2.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-sanhak_2.debug.xcconfig"; path = "Target Support Files/Pods-sanhak_2/Pods-sanhak_2.debug.xcconfig"; sourceTree = "<group>"; };
 		588EF1BBA03F477F9E29415C /* Pretendard-SemiBold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Pretendard-SemiBold.otf"; path = "../assets/fonts/Pretendard-SemiBold.otf"; sourceTree = "<group>"; };
 		60FD9562F414BF7CB3F4CD9C /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = sanhak_2/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		723A8D7522B84025984108CB /* Pretendard-Thin.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Pretendard-Thin.otf"; path = "../assets/fonts/Pretendard-Thin.otf"; sourceTree = "<group>"; };
-		723A8D7522B84025984108CB /* Pretendard-Thin.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Pretendard-Thin.otf"; path = "../assets/fonts/Pretendard-Thin.otf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = sanhak_2/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		846B03AAA8DAC2AB4B5AA5D4 /* Pods-sanhak_2-sanhak_2Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-sanhak_2-sanhak_2Tests.debug.xcconfig"; path = "Target Support Files/Pods-sanhak_2-sanhak_2Tests/Pods-sanhak_2-sanhak_2Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		AA0B1D57260146C09E02D7D2 /* Pretendard-ExtraLight.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Pretendard-ExtraLight.otf"; path = "../assets/fonts/Pretendard-ExtraLight.otf"; sourceTree = "<group>"; };
 		B54C898F3B64D4286F63E631 /* libPods-sanhak_2.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-sanhak_2.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		AA0B1D57260146C09E02D7D2 /* Pretendard-ExtraLight.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Pretendard-ExtraLight.otf"; path = "../assets/fonts/Pretendard-ExtraLight.otf"; sourceTree = "<group>"; };
 		D7E7A54C2C5CAC5400B4EDED /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		E2AC230E5EF810FEE1931CF0 /* Pods-sanhak_2.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-sanhak_2.release.xcconfig"; path = "Target Support Files/Pods-sanhak_2/Pods-sanhak_2.release.xcconfig"; sourceTree = "<group>"; };
 		E4EF1E6B783C439DA22FB654 /* Pretendard-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Pretendard-Regular.otf"; path = "../assets/fonts/Pretendard-Regular.otf"; sourceTree = "<group>"; };
-		E4EF1E6B783C439DA22FB654 /* Pretendard-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Pretendard-Regular.otf"; path = "../assets/fonts/Pretendard-Regular.otf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F395C81CDA042BA0ACBAEC71 /* Pods-sanhak_2-sanhak_2Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-sanhak_2-sanhak_2Tests.release.xcconfig"; path = "Target Support Files/Pods-sanhak_2-sanhak_2Tests/Pods-sanhak_2-sanhak_2Tests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -544,7 +536,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.0.1;
+				MARKETING_VERSION = 0.0.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -575,7 +567,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.0.1;
+				MARKETING_VERSION = 0.0.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
