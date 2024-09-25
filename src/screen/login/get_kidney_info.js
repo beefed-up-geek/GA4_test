@@ -89,7 +89,7 @@ const GetKidneyInfo = () => {
         };
 
         const response = await axios.post(
-          'http://13.238.161.156/login/register/',
+          'http://54.79.134.160/login/register/',
           apiPayload,
           {
             headers: {

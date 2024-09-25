@@ -1,15 +1,16 @@
-import React, {useState, useEffect} from 'react';
+// /src/screen/healthscreen/tabs/HypertensionDiabetesScreen.js
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   ActivityIndicator,
+  Dimensions, // For responsive design
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Bar} from 'react-native-progress'; // Import the Bar component
-import {metrics_info, analysis_text} from './data';
-import {styles} from './styles_tab'; // Import styles
+import { Bar } from 'react-native-progress'; // Import the Bar component
+import { metrics_info, analysis_text } from './data';
+import { styles } from './styles_tab'; // Import styles
 
 const HypertensionDiabetesScreen = () => {
   const [storedData, setStoredData] = useState(null);
@@ -118,33 +119,55 @@ const HypertensionDiabetesScreen = () => {
 
   const getMarkerPosition = (value, maxValue) => `${(value / maxValue) * 100}%`;
 
+  // Responsive width for bars
+  const screenWidth = Dimensions.get('window').width;
+  const barWidth = screenWidth - 60; // Adjust based on padding
+
   return (
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.contentContainer}>
+      
+      {/* 수축기 혈압 */}
       <View style={styles.recordContainer}>
         <Text style={styles.title}>혈압(수축기)</Text>
         <Text style={styles.value}>
           {systolic} {metrics_info.resBloodPressureSystolic.unit}
         </Text>
-        <View style={styles.barContainer}>
+        <View style={[styles.barContainer, { width: barWidth }]}>
           <Bar
             progress={systolicProgress}
-            width={200}
+            width={barWidth}
             height={10}
             color={getBarColor('resBloodPressureSystolic', systolic)} // 동적으로 바 색상 설정
-            unfilledColor="rgba(217, 217, 217, 1)" // Light blue unfilled color with 10% opacity
+            unfilledColor="rgba(217, 217, 217, 1)" // 연한 회색 불채색
             borderColor='white'
           />
-          {/* Upper limit marker */}
-          <View style={styles.markerLine(getMarkerPosition(
+          {/* 상한치 표시 */}
+          <View
+            style={{
+              position: 'absolute',
+              left: getMarkerPosition(
                 metrics_info.resBloodPressureSystolic.normal_range_upper_limit,
                 systolicMax,
-              ))} />
-          <Text style={styles.markerText(getMarkerPosition(
+              ),
+              top: 0,
+              height: 30,
+              width: 2,
+              backgroundColor: 'white',
+            }}
+          />
+          <Text
+            style={{
+              position: 'absolute',
+              left: getMarkerPosition(
                 metrics_info.resBloodPressureSystolic.normal_range_upper_limit,
                 systolicMax,
-              ))}>
+              ),
+              top: 15,
+              fontSize: 10,
+              color: 'gray',
+            }}>
             {metrics_info.resBloodPressureSystolic.normal_range_upper_limit}
           </Text>
         </View>
@@ -153,30 +176,47 @@ const HypertensionDiabetesScreen = () => {
         </Text>
       </View>
 
+      {/* 이완기 혈압 */}
       <View style={styles.recordContainer}>
         <Text style={styles.title}>혈압(이완기)</Text>
         <Text style={styles.value}>
-        {diastolic}{' '}
+          {diastolic}{' '}
           {metrics_info.resBloodPressureDiastolic.unit}
         </Text>
-        <View style={styles.barContainer}>
+        <View style={[styles.barContainer, { width: barWidth }]}>
           <Bar
             progress={diastolicProgress}
-            width={200}
+            width={barWidth}
             height={10}
             color={getBarColor('resBloodPressureDiastolic', diastolic)} // 동적으로 바 색상 설정
-            unfilledColor="rgba(217, 217, 217, 1)" // Light blue unfilled color with 10% opacity
+            unfilledColor="rgba(217, 217, 217, 1)" // 연한 회색 불채색
             borderColor='white'
           />
-          {/* Upper limit marker */}
-          <View style={styles.markerLine(getMarkerPosition(
+          {/* 상한치 표시 */}
+          <View
+            style={{
+              position: 'absolute',
+              left: getMarkerPosition(
                 metrics_info.resBloodPressureDiastolic.normal_range_upper_limit,
                 diastolicMax,
-              ))} />
-          <Text style={styles.markerText(getMarkerPosition(
+              ),
+              top: 0,
+              height: 30,
+              width: 2,
+              backgroundColor: 'white',
+            }}
+          />
+          <Text
+            style={{
+              position: 'absolute',
+              left: getMarkerPosition(
                 metrics_info.resBloodPressureDiastolic.normal_range_upper_limit,
                 diastolicMax,
-              ))}>
+              ),
+              top: 15,
+              fontSize: 10,
+              color: 'gray',
+            }}>
             {metrics_info.resBloodPressureDiastolic.normal_range_upper_limit}
           </Text>
         </View>
@@ -185,30 +225,47 @@ const HypertensionDiabetesScreen = () => {
         </Text>
       </View>
 
+      {/* 공복 혈당 */}
       <View style={styles.recordContainer}>
         <Text style={styles.title}>공복 혈당</Text>
         <Text style={styles.value}>
-         {fastingBloodSugar}{' '}
+          {fastingBloodSugar}{' '}
           {metrics_info.resFastingBloodSugar.unit}
         </Text>
-        <View style={styles.barContainer}>
+        <View style={[styles.barContainer, { width: barWidth }]}>
           <Bar
             progress={fastingBloodSugarProgress}
-            width={200}
+            width={barWidth}
             height={10}
             color={getBarColor('resFastingBloodSugar', fastingBloodSugar)} // 동적으로 바 색상 설정
-            unfilledColor="rgba(217, 217, 217, 1)" // Light blue unfilled color with 10% opacity
+            unfilledColor="rgba(217, 217, 217, 1)" // 연한 회색 불채색
             borderColor='white'
           />
-          {/* Upper limit marker */}
-          <View style={styles.markerLine(getMarkerPosition(
+          {/* 상한치 표시 */}
+          <View
+            style={{
+              position: 'absolute',
+              left: getMarkerPosition(
                 metrics_info.resFastingBloodSugar.normal_range_upper_limit,
                 fastingBloodSugarMax,
-              ))} />
-          <Text style={styles.markerText(getMarkerPosition(
+              ),
+              top: 0,
+              height: 30,
+              width: 2,
+              backgroundColor: 'white',
+            }}
+          />
+          <Text
+            style={{
+              position: 'absolute',
+              left: getMarkerPosition(
                 metrics_info.resFastingBloodSugar.normal_range_upper_limit,
                 fastingBloodSugarMax,
-              ))}>
+              ),
+              top: 15,
+              fontSize: 10,
+              color: 'gray',
+            }}>
             {metrics_info.resFastingBloodSugar.normal_range_upper_limit}
           </Text>
         </View>
@@ -221,5 +278,3 @@ const HypertensionDiabetesScreen = () => {
 };
 
 export default HypertensionDiabetesScreen;
-
-

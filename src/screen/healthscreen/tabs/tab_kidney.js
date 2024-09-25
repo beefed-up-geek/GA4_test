@@ -1,5 +1,6 @@
+// /src/screen/healthscreen/tabs/KidneyScreen.js
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Bar } from 'react-native-progress'; // Bar 컴포넌트 임포트
 import { metrics_info, analysis_text } from './data';
@@ -106,8 +107,25 @@ const KidneyScreen = () => {
             borderColor='white'
           />
           {/* 하한치 표시 */}
-          <View style={styles.markerLine(getMarkerPosition(eGFRMin, eGFRMax))} />
-          <Text style={styles.markerText(getMarkerPosition(eGFRMin, eGFRMax))}>
+          <View
+            style={{
+              position: 'absolute',
+              left: getMarkerPosition(eGFRMin, eGFRMax),
+              top: 0,
+              height: 30,
+              width: 2,
+              backgroundColor: 'white',
+            }}
+          />
+          <Text
+            style={{
+              position: 'absolute',
+              left: getMarkerPosition(eGFRMin, eGFRMax),
+              top: 15,
+              fontSize: 10,
+              color: 'gray',
+            }}
+          >
             {eGFRMin}
           </Text>
         </View>
@@ -128,8 +146,25 @@ const KidneyScreen = () => {
             borderColor='white'
           />
           {/* 상한치 표시 */}
-          <View style={styles.markerLine(getMarkerPosition(metrics_info.resSerumCreatinine.normal_range_upper_limit, serumCreatinineMax))} />
-          <Text style={styles.markerText(getMarkerPosition(metrics_info.resSerumCreatinine.normal_range_upper_limit, serumCreatinineMax))}>
+          <View
+            style={{
+              position: 'absolute',
+              left: getMarkerPosition(metrics_info.resSerumCreatinine.normal_range_upper_limit, serumCreatinineMax),
+              top: 0,
+              height: 30,
+              width: 2,
+              backgroundColor: 'white',
+            }}
+          />
+          <Text
+            style={{
+              position: 'absolute',
+              left: getMarkerPosition(metrics_info.resSerumCreatinine.normal_range_upper_limit, serumCreatinineMax),
+              top: 15,
+              fontSize: 10,
+              color: 'gray',
+            }}
+          >
             {metrics_info.resSerumCreatinine.normal_range_upper_limit}
           </Text>
         </View>
@@ -140,7 +175,9 @@ const KidneyScreen = () => {
       <View style={styles.recordContainer}>
         <Text style={styles.title}>요단백</Text>
         <Text style={styles.value}>{latestRecord.resUrinaryProtein}</Text>
-        <Text style={styles.analysis}>{analysis_text.resUrinaryProtein[latestRecord.resUrinaryProtein === "음성" ? "negative" : "positive"]}</Text>
+        <Text style={styles.analysis}>
+          {analysis_text.resUrinaryProtein[latestRecord.resUrinaryProtein === "음성" ? "negative" : "positive"]}
+        </Text>
       </View>
     </ScrollView>
   );

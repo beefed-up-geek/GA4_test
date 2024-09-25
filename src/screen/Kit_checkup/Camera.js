@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {RNCamera} from 'react-native-camera';
+import { onDisplayNotification } from '../../pushnotification';
 
 const CameraScreen = ({navigation}) => {
   const [photo, setPhoto] = useState(null);
@@ -18,6 +19,11 @@ const CameraScreen = ({navigation}) => {
       const data = await camera.takePictureAsync(options);
       setPhoto(data.uri);
       askToRetakeOrProceed();
+
+      setTimeout(() => {
+        onDisplayNotification(); // PushNotification에서 푸시 알림 함수 호출
+      }, 300000);
+
     } catch (error) {
       console.error(error);
     }

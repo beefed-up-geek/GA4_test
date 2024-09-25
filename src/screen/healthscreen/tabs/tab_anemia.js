@@ -1,10 +1,11 @@
+// /src/screen/healthscreen/tabs/AnemiaScreen.js
 import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   ScrollView,
   ActivityIndicator,
-  StyleSheet, // StyleSheet 임포트
+  Dimensions, // 반응형 디자인을 위해 추가
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { metrics_info, analysis_text } from './data';
@@ -20,13 +21,14 @@ const AnemiaScreen = () => {
     const fetchStoredData = async () => {
       try {
         const data = await AsyncStorage.getItem('healthscreen_data');
+        console.log(data);
         const user = await AsyncStorage.getItem('userInfo');
         if (data !== null) {
           setStoredData(JSON.parse(data));
         }
         if (user !== null) {
           setUserInfo(JSON.parse(user));
-        }
+        }   
       } catch (error) {
         console.error('Failed to load stored data:', error);
       } finally {
@@ -126,32 +128,71 @@ const AnemiaScreen = () => {
 
   const getMarkerPosition = (value, maxValue) => `${(value / maxValue) * 100}%`;
 
+  // 반응형 바 너비 설정
+  const screenWidth = Dimensions.get('window').width;
+  const barWidth = screenWidth - 60; // 패딩에 따라 조정
+
   return (
     <ScrollView
       style={styles.container}
-      contentContainerStyle={styles.contentContainer}>
+      contentContainerStyle={styles.contentContainer}
+    >
       <View style={styles.recordContainer}>
         <Text style={styles.title}>혈색소 (Hemoglobin)</Text>
         <Text style={styles.value}>
           가장 최근 값: {hemoglobin} {metrics_info.resHemoglobin.unit}
         </Text>
-        <View style={styles.barContainer}>
+        <View style={[styles.barContainer, { width: barWidth }]}>
           <Bar
             progress={hemoglobinProgress}
-            width={200}
+            width={barWidth}
             height={10}
             color={getBarColor('resHemoglobin', hemoglobin)} // 바 색상 동적 설정
-            unfilledColor="rgba(217, 217, 217, 1)" // 연한 파란색 10% 불투명도
-            borderColor='white'
+            unfilledColor="rgba(217, 217, 217, 1)" // 연한 회색 불채색
+            borderColor="white"
           />
           {/* 하한치 표시 */}
-          <View style={styles.markerLine(getMarkerPosition(lower, hemoglobinMax))} />
-          <Text style={styles.markerText(getMarkerPosition(lower, hemoglobinMax))}>
+          <View
+            style={{
+              position: 'absolute',
+              left: getMarkerPosition(lower, hemoglobinMax),
+              top: 0,
+              height: 30,
+              width: 2,
+              backgroundColor: 'white',
+            }}
+          />
+          <Text
+            style={{
+              position: 'absolute',
+              left: getMarkerPosition(lower, hemoglobinMax),
+              top: 15,
+              fontSize: 10,
+              color: 'gray',
+            }}
+          >
             {lower}
           </Text>
           {/* 상한치 표시 */}
-          <View style={styles.markerLine(getMarkerPosition(upper, hemoglobinMax))} />
-          <Text style={styles.markerText(getMarkerPosition(upper, hemoglobinMax))}>
+          <View
+            style={{
+              position: 'absolute',
+              left: getMarkerPosition(upper, hemoglobinMax),
+              top: 0,
+              height: 30,
+              width: 2,
+              backgroundColor: 'white',
+            }}
+          />
+          <Text
+            style={{
+              position: 'absolute',
+              left: getMarkerPosition(upper, hemoglobinMax),
+              top: 15,
+              fontSize: 10,
+              color: 'gray',
+            }}
+          >
             {upper}
           </Text>
         </View>
@@ -164,4 +205,3 @@ const AnemiaScreen = () => {
 };
 
 export default AnemiaScreen;
-

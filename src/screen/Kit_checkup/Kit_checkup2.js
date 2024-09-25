@@ -115,8 +115,8 @@ const Kit_checkupScreen2 = ({onPress, navigation}) => {
               </View>
             </View> */}
             <Video
-              source={require('../../../android/app/src/main/res/raw/video.mp4')} // 로컬 파일을 사용하려면 require('./path/to/video.mp4')
-              style={styles.video}
+              // source={require('../../../android/app/src/main/res/raw/video.mp4')} // 로컬 파일을 사용하려면 require('./path/to/video.mp4')
+              // style={styles.video}
               controls={true} // 컨트롤러 표시
             />
           </View>

@@ -1,15 +1,16 @@
+// /src/screen/healthscreen/tabs/DyslipidemiaScreen.js
 import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   ActivityIndicator,
+  Dimensions, // For responsive design
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { metrics_info, analysis_text } from './data';
 import { styles } from './styles_tab'; // 모든 tab의 스타일정보가 styles_tab.js에 통합되어있음
-import { Bar } from 'react-native-progress';
+import { Bar } from 'react-native-progress'; // Import the Bar component
 
 const DyslipidemiaScreen = () => {
   const [storedData, setStoredData] = useState(null);
@@ -109,43 +110,79 @@ const DyslipidemiaScreen = () => {
   // 진행 바 값 계산
   const totalCholesterolMax =
     metrics_info.resTotalCholesterol.normal_range_upper_limit * 1.3;
-  const hdlCholesterolMin = metrics_info.resHDLCholesterol.normal_range_lower_limit;
+  const hdlCholesterolMin =
+    metrics_info.resHDLCholesterol.normal_range_lower_limit;
   const hdlCholesterolMax = hdlCholesterolMin * 2;
 
-  const totalCholesterolProgress = Math.min(totalCholesterol / totalCholesterolMax, 1); // 0에서 1 사이로 제한
-  const hdlCholesterolProgress = Math.min(hdlCholesterol / hdlCholesterolMax, 1);
+  const totalCholesterolProgress = Math.min(
+    totalCholesterol / totalCholesterolMax,
+    1
+  ); // 0에서 1 사이로 제한
+  const hdlCholesterolProgress = Math.min(
+    hdlCholesterol / hdlCholesterolMax,
+    1
+  );
 
   // LDL 콜레스테롤의 상한치 설정
   const ldlUpper = metrics_info.resLDLCholesterol.normal_range_upper_limit;
   const ldlCholesterolMax = ldlUpper * 1.3; // 상한치의 1.3배로 설정
-  const ldlCholesterolProgress = Math.min(ldlCholesterol / ldlCholesterolMax, 1);
+  const ldlCholesterolProgress = Math.min(
+    ldlCholesterol / ldlCholesterolMax,
+    1
+  );
 
   const getMarkerPosition = (value, maxValue) => `${(value / maxValue) * 100}%`;
+
+  // Responsive width for bars
+  const screenWidth = Dimensions.get('window').width;
+  const barWidth = screenWidth - 60; // Adjust based on padding
 
   return (
     <ScrollView
       style={styles.container}
-      contentContainerStyle={styles.contentContainer}>
-      
+      contentContainerStyle={styles.contentContainer}
+    >
       {/* 총 콜레스테롤 */}
       <View style={styles.recordContainer}>
         <Text style={styles.title}>총 콜레스테롤</Text>
         <Text style={styles.value}>
-          {totalCholesterol}{' '}
-          {metrics_info.resTotalCholesterol.unit}
+          {totalCholesterol} {metrics_info.resTotalCholesterol.unit}
         </Text>
-        <View style={styles.barContainer}>
+        <View style={[styles.barContainer, { width: barWidth }]}>
           <Bar
             progress={totalCholesterolProgress}
-            width={200}
+            width={barWidth}
             height={10}
             color={getBarColor('resTotalCholesterol', totalCholesterol)}
-            unfilledColor="rgba(217, 217, 217, 1)" // 연한 파란색 10% 불투명도
-            borderColor='white'
+            unfilledColor="rgba(217, 217, 217, 1)" // 연한 회색 불채색
+            borderColor="white"
           />
           {/* 상한치 표시 */}
-          <View style={styles.markerLine(getMarkerPosition(metrics_info.resTotalCholesterol.normal_range_upper_limit, totalCholesterolMax))} />
-          <Text style={styles.markerText(getMarkerPosition(metrics_info.resTotalCholesterol.normal_range_upper_limit, totalCholesterolMax))}>
+          <View
+            style={{
+              position: 'absolute',
+              left: getMarkerPosition(
+                metrics_info.resTotalCholesterol.normal_range_upper_limit,
+                totalCholesterolMax
+              ),
+              top: 0,
+              height: 30,
+              width: 2,
+              backgroundColor: 'white',
+            }}
+          />
+          <Text
+            style={{
+              position: 'absolute',
+              left: getMarkerPosition(
+                metrics_info.resTotalCholesterol.normal_range_upper_limit,
+                totalCholesterolMax
+              ),
+              top: 15,
+              fontSize: 10,
+              color: 'gray',
+            }}
+          >
             {metrics_info.resTotalCholesterol.normal_range_upper_limit}
           </Text>
         </View>
@@ -158,21 +195,43 @@ const DyslipidemiaScreen = () => {
       <View style={styles.recordContainer}>
         <Text style={styles.title}>HDL 콜레스테롤</Text>
         <Text style={styles.value}>
-          {hdlCholesterol}{' '}
-          {metrics_info.resHDLCholesterol.unit}
+          {hdlCholesterol} {metrics_info.resHDLCholesterol.unit}
         </Text>
-        <View style={styles.barContainer}>
+        <View style={[styles.barContainer, { width: barWidth }]}>
           <Bar
             progress={hdlCholesterolProgress}
-            width={200}
+            width={barWidth}
             height={10}
             color={getBarColor('resHDLCholesterol', hdlCholesterol)}
             unfilledColor="rgba(217, 217, 217, 1)"
-            borderColor='white'
+            borderColor="white"
           />
           {/* 하한치 표시 */}
-          <View style={styles.markerLine(getMarkerPosition(metrics_info.resHDLCholesterol.normal_range_lower_limit, hdlCholesterolMax))} />
-          <Text style={styles.markerText(getMarkerPosition(metrics_info.resHDLCholesterol.normal_range_lower_limit, hdlCholesterolMax))}>
+          <View
+            style={{
+              position: 'absolute',
+              left: getMarkerPosition(
+                metrics_info.resHDLCholesterol.normal_range_lower_limit,
+                hdlCholesterolMax
+              ),
+              top: 0,
+              height: 30,
+              width: 2,
+              backgroundColor: 'white',
+            }}
+          />
+          <Text
+            style={{
+              position: 'absolute',
+              left: getMarkerPosition(
+                metrics_info.resHDLCholesterol.normal_range_lower_limit,
+                hdlCholesterolMax
+              ),
+              top: 15,
+              fontSize: 10,
+              color: 'gray',
+            }}
+          >
             {metrics_info.resHDLCholesterol.normal_range_lower_limit}
           </Text>
         </View>
@@ -185,21 +244,37 @@ const DyslipidemiaScreen = () => {
       <View style={styles.recordContainer}>
         <Text style={styles.title}>LDL 콜레스테롤</Text>
         <Text style={styles.value}>
-          {ldlCholesterol}{' '}
-          {metrics_info.resLDLCholesterol.unit}
+          {ldlCholesterol} {metrics_info.resLDLCholesterol.unit}
         </Text>
-        <View style={styles.barContainer}>
+        <View style={[styles.barContainer, { width: barWidth }]}>
           <Bar
             progress={ldlCholesterolProgress}
-            width={200}
+            width={barWidth}
             height={10}
             color={getBarColor('resLDLCholesterol', ldlCholesterol)}
             unfilledColor="rgba(217, 217, 217, 1)"
-            borderColor='white'
+            borderColor="white"
           />
           {/* 상한치 표시 */}
-          <View style={styles.markerLine(getMarkerPosition(ldlUpper, ldlCholesterolMax))} />
-          <Text style={styles.markerText(getMarkerPosition(ldlUpper, ldlCholesterolMax))}>
+          <View
+            style={{
+              position: 'absolute',
+              left: getMarkerPosition(ldlUpper, ldlCholesterolMax),
+              top: 0,
+              height: 30,
+              width: 2,
+              backgroundColor: 'white',
+            }}
+          />
+          <Text
+            style={{
+              position: 'absolute',
+              left: getMarkerPosition(ldlUpper, ldlCholesterolMax),
+              top: 15,
+              fontSize: 10,
+              color: 'gray',
+            }}
+          >
             {ldlUpper}
           </Text>
         </View>
@@ -212,4 +287,3 @@ const DyslipidemiaScreen = () => {
 };
 
 export default DyslipidemiaScreen;
-

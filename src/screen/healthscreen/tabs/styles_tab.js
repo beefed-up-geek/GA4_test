@@ -60,19 +60,4 @@ export const styles = StyleSheet.create({
     width: 200,
     height: 30,
   },
-  markerLine: (leftPosition) => ({
-    position: 'absolute',
-    left: leftPosition,
-    top: 0,
-    height: 30,
-    width: 2,
-    backgroundColor: 'white',
-  }),
-  markerText: (leftPosition) => ({
-    position: 'absolute',
-    left: leftPosition,
-    top: 15,
-    fontSize: 10,
-    color: 'gray',
-  }),
 });
