@@ -104,7 +104,7 @@ const Authentication3Screen = () => {
         console.log('Error data:', error.response.data);
         console.log('Error status:', error.response.status);
         console.log('Error headers:', error.response.headers);
-        Alert.alert('오류', '인증에 완료가 됐으나 정보를 찾을 수 없습니다.');
+        Alert.alert('오류', '인증이 완료가 됐으나 정보를 찾을 수 없습니다.');
       } else {
         // 요청이 전송되지 못한 경우
         console.log('Error message:', error.message);
