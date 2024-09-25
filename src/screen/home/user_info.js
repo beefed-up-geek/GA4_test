@@ -147,7 +147,7 @@ const Get_User_Info_Two = () => {
       };
   
       // 서버에 업데이트 요청
-      const response = await axios.post('http://13.238.161.156/login/update', userInfo);
+      const response = await axios.post('https://54.79.134.160/login/update', userInfo);
       
       if (response.status === 200) {
         Alert.alert('성공', '사용자 정보가 성공적으로 업데이트되었습니다.');

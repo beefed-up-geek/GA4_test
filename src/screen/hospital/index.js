@@ -132,7 +132,7 @@ export default function HospitalScreen({navigation}) {
   const fetchHospitalData = async query => {
     try {
       const response = await axios.post(
-        `http://13.238.161.156/hospital`,
+        `http://54.79.134.160/hospital`,
         {
           hospitalName: query,
           user_latitude: latitude,
