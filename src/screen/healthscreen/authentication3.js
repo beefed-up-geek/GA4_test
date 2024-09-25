@@ -5,7 +5,6 @@ import FastImage from 'react-native-fast-image';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
 const printAllAsyncStorageData = async () => {
   try {
     const keys = await AsyncStorage.getAllKeys();
@@ -21,7 +20,10 @@ const printAllAsyncStorageData = async () => {
 
     return result;
   } catch (error) {
-    console.error('AsyncStorage 데이터를 불러오는 중 에러가 발생했습니다:', error);
+    console.error(
+      'AsyncStorage 데이터를 불러오는 중 에러가 발생했습니다:',
+      error,
+    );
   }
 };
 
