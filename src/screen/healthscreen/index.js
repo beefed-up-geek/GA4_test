@@ -105,7 +105,7 @@ const HealthScreen = () => {
 
       {/* 신장 데이터 제목 */}
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>신장</Text>
+        <Text style={styles.sectionTitle}>나의 콩팥 건강</Text>
       </View>
 
       {/* KidneyScreen 컴포넌트 표시 */}
@@ -195,7 +195,8 @@ const styles = StyleSheet.create({
   sectionHeader: {
     paddingHorizontal: 20,
     paddingVertical: 10,
-    backgroundColor: '#F0F0F0',
+    backgroundColor: 'white',
+    marginTop: -20,
   },
   sectionTitle: {
     fontSize: 20,
