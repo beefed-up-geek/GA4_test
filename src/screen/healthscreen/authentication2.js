@@ -350,6 +350,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   backButton: {
+    marginLeft: -8,
     marginTop: 12,
     marginBottom: 40,
   },
@@ -413,8 +414,9 @@ const styles = StyleSheet.create({
     borderRadius: 8 * width_ratio,
   },
   telecomButtonText: {
-    fontSize: 14 * width_ratio,
-    color: '#000',
+    fontSize: 12,
+    ...theme.fonts.Medium,
+    color: theme.colors.textGray,
   },
   underTriangleButtonImage: {
     width: 7 * width_ratio,

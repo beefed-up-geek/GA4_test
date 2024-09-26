@@ -87,7 +87,9 @@ const styles = StyleSheet.create({
     marginLeft: 2 * width_ratio,
   },
   backButton: {
-    marginBottom: 40 * height_ratio,
+    marginLeft: -8,
+    marginTop: 12,
+    marginBottom: 40,
   },
   backButtonImage: {
     width: 24 * width_ratio,
