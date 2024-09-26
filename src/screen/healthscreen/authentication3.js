@@ -1,10 +1,10 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, Alert} from 'react-native';
+import {View, Text, TouchableOpacity, StyleSheet, Alert, Image} from 'react-native';
 import {useRoute, useNavigation} from '@react-navigation/native';
-import FastImage from 'react-native-fast-image';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import theme from '../../theme';
 
 const printAllAsyncStorageData = async () => {
   try {
@@ -37,6 +37,8 @@ const Authentication3Screen = () => {
     phoneNo,
     telecom,
     loginTypeLevel,
+    selectedLabel,
+    selectedImage,
   } = route.params;
 
   const handleCompleteAuth = async () => {
@@ -113,18 +115,43 @@ const Authentication3Screen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>
-        이 화면은 /src/screen/health_screen/authentication3.js 🎉
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.goBack()}>
+        <Image
+          source={require('../../images/chevronArrowLeft.png')}
+          style={styles.backButtonImage}
+        />
+      </TouchableOpacity>
+      <Text style={styles.mainText}>
+        {selectedLabel}에서 본인인증 후 인증완료를 눌러주세요
       </Text>
-      <Text style={styles.waitingText}>
-        본인인증을 완료하고 인증완료를 눌러주세요!
-      </Text>
-      <Text style={styles.waitingText}>기다리는 중입니다!</Text>
-      <FastImage
-        source={require('../../images/health_screen/waiting.gif')}
-        style={styles.image}
-        resizeMode={FastImage.resizeMode.contain}
-      />
+      <Text style={styles.waitingText}>선택하신 인증서 앱에서 인증을 진행해 주세요.</Text>
+      <View style={styles.flowContainer}>
+        <View style={styles.imageContainer}>
+          <Image source={require('../../images/hns.png')} style={styles.HSappImage} />
+          <Text style={styles.label}>인증요청</Text>
+        </View>
+        <Image source={require('../../images/health_screen/play.png')} style={styles.arrowImage} />
+        <View style={styles.imageContainer}>
+          <Image source={selectedImage} style={styles.appImage} />
+          <Text style={styles.label}>간편인증</Text>
+        </View>
+        <Image source={require('../../images/health_screen/play.png')} style={styles.arrowImage} />
+        <View style={styles.imageContainer}>
+         <Image source={require('../../images/hns.png')} style={styles.HSappImage} />
+          <Text style={styles.label}>인증완료</Text>
+        </View>
+      </View>
+      <View style={styles.alertBox}>
+        <View style={styles.alertTitleContainer}>      
+          <Image source={require('../../images/health_screen/info.png')} style={styles.infoIcon} />
+          <Text style={styles.alertTitle}>인증요청이 오지 않는다면?</Text>
+        </View>
+        <Text style={styles.alertDescription}>
+          간편인증 서비스 이용 중 인증 오류가 발생할 경우 선택하신 인증기관으로 문의해 주세요.
+        </Text>
+      </View>
       <TouchableOpacity style={styles.button} onPress={handleCompleteAuth}>
         <Text style={styles.buttonText}>인증완료</Text>
       </TouchableOpacity>
@@ -135,9 +162,19 @@ const Authentication3Screen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    flexGrow: 1,
+    paddingTop: 20,
+    paddingHorizontal: 24,
+    backgroundColor: 'white',
+  },
+  backButton: {
+    marginLeft: -8,
+    marginTop: 12,
+    marginBottom: 40,
+  },
+  backButtonImage: {
+    width: 24,
+    height: 24,
   },
   image: {
     width: 200,
@@ -148,18 +185,89 @@ const styles = StyleSheet.create({
     color: 'black',
     marginBottom: 50,
   },
+  mainText: {
+    marginLeft: 6,
+    fontSize: 20,
+    ...theme.fonts.SemiBold,
+    color: theme.colors.textGray,
+    marginBottom: 12,
+  },
   waitingText: {
-    color: 'black',
+    marginLeft: 6,
+    fontSize: 16,
+    ...theme.fonts.Medium,
+    color: theme.colors.BlueGray,
+  },
+  flowContainer: {
+    justifyContent: 'center',
+    marginVertical: 120,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  imageContainer: {
+    alignItems: 'center',
+  },
+  appImage: {
+    // borderWidth: 2,
+    // borderColor: theme.colors.lightGray,
+    width: 64,
+    height: 64,
+    resizeMode: 'contain',
+  },  
+  HSappImage: {
+    width: 52,
+    height: 52,
+    resizeMode: 'contain',
+  },
+  arrowImage: {
+    width: 16,
+    height: 16,
+    marginHorizontal: 24,
+    marginBottom: 24,
+  },
+  label: {
+    marginTop: 12,
+    fontSize: 12,
+    color: '#000',
+    textAlign: 'center',
+  },
+  alertBox: {
+    backgroundColor: '#F3F6FB',
+    borderRadius: 13,
+    paddingVertical: 20,
+    paddingHorizontal: 16,
+    marginBottom: 20,
+  },
+  alertTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  infoIcon: {
+    width: 18,
+    height: 18,
+    marginRight: 8,
+  },
+  alertTitle: {
+    fontSize: 15,
+    ...theme.fonts.SemiBold,
+    color: theme.colors.textGray,
+  },
+  alertDescription: {
+    marginLeft: 20,
+    fontSize: 14,
+    color: theme.colors.BlueGray,
   },
   button: {
-    backgroundColor: '#1677FF',
-    paddingVertical: 10,
+    alignItems: 'center',
+    backgroundColor: theme.colors.mainBlue,
+    paddingVertical: 16,
     paddingHorizontal: 20,
-    borderRadius: 5,
+    borderRadius: 13,
   },
   buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    ...theme.fonts.SemiBold,
+    color: theme.colors.White,
   },
 });
 

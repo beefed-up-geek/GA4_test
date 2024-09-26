@@ -16,7 +16,11 @@ const Authentication1Screen = () => {
   const handleButtonPress = (index) => {
     setSelectedButtonIndex(index);
     setSelectedValue(index + 1); // 1~8 값 설정
-    navigation.navigate('Authentication2', { selectedValue: index + 1 });
+    navigation.navigate('Authentication2', { 
+      selectedValue: index + 1, 
+      selectedLabel: labels[index],
+      selectedImage: images[index]
+    });
   };
 
   const images = [

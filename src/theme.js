@@ -9,8 +9,8 @@ const theme = {
     mainBlue: '#597EF7',  
     lightBlue: '#F0F5FF',
     lightGray: '#FAFAFA',
-    DarkGray: '#D9D9D9',
-    textGray: '#8B8B91',
+    BlueGray: '#4D495A',
+    textGray: '#353535',
   },
   fonts: {
     Black: {

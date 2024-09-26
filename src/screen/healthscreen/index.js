@@ -13,7 +13,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 
-// Importing the components from the tabs directory
+import theme from '../../theme';
 import KidneyScreen from './tabs/tab_kidney';
 
 const initialLayout = { width: Dimensions.get('window').width };
@@ -160,8 +160,8 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: 'black',
+    ...theme.fonts.SemiBold,
+    color: theme.colors.textGray,
   },
   boxContainer: {
     justifyContent: 'center',
@@ -189,19 +189,19 @@ const styles = StyleSheet.create({
   },
   boxTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: 'black',
+    ...theme.fonts.Bold,
+    color: theme.colors.textGray,
     textAlign: 'left',
     marginBottom: 5,
   },
   boxSubtitle: {
     fontSize: 14,
-    fontWeight: 'bold',
-    color: 'black',
+    ...theme.fonts.Medium,
+    color: theme.colors.textGray,
   },
   boxDate: {
     fontSize: 14,
-    color: 'black',
+    color: theme.colors.textGray,
   },
   image: {
     width: 120,
@@ -241,14 +241,14 @@ const styles = StyleSheet.create({
     height: 3,
   },
   labelStyle: {
-    fontWeight: 'bold',
+    ...theme.fonts.SemiBold,
   },
   tabStyle: {
     width: 100,  // 탭의 너비 줄이기
   },
   tabLabel: {
     fontSize: 14,
-    fontWeight: 'bold',
+    ...theme.fonts.SemiBold,
   },
 });
 
