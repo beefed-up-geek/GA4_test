@@ -11,12 +11,9 @@ import {
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 
 import theme from '../../theme';
 import KidneyScreen from './tabs/tab_kidney';
-
-const initialLayout = { width: Dimensions.get('window').width };
 
 const HealthScreen = () => {
   const navigation = useNavigation();
@@ -25,11 +22,6 @@ const HealthScreen = () => {
   const [lastUpdate, setLastUpdate] = useState(null);
   const [lastCheckupDate, setLastCheckupDate] = useState(null);
   const [healthData, setHealthData] = useState([]);
-  const [index, setIndex] = useState(0);
-  const [routes] = useState([
-    { key: 'kidney', title: '신장' },
-    // 다른 탭이 있다면 여기에 추가
-  ]);
 
   const fetchData = async () => {
     try {
@@ -39,14 +31,22 @@ const HealthScreen = () => {
       const storedData = await AsyncStorage.getItem('healthscreen_data');
       if (storedData) {
         const parsedData = JSON.parse(storedData);
-        setHealthData(parsedData);
+
+        // 데이터 평탄화
+        const flatData = Array.isArray(parsedData[0]) ? parsedData.flat() : parsedData;
+        setHealthData(flatData);
 
         // Get the latest checkup date
-        const latestRecord = parsedData[parsedData.length - 1];
+        const latestRecord = flatData[flatData.length - 1];
         if (latestRecord) {
           const { resCheckupYear, resCheckupDate } = latestRecord;
-          const formattedDate = `${resCheckupYear}-${resCheckupDate.slice(0, 2)}-${resCheckupDate.slice(2, 4)}`;
-          setLastCheckupDate(formattedDate);
+
+          if (resCheckupDate) {
+            const formattedDate = `${resCheckupYear}-${resCheckupDate.slice(0, 2)}-${resCheckupDate.slice(2, 4)}`;
+            setLastCheckupDate(formattedDate);
+          } else {
+            console.error('resCheckupDate가 정의되어 있지 않습니다.');
+          }
         }
       }
     } catch (error) {
@@ -58,36 +58,6 @@ const HealthScreen = () => {
     React.useCallback(() => {
       fetchData();
     }, []),
-  );
-
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      // 화면이 포커스될 때마다 fetchData 호출
-      fetchData();
-    });
-
-    return unsubscribe;
-  }, [navigation]);
-
-  const renderScene = SceneMap({
-    kidney: KidneyScreen,
-    // 다른 탭이 있다면 여기에 추가
-  });
-
-  const renderTabBar = props => (
-    <TabBar
-      {...props}
-      indicatorStyle={styles.indicator}
-      style={styles.tabBar}
-      labelStyle={styles.labelStyle}
-      scrollEnabled
-      tabStyle={styles.tabStyle} // Reduce the width of each tab
-      renderLabel={({ route, focused, color }) => (
-        <Text style={[styles.tabLabel, { color: focused ? '#7596FF' : '#5D5D62' }]}>
-          {route.title}
-        </Text>
-      )}
-    />
   );
 
   return (
@@ -133,16 +103,14 @@ const HealthScreen = () => {
         </TouchableOpacity>
       </View>
 
-      {/* 새로운 Tab View 컴포넌트 */}
-      <View style={styles.tabContainer}>
-        <TabView
-          navigationState={{ index, routes }}
-          renderScene={renderScene}
-          onIndexChange={setIndex}
-          initialLayout={initialLayout}
-          renderTabBar={renderTabBar}
-          style={styles.tabView}
-        />
+      {/* 신장 데이터 제목 */}
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>나의 콩팥 건강</Text>
+      </View>
+
+      {/* KidneyScreen 컴포넌트 표시 */}
+      <View style={styles.contentContainer}>
+        <KidneyScreen />
       </View>
     </View>
   );
@@ -224,17 +192,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     transform: [{ translateY: 15 }],
   },
-  tabContainer: {
-    flex: 1,
-    marginTop: 20,
-  },
-  tabView: {
-    flex: 1,
-  },
-  tabBar: {
+  sectionHeader: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
     backgroundColor: 'white',
-    borderBottomColor: '#EBEFFE',
-    borderBottomWidth: 1,
+    marginTop: -20,
   },
   indicator: {
     backgroundColor: '#7596FF',

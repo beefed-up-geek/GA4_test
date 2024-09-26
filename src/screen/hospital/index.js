@@ -88,7 +88,17 @@ export default function HospitalScreen({navigation}) {
           setLoading(false);
           return;
         }
+      } else if (Platform.OS === 'ios') {
+        const hasPermission = await Geolocation.requestAuthorization(
+          'whenInUse',
+        );
+        if (hasPermission === 'denied' || hasPermission === 'restricted') {
+          console.error('Location permission denied on iOS');
+          setLoading(false);
+          return;
+        }
       }
+      // 위치 정보를 가져오는 함수 호출
       getCurrentLocation();
     } catch (err) {
       console.warn(err);
@@ -129,7 +139,7 @@ export default function HospitalScreen({navigation}) {
     }
   };
 
-  const fetchHospitalData = async (query) => {
+  const fetchHospitalData = async query => {
     try {
       console.log('Fetching hospital data...'); // 요청 시작 로그
       console.log('Request body:', {
@@ -138,7 +148,7 @@ export default function HospitalScreen({navigation}) {
         user_longitude: longitude,
         hospitalStatus: hospitalStatus,
       });
-  
+
       const response = await axios.post(
         `http://54.79.134.160/hospital`,
         {
@@ -151,20 +161,21 @@ export default function HospitalScreen({navigation}) {
           headers: {
             'Content-Type': 'application/json',
           },
-        }
+          timeout: 10000,
+        },
       );
-  
+
       // 요청 후 응답 데이터 확인 로그
       console.log('Response status:', response.status); // HTTP 상태 코드
       console.log('Response data:', response.data); // 서버에서 반환된 데이터
-  
-      const filteredData = response.data.results.filter((hospital) => {
+
+      const filteredData = response.data.results.filter(hospital => {
         const distanceInKm = parseFloat(hospital.distance);
         return distanceInKm <= parseFloat(valueDistance);
       });
-  
+
       setHospitalData(filteredData);
-      console.log('Filtered hospital data:', filteredData); // 필터된 데이터 확인
+      //console.log('Filtered hospital data:', filteredData); // 필터된 데이터 확인
     } catch (error) {
       console.error('Error fetching hospital data:', error); // 에러 메시지 출력
     }
@@ -214,74 +225,72 @@ export default function HospitalScreen({navigation}) {
         <Text style={styles.locationText}>{address}</Text>
       </View>
 
-        <View style={styles.section}>
-
-          <View style={styles.pickerWrapper}>
-            <View style={styles.distancePicker}>
-              <DropDownPicker
-                open={openDistance}
-                value={valueDistance}
-                items={itemsDistance}
-                setOpen={setOpenDistance}
-                setValue={setValueDistance}
-                setItems={setItemsDistance}
-                containerStyle={styles.dropdownContainer}
-                style={styles.dropdown}
-                dropDownContainerStyle={styles.dropdownList1}
-                textStyle={styles.dropdownText}
-                dropDownDirection="BOTTOM"
-              />
-            </View>
-
-            <View style={styles.gradePicker}>
-              <DropDownPicker
-                open={openNearby}
-                value={valueNearby}
-                items={itemsNearby}
-                setOpen={setOpenNearby}
-                setValue={setValueNearby}
-                setItems={setItemsNearby}
-                containerStyle={styles.dropdownContainer}
-                style={styles.dropdown}
-                dropDownContainerStyle={styles.dropdownList1}
-                textStyle={styles.dropdownText}
-                dropDownDirection="BOTTOM"
-              />
-            </View>
+      <View style={styles.section}>
+        <View style={styles.pickerWrapper}>
+          <View style={styles.distancePicker}>
+            <DropDownPicker
+              open={openDistance}
+              value={valueDistance}
+              items={itemsDistance}
+              setOpen={setOpenDistance}
+              setValue={setValueDistance}
+              setItems={setItemsDistance}
+              containerStyle={styles.dropdownContainer}
+              style={styles.dropdown}
+              dropDownContainerStyle={styles.dropdownList1}
+              textStyle={styles.dropdownText}
+              dropDownDirection="BOTTOM"
+            />
           </View>
 
-          <View style={styles.buttonContainer}>
-            {Object.keys(hospitalStatus).map(hospital => (
-              <TouchableOpacity
-                key={hospital}
-                style={[
-                  styles.button,
-                  hospitalStatus[hospital] && styles.buttonActive,
-                ]}
-                onPress={() => toggleHospitalStatus(hospital)}>
-                <Text style={styles.buttonText}>{hospital}</Text>
-              </TouchableOpacity>
-            ))}
+          <View style={styles.gradePicker}>
+            <DropDownPicker
+              open={openNearby}
+              value={valueNearby}
+              items={itemsNearby}
+              setOpen={setOpenNearby}
+              setValue={setValueNearby}
+              setItems={setItemsNearby}
+              containerStyle={styles.dropdownContainer}
+              style={styles.dropdown}
+              dropDownContainerStyle={styles.dropdownList1}
+              textStyle={styles.dropdownText}
+              dropDownDirection="BOTTOM"
+            />
           </View>
         </View>
 
-        <ScrollView style={styles.scrollView}>
-          {filteredHospitals.length === 0 ? (
-            <View>
-              <Text style={styles.noHospitalText}>병원을 검색하세요!</Text>
-            </View>
-          ) : (
-            <>
-              {filteredHospitals.map((hospital, index) => (
-                <HospitalCard key={index} hospital={hospital} />
-              ))}
-              <View style={styles.placeholder}></View>
-            </>
-          )}
-        </ScrollView> 
+        <View style={styles.buttonContainer}>
+          {Object.keys(hospitalStatus).map(hospital => (
+            <TouchableOpacity
+              key={hospital}
+              style={[
+                styles.button,
+                hospitalStatus[hospital] && styles.buttonActive,
+              ]}
+              onPress={() => toggleHospitalStatus(hospital)}>
+              <Text style={styles.buttonText}>{hospital}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
 
-        <View style={styles.whiteBox}></View>
+      <ScrollView style={styles.scrollView}>
+        {filteredHospitals.length === 0 ? (
+          <View>
+            <Text style={styles.noHospitalText}>병원을 검색하세요!</Text>
+          </View>
+        ) : (
+          <>
+            {filteredHospitals.map((hospital, index) => (
+              <HospitalCard key={index} hospital={hospital} />
+            ))}
+            <View style={styles.placeholder}></View>
+          </>
+        )}
+      </ScrollView>
 
+      <View style={styles.whiteBox}></View>
     </View>
   );
 }

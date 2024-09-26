@@ -1,6 +1,13 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, Dimensions } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, {useState} from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  Dimensions,
+} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios'; // axios to handle HTTP requests
 
@@ -19,7 +26,7 @@ const GetKidneyInfo = () => {
     '신장 이식 받음',
   ];
 
-  const handleOptionSelect = (optionIndex) => {
+  const handleOptionSelect = optionIndex => {
     setSelectedOption(optionIndex);
   };
 
@@ -38,7 +45,10 @@ const GetKidneyInfo = () => {
 
       return result;
     } catch (error) {
-      console.error('AsyncStorage 데이터를 불러오는 중 에러가 발생했습니다:', error);
+      console.error(
+        'AsyncStorage 데이터를 불러오는 중 에러가 발생했습니다:',
+        error,
+      );
     }
   };
 
@@ -57,8 +67,11 @@ const GetKidneyInfo = () => {
         const userInfo = JSON.parse(storedUserInfo);
         userInfo.kidneyDisease = selectedOption;
         await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
-        Alert.alert('정보 저장 완료', '사용자 정보가 성공적으로 저장되었습니다.');
-        console.log("<<< GetKidneyInfo화면 사용자 정보 저장됨 >>>");
+        Alert.alert(
+          '정보 저장 완료',
+          '사용자 정보가 성공적으로 저장되었습니다.',
+        );
+        console.log('<<< GetKidneyInfo화면 사용자 정보 저장됨 >>>');
 
         const asyncData = await printAllAsyncStorageData();
 
@@ -120,10 +133,16 @@ const GetKidneyInfo = () => {
       {options.map((option, index) => (
         <TouchableOpacity
           key={index}
-          style={[styles.optionButton, selectedOption === index && styles.selectedButton]}
-          onPress={() => handleOptionSelect(index)}
-        >
-          <Text style={[styles.optionText, selectedOption === index && styles.selectedText]}>
+          style={[
+            styles.optionButton,
+            selectedOption === index && styles.selectedButton,
+          ]}
+          onPress={() => handleOptionSelect(index)}>
+          <Text
+            style={[
+              styles.optionText,
+              selectedOption === index && styles.selectedText,
+            ]}>
             {option}
           </Text>
         </TouchableOpacity>

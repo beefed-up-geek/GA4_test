@@ -1,9 +1,20 @@
 // /src/screen/home/user_info.js
-import React, { useState, useEffect } from 'react';
-import { Dimensions, View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, Platform, KeyboardAvoidingView } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {
+  Dimensions,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  Alert,
+  Platform,
+  KeyboardAvoidingView,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {useNavigation} from '@react-navigation/native';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import theme from '../../theme';
 import axios from 'axios'; // axios to handle HTTP requests
 
@@ -30,21 +41,31 @@ const Get_User_Info_Two = () => {
         const storedUserInfo = await AsyncStorage.getItem('userInfo');
         if (storedUserInfo !== null) {
           const userInfo = JSON.parse(storedUserInfo);
+  
+          // Format birthdate from 'YYYYMMDD' to 'YYYY/MM/DD'
+          const formatBirthdate = (birthdate) => {
+            if (birthdate && birthdate.length === 8) {
+              return `${birthdate.slice(0, 4)}/${birthdate.slice(4, 6)}/${birthdate.slice(6)}`;
+            }
+            return birthdate || '';
+          };
+  
           setName(userInfo.name || '');
           setNickname(userInfo.nickname || '');
-          setBirthdate(userInfo.birthdate || '');
-          setHeight(userInfo.height || '');
-          setWeight(userInfo.weight || '');
-          setGender(userInfo.gender || '');
+          setBirthdate(formatBirthdate(userInfo.birthdate));  // Use formatted birthdate
+          setHeight(userInfo.height ? userInfo.height.toString() : '');
+          setWeight(userInfo.weight ? userInfo.weight.toString() : '');
+          setGender(userInfo.gender === 1 ? 'male' : 'female');  // Handle gender icon
           setSelectedKidneyDisease(userInfo.kidneyDisease || null);
         }
       } catch (error) {
         console.error('Failed to load user info', error);
       }
     };
-
+  
     fetchUserData();
   }, []);
+  
 
   useEffect(() => {
     validateForm();
@@ -78,7 +99,7 @@ const Get_User_Info_Two = () => {
     const currentYear = new Date().getFullYear();
     const [year, month, day] = birthdate.split('/').map(Number);
     let errorMessage = '';
-  
+
     if (!name) {
       errorMessage += '이름을 입력해주세요.\n';
     }
@@ -101,7 +122,9 @@ const Get_User_Info_Two = () => {
       errorMessage += '생년월일 형식이 잘못되었습니다.\n';
     } else {
       if (year < currentYear - 150 || year > currentYear) {
-        errorMessage += `생년월일의 연도는 ${currentYear - 150}년에서 ${currentYear}년 사이여야 합니다.\n`;
+        errorMessage += `생년월일의 연도는 ${
+          currentYear - 150
+        }년에서 ${currentYear}년 사이여야 합니다.\n`;
       }
       if (month < 1 || month > 12) {
         errorMessage += '생년월일의 월은 01에서 12 사이여야 합니다.\n';
@@ -110,12 +133,12 @@ const Get_User_Info_Two = () => {
         errorMessage += '생년월일의 일은 01에서 31 사이여야 합니다.\n';
       }
     }
-  
+
     if (errorMessage) {
       Alert.alert('입력 오류', errorMessage);
       return;
     }
-  
+
     try {
       // AsyncStorage에서 providerId 가져오기
       const providerId = await AsyncStorage.getItem('userId');
@@ -124,7 +147,7 @@ const Get_User_Info_Two = () => {
         Alert.alert('오류', '사용자 ID를 찾을 수 없습니다.');
         return;
       }
-      
+
       let provider = -1;
       if (loginMethod === 'kakao') {
         provider = 2;
@@ -133,22 +156,25 @@ const Get_User_Info_Two = () => {
       } else if (loginMethod === 'google') {
         provider = 0;
       }
-      const userInfo = { 
-        providerId,  // AsyncStorage에서 불러온 providerId 사용
+      const userInfo = {
+        providerId, // AsyncStorage에서 불러온 providerId 사용
         provider,
-        name, 
-        nickname, 
-        birthdate, 
-        height, 
-        weight, 
-        gender, 
+        name,
+        nickname,
+        birthdate,
+        height,
+        weight,
+        gender,
         kidneyInfo: selectedKidneyDisease,
-        email: 'your_email@example.com'  // 고정된 이메일 사용
+        email: 'your_email@example.com', // 고정된 이메일 사용
       };
-  
+
       // 서버에 업데이트 요청
-      const response = await axios.post('https://54.79.134.160/login/update', userInfo);
-      
+      const response = await axios.post(
+        'http://54.79.134.160/login/update',
+        userInfo,
+      );
+
       if (response.status === 200) {
         Alert.alert('성공', '사용자 정보가 성공적으로 업데이트되었습니다.');
         // 정보 저장 후 화면 이동 (뒤로 가기 등)
@@ -162,7 +188,7 @@ const Get_User_Info_Two = () => {
     }
   };
 
-  const handleHeightChange = (value) => {
+  const handleHeightChange = value => {
     const numValue = parseInt(value.replace(/[^0-9]/g, ''), 10);
     if (!isNaN(numValue)) {
       setHeight(numValue > 250 ? '250' : numValue.toString());
@@ -171,7 +197,7 @@ const Get_User_Info_Two = () => {
     }
   };
 
-  const handleWeightChange = (value) => {
+  const handleWeightChange = value => {
     const regex = /^[0-9]{1,3}(\.[0-9]?)?$/;
     if (regex.test(value) || value === '') {
       const numValue = parseFloat(value);
@@ -183,7 +209,7 @@ const Get_User_Info_Two = () => {
     }
   };
 
-  const handleBirthdateChange = (value) => {
+  const handleBirthdateChange = value => {
     const cleaned = value.replace(/[^0-9]/g, '');
     let formatted = cleaned;
     if (cleaned.length > 4) {
@@ -195,7 +221,7 @@ const Get_User_Info_Two = () => {
     setBirthdate(formatted);
   };
 
-  const handleNameChange = (text) => {
+  const handleNameChange = text => {
     if (text.length > 6) {
       setNameError('6자리 이내로 입력하세요');
       setName(text.slice(0, 6)); // 6자까지만 입력
@@ -205,7 +231,7 @@ const Get_User_Info_Two = () => {
     }
   };
 
-  const handleNicknameChange = (text) => {
+  const handleNicknameChange = text => {
     if (text.length > 6) {
       setNicknameError('6자리 이내로 입력하세요');
       setNickname(text.slice(0, 6)); // 6자까지만 입력
@@ -215,14 +241,18 @@ const Get_User_Info_Two = () => {
     }
   };
 
-  const handleKidneyDiseaseSelect = (option) => {
+  const handleKidneyDiseaseSelect = option => {
     setSelectedKidneyDisease(option);
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={styles.customHeaderContainer}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}>
           <Image
             source={require('../../images/chevronArrowLeft.png')}
             style={styles.backButtonImage}
@@ -234,22 +264,31 @@ const Get_User_Info_Two = () => {
         contentContainerStyle={styles.scrollContainer}
         enableOnAndroid={true}
         extraScrollHeight={20 * height_ratio}
-        scrollEnabled={true}
-      >
+        scrollEnabled={true}>
         <View style={styles.innerContainer}>
           <View style={styles.genderWrapper}>
             <Text style={styles.label}>성별</Text>
             <View style={styles.genderContainer}>
-              <TouchableOpacity onPress={() => setGender('female')} style={styles.genderButton}>
+              <TouchableOpacity
+                onPress={() => setGender('female')}
+                style={styles.genderButton}>
                 <Image
                   source={require('../../images/login/female.png')}
-                  style={[styles.genderImageFemale, gender === 'male' && styles.desaturated]}
+                  style={[
+                    styles.genderImageFemale,
+                    gender === 'male' && styles.desaturated,
+                  ]}
                 />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => setGender('male')} style={styles.genderButton}>
+              <TouchableOpacity
+                onPress={() => setGender('male')}
+                style={styles.genderButton}>
                 <Image
                   source={require('../../images/login/male.png')}
-                  style={[styles.genderImageMale, gender === 'female' && styles.desaturated]}
+                  style={[
+                    styles.genderImageMale,
+                    gender === 'female' && styles.desaturated,
+                  ]}
                 />
               </TouchableOpacity>
             </View>
@@ -266,7 +305,9 @@ const Get_User_Info_Two = () => {
                 value={name}
                 onChangeText={handleNameChange}
               />
-              {nameError ? <Text style={styles.errorText}>{nameError}</Text> : null}
+              {nameError ? (
+                <Text style={styles.errorText}>{nameError}</Text>
+              ) : null}
             </View>
             <View style={styles.inputGroup}>
               <Text style={styles.label}>닉네임</Text>
@@ -278,7 +319,9 @@ const Get_User_Info_Two = () => {
                 value={nickname}
                 onChangeText={handleNicknameChange}
               />
-              {nicknameError ? <Text style={styles.errorText}>{nicknameError}</Text> : null}
+              {nicknameError ? (
+                <Text style={styles.errorText}>{nicknameError}</Text>
+              ) : null}
             </View>
           </View>
 
@@ -336,16 +379,16 @@ const Get_User_Info_Two = () => {
             <TouchableOpacity
               style={[
                 styles.optionButton,
-                selectedKidneyDisease === '해당사항 없음' && styles.selectedButton,
+                selectedKidneyDisease === '해당사항 없음' &&
+                  styles.selectedButton,
               ]}
-              onPress={() => handleKidneyDiseaseSelect('해당사항 없음')}
-            >
+              onPress={() => handleKidneyDiseaseSelect('해당사항 없음')}>
               <Text
                 style={[
                   styles.optionText,
-                  selectedKidneyDisease === '해당사항 없음' && styles.selectedText,
-                ]}
-              >
+                  selectedKidneyDisease === '해당사항 없음' &&
+                    styles.selectedText,
+                ]}>
                 해당사항 없음
               </Text>
             </TouchableOpacity>
@@ -353,16 +396,16 @@ const Get_User_Info_Two = () => {
             <TouchableOpacity
               style={[
                 styles.optionButton,
-                selectedKidneyDisease === '만성콩팥병 (투석 전)' && styles.selectedButton,
+                selectedKidneyDisease === '만성콩팥병 (투석 전)' &&
+                  styles.selectedButton,
               ]}
-              onPress={() => handleKidneyDiseaseSelect('만성콩팥병 (투석 전)')}
-            >
+              onPress={() => handleKidneyDiseaseSelect('만성콩팥병 (투석 전)')}>
               <Text
                 style={[
                   styles.optionText,
-                  selectedKidneyDisease === '만성콩팥병 (투석 전)' && styles.selectedText,
-                ]}
-              >
+                  selectedKidneyDisease === '만성콩팥병 (투석 전)' &&
+                    styles.selectedText,
+                ]}>
                 만성콩팥병 (투석 전)
               </Text>
             </TouchableOpacity>
@@ -370,16 +413,16 @@ const Get_User_Info_Two = () => {
             <TouchableOpacity
               style={[
                 styles.optionButton,
-                selectedKidneyDisease === '혈액투석 중' && styles.selectedButton,
+                selectedKidneyDisease === '혈액투석 중' &&
+                  styles.selectedButton,
               ]}
-              onPress={() => handleKidneyDiseaseSelect('혈액투석 중')}
-            >
+              onPress={() => handleKidneyDiseaseSelect('혈액투석 중')}>
               <Text
                 style={[
                   styles.optionText,
-                  selectedKidneyDisease === '혈액투석 중' && styles.selectedText,
-                ]}
-              >
+                  selectedKidneyDisease === '혈액투석 중' &&
+                    styles.selectedText,
+                ]}>
                 혈액투석 중
               </Text>
             </TouchableOpacity>
@@ -387,16 +430,16 @@ const Get_User_Info_Two = () => {
             <TouchableOpacity
               style={[
                 styles.optionButton,
-                selectedKidneyDisease === '복막투석 중' && styles.selectedButton,
+                selectedKidneyDisease === '복막투석 중' &&
+                  styles.selectedButton,
               ]}
-              onPress={() => handleKidneyDiseaseSelect('복막투석 중')}
-            >
+              onPress={() => handleKidneyDiseaseSelect('복막투석 중')}>
               <Text
                 style={[
                   styles.optionText,
-                  selectedKidneyDisease === '복막투석 중' && styles.selectedText,
-                ]}
-              >
+                  selectedKidneyDisease === '복막투석 중' &&
+                    styles.selectedText,
+                ]}>
                 복막투석 중
               </Text>
             </TouchableOpacity>
@@ -404,16 +447,16 @@ const Get_User_Info_Two = () => {
             <TouchableOpacity
               style={[
                 styles.optionButton,
-                selectedKidneyDisease === '신장 이식 받음' && styles.selectedButton,
+                selectedKidneyDisease === '신장 이식 받음' &&
+                  styles.selectedButton,
               ]}
-              onPress={() => handleKidneyDiseaseSelect('신장 이식 받음')}
-            >
+              onPress={() => handleKidneyDiseaseSelect('신장 이식 받음')}>
               <Text
                 style={[
                   styles.optionText,
-                  selectedKidneyDisease === '신장 이식 받음' && styles.selectedText,
-                ]}
-              >
+                  selectedKidneyDisease === '신장 이식 받음' &&
+                    styles.selectedText,
+                ]}>
                 신장 이식 받음
               </Text>
             </TouchableOpacity>
@@ -423,10 +466,28 @@ const Get_User_Info_Two = () => {
       {/* 하단에 고정된 컨테이너 */}
       <View style={styles.fixedButtonContainer}>
         <TouchableOpacity
-          onPress={isFormValid ? handleSave : () => Alert.alert('입력 오류', '모든 필드를 형식에 맞게 입력해주세요.')}
-          style={[styles.button, isFormValid ? styles.buttonEnabled : styles.buttonDisabled]}
-        >
-          <Text style={[styles.buttonText, isFormValid ? styles.buttonTextEnabled : styles.buttonTextDisabled]}>저장</Text>
+          onPress={
+            isFormValid
+              ? handleSave
+              : () =>
+                  Alert.alert(
+                    '입력 오류',
+                    '모든 필드를 형식에 맞게 입력해주세요.',
+                  )
+          }
+          style={[
+            styles.button,
+            isFormValid ? styles.buttonEnabled : styles.buttonDisabled,
+          ]}>
+          <Text
+            style={[
+              styles.buttonText,
+              isFormValid
+                ? styles.buttonTextEnabled
+                : styles.buttonTextDisabled,
+            ]}>
+            저장
+          </Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>

@@ -4,11 +4,14 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: '120%',
     padding: 15,
-    backgroundColor: '#F4F5FB', // Set the background color of the container
+    backgroundColor: 'white', // Set the background color of the container
   },
   contentContainer: {
     paddingBottom: 100,  // Adjust this value based on your bottom navigation bar height
+    width: '90%',
+    marginLeft: '-3%',
   },
   loadingContainer: {
     flex: 1,
@@ -25,7 +28,7 @@ export const styles = StyleSheet.create({
     color: '#333',
   },
   recordContainer: {
-    backgroundColor: 'white',
+    backgroundColor: '#F4F5FB',
     borderRadius: 10,
     padding: 15,
     marginBottom: 15,
