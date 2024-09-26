@@ -40,12 +40,12 @@ const TabDesign = ({
           },
         ]}>
         <Image
-          source={isSelected ? selectedIconSource : iconSource}
-          style={{
-            width: 24,
-            height: 24,
-          }}
-        />
+        source={iconSource}
+        style={[
+          styles.icon,
+          { tintColor: isSelected ? '#FFFFFF' : '#828287' },
+        ]}
+      />
         {isSelected && <Text style={styles.label}>{label}</Text>}
       </Animated.View>
     </TouchableOpacity>
@@ -63,6 +63,11 @@ const styles = StyleSheet.create({
     height: 40,
     paddingHorizontal: 10,
     overflow: 'hidden', // 애니메이션이 부모 컨테이너를 넘어가지 않도록 설정
+  },
+   icon: {
+    width: 24,
+    height: 24,
+    marginBottom: 4,
   },
   label: {
     color: '#fff',

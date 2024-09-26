@@ -79,7 +79,7 @@ const Login1 = () => {
     <View style={styles.container}>
       <Animated.Image
         source={splashImage}
-        style={[styles.image, animatedStyle]}
+        style={[styles.image]}
       />
       <Text style={styles.descriptionText}>빠르고 간편한</Text>
       <Text style={styles.descriptionText}>신장기능 조기 진단 검사지</Text>
