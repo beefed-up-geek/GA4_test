@@ -82,7 +82,7 @@ const GetKidneyInfo = () => {
           name: userInfo.name,
           nickname: userInfo.nickname,
           birthdate: userInfo.birthdate.replace(/\//g, ''),
-          gender: userInfo.gender === 'male' ? 1 : 0,
+          gender: userInfo.gender === 'male' ? 1 : 0, 
           height: parseInt(userInfo.height, 10),
           weight: parseInt(userInfo.weight, 10),
           kidneyInfo: userInfo.kidneyDisease,

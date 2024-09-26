@@ -65,8 +65,13 @@ const HealthScreen = () => {
   );
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    const unsubscribe = navigation.addListener('focus', () => {
+      // 화면이 포커스될 때마다 fetchData 호출
+      fetchData();
+    });
+  
+    return unsubscribe;
+  }, [navigation]);
 
   const renderScene = SceneMap({
     kidney: KidneyScreen,
