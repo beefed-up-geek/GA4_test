@@ -82,14 +82,14 @@ const GetKidneyInfo = () => {
           name: userInfo.name,
           nickname: userInfo.nickname,
           birthdate: userInfo.birthdate.replace(/\//g, ''),
-          gender: userInfo.gender === 'male' ? 1 : 0,
+          gender: userInfo.gender === 'male' ? 1 : 0, 
           height: parseInt(userInfo.height, 10),
           weight: parseInt(userInfo.weight, 10),
           kidneyInfo: userInfo.kidneyDisease,
         };
 
         const response = await axios.post(
-          'http://13.238.161.156/login/register/',
+          'http://54.79.134.160/login/register/',
           apiPayload,
           {
             headers: {

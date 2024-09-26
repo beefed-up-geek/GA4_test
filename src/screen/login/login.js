@@ -59,7 +59,7 @@ const ifExistUser = async(providerId, provider)=>{
   };
 
   const response = await axios.post(
-    'http://13.238.161.156/login/checkExistingUser/',
+    'http://54.79.134.160/login/checkExistingUser/',
     apiPayload,
     {
       headers: {
@@ -77,7 +77,7 @@ const loginExist = async(providerId, provider)=>{
   };
 
   const response = await axios.post(
-    'http://13.238.161.156/login/',
+    'http://54.79.134.160/login/',
     apiPayload,
     {
       headers: {
