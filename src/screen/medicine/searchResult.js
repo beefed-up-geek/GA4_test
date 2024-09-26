@@ -70,7 +70,7 @@ const SearchResult = ({route, navigation}) => {
       const searchField =
         selectedOption === 'name' ? 'medicine_name' : 'ingredient_name';
       try {
-        const response = await axios.post('https://13.238.161.156/medicine', {
+        const response = await axios.post('http://54.79.134.160/medicine', {
           [searchField]: searchTerm, // 동적으로 필드를 설정
         });
 

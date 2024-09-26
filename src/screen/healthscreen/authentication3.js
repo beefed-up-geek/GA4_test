@@ -52,7 +52,7 @@ const Authentication3Screen = () => {
         twoWayTimestamp: twoWayTimestamp,
       };
       const response = await axios.post(
-        'https://13.238.161.156/health_checkup/step2',
+        'http://54.79.134.160/health_checkup/step2',
         request_data,
       );
 
