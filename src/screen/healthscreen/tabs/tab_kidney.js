@@ -1,10 +1,9 @@
-// /src/screen/healthscreen/tabs/KidneyScreen.js
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Bar } from 'react-native-progress'; // Bar 컴포넌트 임포트
+import { Bar } from 'react-native-progress';
 import { metrics_info, analysis_text } from './data';
-import { styles } from './styles_tab'; // 모든 tab의 스타일 정보가 styles_tab.js에 통합되어 있음
+import { styles } from './styles_tab';
 
 const KidneyScreen = () => {
   const [storedData, setStoredData] = useState(null);
@@ -14,11 +13,18 @@ const KidneyScreen = () => {
     const fetchStoredData = async () => {
       try {
         const data = await AsyncStorage.getItem('healthscreen_data');
+        console.log(data);
         if (data !== null) {
-          setStoredData(JSON.parse(data));
+          const parsedData = JSON.parse(data);
+          // 각 레코드의 유효성 검사
+          const validData = parsedData.filter(record => 
+            !isNaN(parseFloat(record.resGFR)) &&
+            !isNaN(parseFloat(record.resSerumCreatinine))
+          );
+          setStoredData(validData);
         }
       } catch (error) {
-        console.error('Failed to load stored data:', error);
+        console.error('저장된 데이터를 불러오는데 실패했습니다:', error);
       } finally {
         setLoading(false);
       }
@@ -78,18 +84,27 @@ const KidneyScreen = () => {
   }
 
   const latestRecord = storedData[storedData.length - 1];
-  const eGFR = parseFloat(latestRecord.resGFR);
-  const serumCreatinine = parseFloat(latestRecord.resSerumCreatinine);
+  const eGFR = parseFloat(latestRecord.resGFR) || 0;
+  const serumCreatinine = parseFloat(latestRecord.resSerumCreatinine) || 0;
 
   // eGFR과 Serum Creatinine의 범위 및 프로그레스 바 계산
-  const eGFRMin = metrics_info.resGFR.normal_range_lower_limit;
-  const eGFRMax = eGFRMin * 2; // eGFR의 하한치의 2배로 설정
-  const eGFRProgress = Math.min(eGFR / eGFRMax, 1); // 0에서 1 사이로 제한
+  const eGFRMin = metrics_info.resGFR.normal_range_lower_limit || 0;
+  const eGFRMax = eGFRMin * 2 || 100; // eGFR의 하한치의 2배로 설정, 기본값 100
+  const eGFRProgress = eGFRMax !== 0 ? Math.min(eGFR / eGFRMax, 1) : 0;
 
-  const serumCreatinineMax = metrics_info.resSerumCreatinine.normal_range_upper_limit * 1.3; // 상한치의 1.3배로 설정
-  const serumCreatinineProgress = Math.min(serumCreatinine / serumCreatinineMax, 1); // 0에서 1 사이로 제한
+  const serumCreatinineMax = metrics_info.resSerumCreatinine.normal_range_upper_limit ? metrics_info.resSerumCreatinine.normal_range_upper_limit * 1.3 : 100; // 상한치의 1.3배로 설정, 기본값 100
+  const serumCreatinineProgress = serumCreatinineMax !== 0 ? Math.min(serumCreatinine / serumCreatinineMax, 1) : 0;
 
-  const getMarkerPosition = (value, maxValue) => `${(value / maxValue) * 100}%`;
+  const getMarkerPosition = (value, maxValue) => {
+    if (isNaN(value) || isNaN(maxValue) || maxValue === 0) {
+      return '0%'; // 기본 위치
+    }
+    return `${(value / maxValue) * 100}%`;
+  };
+
+  // 디버깅 로그 추가
+  console.log('eGFR:', eGFR, 'eGFRMax:', eGFRMax, 'eGFRProgress:', eGFRProgress);
+  console.log('serumCreatinine:', serumCreatinine, 'serumCreatinineMax:', serumCreatinineMax, 'serumCreatinineProgress:', serumCreatinineProgress);
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
@@ -107,25 +122,8 @@ const KidneyScreen = () => {
             borderColor='white'
           />
           {/* 하한치 표시 */}
-          <View
-            style={{
-              position: 'absolute',
-              left: getMarkerPosition(eGFRMin, eGFRMax),
-              top: 0,
-              height: 30,
-              width: 2,
-              backgroundColor: 'white',
-            }}
-          />
-          <Text
-            style={{
-              position: 'absolute',
-              left: getMarkerPosition(eGFRMin, eGFRMax),
-              top: 15,
-              fontSize: 10,
-              color: 'gray',
-            }}
-          >
+          <View style={styles.markerLine(getMarkerPosition(eGFRMin, eGFRMax))} />
+          <Text style={styles.markerText(getMarkerPosition(eGFRMin, eGFRMax))}>
             {eGFRMin}
           </Text>
         </View>
@@ -146,25 +144,8 @@ const KidneyScreen = () => {
             borderColor='white'
           />
           {/* 상한치 표시 */}
-          <View
-            style={{
-              position: 'absolute',
-              left: getMarkerPosition(metrics_info.resSerumCreatinine.normal_range_upper_limit, serumCreatinineMax),
-              top: 0,
-              height: 30,
-              width: 2,
-              backgroundColor: 'white',
-            }}
-          />
-          <Text
-            style={{
-              position: 'absolute',
-              left: getMarkerPosition(metrics_info.resSerumCreatinine.normal_range_upper_limit, serumCreatinineMax),
-              top: 15,
-              fontSize: 10,
-              color: 'gray',
-            }}
-          >
+          <View style={styles.markerLine(getMarkerPosition(metrics_info.resSerumCreatinine.normal_range_upper_limit, serumCreatinineMax))} />
+          <Text style={styles.markerText(getMarkerPosition(metrics_info.resSerumCreatinine.normal_range_upper_limit, serumCreatinineMax))}>
             {metrics_info.resSerumCreatinine.normal_range_upper_limit}
           </Text>
         </View>
@@ -175,9 +156,7 @@ const KidneyScreen = () => {
       <View style={styles.recordContainer}>
         <Text style={styles.title}>요단백</Text>
         <Text style={styles.value}>{latestRecord.resUrinaryProtein}</Text>
-        <Text style={styles.analysis}>
-          {analysis_text.resUrinaryProtein[latestRecord.resUrinaryProtein === "음성" ? "negative" : "positive"]}
-        </Text>
+        <Text style={styles.analysis}>{analysis_text.resUrinaryProtein[latestRecord.resUrinaryProtein === "음성" ? "negative" : "positive"]}</Text>
       </View>
     </ScrollView>
   );

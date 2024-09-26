@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   Image,
   Dimensions,
-  ScrollView,
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -16,10 +15,6 @@ import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 
 // Importing the components from the tabs directory
 import KidneyScreen from './tabs/tab_kidney';
-import HypertensionDiabetesScreen from './tabs/tab_hypertension_diabetes';
-import DyslipidemiaScreen from './tabs/tab_dyslipidemia';
-import AnemiaScreen from './tabs/tab_anemia';
-import LiverDiseaseScreen from './tabs/tab_liver';
 
 const initialLayout = { width: Dimensions.get('window').width };
 
@@ -33,28 +28,29 @@ const HealthScreen = () => {
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: 'kidney', title: '신장' },
-    { key: 'hypertensionDiabetes', title: '고혈압/당뇨' },
-    { key: 'dyslipidemia', title: '이상지질혈증' },
-    { key: 'anemia', title: '빈혈' },
-    { key: 'liverDisease', title: '간장질환' },
+    // 다른 탭이 있다면 여기에 추가
   ]);
 
   const fetchData = async () => {
-    const storedDate = await AsyncStorage.getItem('healthscreen_last_update');
-    setLastUpdate(storedDate);
+    try {
+      const storedDate = await AsyncStorage.getItem('healthscreen_last_update');
+      setLastUpdate(storedDate);
 
-    const storedData = await AsyncStorage.getItem('healthscreen_data');
-    if (storedData) {
-      const parsedData = JSON.parse(storedData);
-      setHealthData(parsedData);
+      const storedData = await AsyncStorage.getItem('healthscreen_data');
+      if (storedData) {
+        const parsedData = JSON.parse(storedData);
+        setHealthData(parsedData);
 
-      // Get the latest checkup date
-      const latestRecord = parsedData[parsedData.length - 1];
-      if (latestRecord) {
-        const { resCheckupYear, resCheckupDate } = latestRecord;
-        const formattedDate = `${resCheckupYear}-${resCheckupDate.slice(0, 2)}-${resCheckupDate.slice(2, 4)}`;
-        setLastCheckupDate(formattedDate);
+        // Get the latest checkup date
+        const latestRecord = parsedData[parsedData.length - 1];
+        if (latestRecord) {
+          const { resCheckupYear, resCheckupDate } = latestRecord;
+          const formattedDate = `${resCheckupYear}-${resCheckupDate.slice(0, 2)}-${resCheckupDate.slice(2, 4)}`;
+          setLastCheckupDate(formattedDate);
+        }
       }
+    } catch (error) {
+      console.error('데이터를 불러오는 데 실패했습니다:', error);
     }
   };
 
@@ -69,16 +65,13 @@ const HealthScreen = () => {
       // 화면이 포커스될 때마다 fetchData 호출
       fetchData();
     });
-  
+
     return unsubscribe;
   }, [navigation]);
 
   const renderScene = SceneMap({
     kidney: KidneyScreen,
-    hypertensionDiabetes: HypertensionDiabetesScreen,
-    dyslipidemia: DyslipidemiaScreen,
-    anemia: AnemiaScreen,
-    liverDisease: LiverDiseaseScreen,
+    // 다른 탭이 있다면 여기에 추가
   });
 
   const renderTabBar = props => (
@@ -98,8 +91,8 @@ const HealthScreen = () => {
   );
 
   return (
-    <ScrollView style={styles.container}>
-      {/* Existing Health Information Components */}
+    <View style={styles.container}>
+      {/* 기존 건강 정보 컴포넌트 */}
       <View style={styles.headerContainer}>
         <Text style={styles.headerText}>건강검진</Text>
       </View>
@@ -140,7 +133,7 @@ const HealthScreen = () => {
         </TouchableOpacity>
       </View>
 
-      {/* New Tab View Component */}
+      {/* 새로운 Tab View 컴포넌트 */}
       <View style={styles.tabContainer}>
         <TabView
           navigationState={{ index, routes }}
@@ -151,7 +144,7 @@ const HealthScreen = () => {
           style={styles.tabView}
         />
       </View>
-    </ScrollView>
+    </View>
   );
 };
 
@@ -251,7 +244,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   tabStyle: {
-    width: 100,  // Reduce width of each tab
+    width: 100,  // 탭의 너비 줄이기
   },
   tabLabel: {
     fontSize: 14,
