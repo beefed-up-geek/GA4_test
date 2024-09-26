@@ -41,21 +41,31 @@ const Get_User_Info_Two = () => {
         const storedUserInfo = await AsyncStorage.getItem('userInfo');
         if (storedUserInfo !== null) {
           const userInfo = JSON.parse(storedUserInfo);
+  
+          // Format birthdate from 'YYYYMMDD' to 'YYYY/MM/DD'
+          const formatBirthdate = (birthdate) => {
+            if (birthdate && birthdate.length === 8) {
+              return `${birthdate.slice(0, 4)}/${birthdate.slice(4, 6)}/${birthdate.slice(6)}`;
+            }
+            return birthdate || '';
+          };
+  
           setName(userInfo.name || '');
           setNickname(userInfo.nickname || '');
-          setBirthdate(userInfo.birthdate || '');
-          setHeight(userInfo.height || '');
-          setWeight(userInfo.weight || '');
-          setGender(userInfo.gender || '');
+          setBirthdate(formatBirthdate(userInfo.birthdate));  // Use formatted birthdate
+          setHeight(userInfo.height ? userInfo.height.toString() : '');
+          setWeight(userInfo.weight ? userInfo.weight.toString() : '');
+          setGender(userInfo.gender === 1 ? 'male' : 'female');  // Handle gender icon
           setSelectedKidneyDisease(userInfo.kidneyDisease || null);
         }
       } catch (error) {
         console.error('Failed to load user info', error);
       }
     };
-
+  
     fetchUserData();
   }, []);
+  
 
   useEffect(() => {
     validateForm();
