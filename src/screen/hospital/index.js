@@ -129,8 +129,16 @@ export default function HospitalScreen({navigation}) {
     }
   };
 
-  const fetchHospitalData = async query => {
+  const fetchHospitalData = async (query) => {
     try {
+      console.log('Fetching hospital data...'); // 요청 시작 로그
+      console.log('Request body:', {
+        hospitalName: query,
+        user_latitude: latitude,
+        user_longitude: longitude,
+        hospitalStatus: hospitalStatus,
+      });
+  
       const response = await axios.post(
         `http://54.79.134.160/hospital`,
         {
@@ -143,16 +151,22 @@ export default function HospitalScreen({navigation}) {
           headers: {
             'Content-Type': 'application/json',
           },
-        },
+        }
       );
-
-      const filteredData = response.data.results.filter(
-        hospital => hospital.distance < parseInt(valueDistance),
-      );
-
+  
+      // 요청 후 응답 데이터 확인 로그
+      console.log('Response status:', response.status); // HTTP 상태 코드
+      console.log('Response data:', response.data); // 서버에서 반환된 데이터
+  
+      const filteredData = response.data.results.filter((hospital) => {
+        const distanceInKm = parseFloat(hospital.distance);
+        return distanceInKm <= parseFloat(valueDistance);
+      });
+  
       setHospitalData(filteredData);
+      console.log('Filtered hospital data:', filteredData); // 필터된 데이터 확인
     } catch (error) {
-      console.error('Error fetching hospital data:', error);
+      console.error('Error fetching hospital data:', error); // 에러 메시지 출력
     }
   };
 
