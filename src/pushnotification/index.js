@@ -23,15 +23,15 @@ const checkAPPlicationPermission = async () => {
     }
 }
 
-async function onDisplayNotification() {
+export async function onDisplayNotification() {
     const channelId = await notifee.createChannel({
         id: 'default',
         name: 'Default Channel',
     });
 
     await notifee.displayNotification({
-        title: '키트 검사하기',
-        body: '검사한지 2주가 지났어요. 다시 한번 검사해보는 건 어떨까요?',
+        title: '(테스트)키트 검사',
+        body: '검사한지 5분이 지났어요. 다시 한번 검사해보는 건 어떨까요?',
         android: {
             channelId,
         },
