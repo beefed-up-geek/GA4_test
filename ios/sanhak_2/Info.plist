@@ -92,6 +92,8 @@
 	<string>We need your permission to use the camera</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>We need your permission to access your location</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>We need your permission to access your location even when the app is in the background</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>We need your permission to use the microphone</string>
 	<key>UIAppFonts</key>
