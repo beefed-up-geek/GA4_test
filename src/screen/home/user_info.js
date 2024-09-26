@@ -30,21 +30,31 @@ const Get_User_Info_Two = () => {
         const storedUserInfo = await AsyncStorage.getItem('userInfo');
         if (storedUserInfo !== null) {
           const userInfo = JSON.parse(storedUserInfo);
+  
+          // Format birthdate from 'YYYYMMDD' to 'YYYY/MM/DD'
+          const formatBirthdate = (birthdate) => {
+            if (birthdate && birthdate.length === 8) {
+              return `${birthdate.slice(0, 4)}/${birthdate.slice(4, 6)}/${birthdate.slice(6)}`;
+            }
+            return birthdate || '';
+          };
+  
           setName(userInfo.name || '');
           setNickname(userInfo.nickname || '');
-          setBirthdate(userInfo.birthdate || '');
-          setHeight(userInfo.height || '');
-          setWeight(userInfo.weight || '');
-          setGender(userInfo.gender || '');
+          setBirthdate(formatBirthdate(userInfo.birthdate));  // Use formatted birthdate
+          setHeight(userInfo.height ? userInfo.height.toString() : '');
+          setWeight(userInfo.weight ? userInfo.weight.toString() : '');
+          setGender(userInfo.gender === 1 ? 'male' : 'female');  // Handle gender icon
           setSelectedKidneyDisease(userInfo.kidneyDisease || null);
         }
       } catch (error) {
         console.error('Failed to load user info', error);
       }
     };
-
+  
     fetchUserData();
   }, []);
+  
 
   useEffect(() => {
     validateForm();
@@ -78,7 +88,7 @@ const Get_User_Info_Two = () => {
     const currentYear = new Date().getFullYear();
     const [year, month, day] = birthdate.split('/').map(Number);
     let errorMessage = '';
-  
+    console.log("1");
     if (!name) {
       errorMessage += '이름을 입력해주세요.\n';
     }
@@ -110,7 +120,8 @@ const Get_User_Info_Two = () => {
         errorMessage += '생년월일의 일은 01에서 31 사이여야 합니다.\n';
       }
     }
-  
+    
+    console.log("2");
     if (errorMessage) {
       Alert.alert('입력 오류', errorMessage);
       return;
@@ -142,12 +153,20 @@ const Get_User_Info_Two = () => {
         height, 
         weight, 
         gender, 
-        kidneyInfo: selectedKidneyDisease,
-        email: 'your_email@example.com'  // 고정된 이메일 사용
+        kidneyInfo: selectedKidneyDisease
       };
-  
+      const AsyncUserInfo = {
+        name, 
+        nickname, 
+        birthdate, 
+        height, 
+        weight, 
+        gender, 
+        kidneyInfo: selectedKidneyDisease
+      };
+      await AsyncStorage.setItem('userInfo', JSON.stringify(AsyncUserInfo));
       // 서버에 업데이트 요청
-      const response = await axios.post('https://54.79.134.160/login/update', userInfo);
+      const response = await axios.post('http://54.79.134.160/login/update', userInfo);
       
       if (response.status === 200) {
         Alert.alert('성공', '사용자 정보가 성공적으로 업데이트되었습니다.');
@@ -243,13 +262,13 @@ const Get_User_Info_Two = () => {
               <TouchableOpacity onPress={() => setGender('female')} style={styles.genderButton}>
                 <Image
                   source={require('../../images/login/female.png')}
-                  style={[styles.genderImageFemale, gender === 'male' && styles.desaturated]}
+                  style={[styles.genderImageFemale, gender === 'female' && styles.desaturated]}
                 />
               </TouchableOpacity>
               <TouchableOpacity onPress={() => setGender('male')} style={styles.genderButton}>
                 <Image
                   source={require('../../images/login/male.png')}
-                  style={[styles.genderImageMale, gender === 'female' && styles.desaturated]}
+                  style={[styles.genderImageMale, gender === 'male' && styles.desaturated]}
                 />
               </TouchableOpacity>
             </View>
