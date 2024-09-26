@@ -23,6 +23,7 @@ import { Circle, Svg, Polygon, Image as SvgImage } from 'react-native-svg';
 import LottieView from 'lottie-react-native';
 import animationData from '../../images/home/click.json';
 import theme from '../../theme';
+import KitScreen from '../kit';
 
 const { width } = Dimensions.get('screen');
 const width_ratio = Dimensions.get('screen').width / 390;
@@ -186,7 +187,9 @@ const HomeScreen = () => {
             />
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.testButton}>
+            style={styles.testButton}
+            onPress={() => navigation.navigate('KitStack')}
+          >
             <Text style={styles.buttonText}>검사하러 가기</Text>
             <Image
               source={require('../../images/home/go.png')}
