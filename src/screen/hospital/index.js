@@ -88,7 +88,17 @@ export default function HospitalScreen({navigation}) {
           setLoading(false);
           return;
         }
+      } else if (Platform.OS === 'ios') {
+        const hasPermission = await Geolocation.requestAuthorization(
+          'whenInUse',
+        );
+        if (hasPermission === 'denied' || hasPermission === 'restricted') {
+          console.error('Location permission denied on iOS');
+          setLoading(false);
+          return;
+        }
       }
+      // 위치 정보를 가져오는 함수 호출
       getCurrentLocation();
     } catch (err) {
       console.warn(err);
@@ -129,7 +139,7 @@ export default function HospitalScreen({navigation}) {
     }
   };
 
-  const fetchHospitalData = async (query) => {
+  const fetchHospitalData = async query => {
     try {
       console.log('Fetching hospital data...'); // 요청 시작 로그
       console.log('Request body:', {
@@ -138,7 +148,7 @@ export default function HospitalScreen({navigation}) {
         user_longitude: longitude,
         hospitalStatus: hospitalStatus,
       });
-  
+
       const response = await axios.post(
         `http://54.79.134.160/hospital`,
         {
@@ -151,18 +161,19 @@ export default function HospitalScreen({navigation}) {
           headers: {
             'Content-Type': 'application/json',
           },
-        }
+          timeout: 10000,
+        },
       );
-  
+
       // 요청 후 응답 데이터 확인 로그
       console.log('Response status:', response.status); // HTTP 상태 코드
-      //console.log('Response data:', response.data); // 서버에서 반환된 데이터
-  
-      const filteredData = response.data.results.filter((hospital) => {
+      console.log('Response data:', response.data); // 서버에서 반환된 데이터
+
+      const filteredData = response.data.results.filter(hospital => {
         const distanceInKm = parseFloat(hospital.distance);
         return distanceInKm <= parseFloat(valueDistance);
       });
-  
+
       setHospitalData(filteredData);
       //console.log('Filtered hospital data:', filteredData); // 필터된 데이터 확인
     } catch (error) {
