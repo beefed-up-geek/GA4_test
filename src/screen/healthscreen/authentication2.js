@@ -138,7 +138,9 @@ const Authentication2Screen = () => {
           birthdate: birthdate,
           phoneNo: phoneNumber,
           telecom: telecom,
-          loginTypeLevel: selectedValue.toString(), // loginTypeLevel을 문자열로 변환
+          loginTypeLevel: selectedValue.toString(), 
+          selectedLabel: route.params.selectedLabel, 
+          selectedImage: route.params.selectedImage,
         });
       } else {
         setBirthdateError(true);
@@ -155,7 +157,9 @@ const Authentication2Screen = () => {
           birthdate: birthdate,
           phoneNo: phoneNumber,
           telecom: telecom,
-          loginTypeLevel: selectedValue.toString(), // loginTypeLevel을 문자열로 변환
+          loginTypeLevel: selectedValue.toString(),
+          selectedLabel: route.params.selectedLabel,
+          selectedImage: route.params.selectedImage,
         });
       } else {
         console.error(error);
@@ -342,12 +346,13 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     paddingTop: 20 * height_ratio,
-    paddingBottom: 100 * height_ratio,
     paddingHorizontal: 24 * width_ratio,
     backgroundColor: 'white',
   },
   backButton: {
-    marginBottom: 40 * height_ratio,
+    marginLeft: -8,
+    marginTop: 12,
+    marginBottom: 40,
   },
   backButtonImage: {
     width: 24 * width_ratio,
@@ -409,8 +414,9 @@ const styles = StyleSheet.create({
     borderRadius: 8 * width_ratio,
   },
   telecomButtonText: {
-    fontSize: 14 * width_ratio,
-    color: '#000',
+    fontSize: 12,
+    ...theme.fonts.Medium,
+    color: theme.colors.textGray,
   },
   underTriangleButtonImage: {
     width: 7 * width_ratio,

@@ -16,7 +16,11 @@ const Authentication1Screen = () => {
   const handleButtonPress = (index) => {
     setSelectedButtonIndex(index);
     setSelectedValue(index + 1); // 1~8 값 설정
-    navigation.navigate('Authentication2', { selectedValue: index + 1 });
+    navigation.navigate('Authentication2', { 
+      selectedValue: index + 1, 
+      selectedLabel: labels[index],
+      selectedImage: images[index]
+    });
   };
 
   const images = [
@@ -83,7 +87,9 @@ const styles = StyleSheet.create({
     marginLeft: 2 * width_ratio,
   },
   backButton: {
-    marginBottom: 40 * height_ratio,
+    marginLeft: -8,
+    marginTop: 12,
+    marginBottom: 40,
   },
   backButtonImage: {
     width: 24 * width_ratio,
