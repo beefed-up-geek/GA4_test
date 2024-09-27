@@ -12,7 +12,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import theme from '../../theme';
+// Importing the component from the tabs directory
 import KidneyScreen from './tabs/tab_kidney';
 
 const HealthScreen = () => {
@@ -31,22 +31,14 @@ const HealthScreen = () => {
       const storedData = await AsyncStorage.getItem('healthscreen_data');
       if (storedData) {
         const parsedData = JSON.parse(storedData);
-
-        // 데이터 평탄화
-        const flatData = Array.isArray(parsedData[0]) ? parsedData.flat() : parsedData;
-        setHealthData(flatData);
+        setHealthData(parsedData);
 
         // Get the latest checkup date
-        const latestRecord = flatData[flatData.length - 1];
+        const latestRecord = parsedData[parsedData.length - 1];
         if (latestRecord) {
           const { resCheckupYear, resCheckupDate } = latestRecord;
-
-          if (resCheckupDate) {
-            const formattedDate = `${resCheckupYear}-${resCheckupDate.slice(0, 2)}-${resCheckupDate.slice(2, 4)}`;
-            setLastCheckupDate(formattedDate);
-          } else {
-            console.error('resCheckupDate가 정의되어 있지 않습니다.');
-          }
+          const formattedDate = `${resCheckupYear}-${resCheckupDate.slice(0, 2)}-${resCheckupDate.slice(2, 4)}`;
+          setLastCheckupDate(formattedDate);
         }
       }
     } catch (error) {
@@ -59,6 +51,15 @@ const HealthScreen = () => {
       fetchData();
     }, []),
   );
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      // 화면이 포커스될 때마다 fetchData 호출
+      fetchData();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   return (
     <View style={styles.container}>
@@ -128,8 +129,8 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 24,
-    ...theme.fonts.SemiBold,
-    color: theme.colors.textGray,
+    fontWeight: 'bold',
+    color: 'black',
   },
   boxContainer: {
     justifyContent: 'center',
@@ -157,19 +158,19 @@ const styles = StyleSheet.create({
   },
   boxTitle: {
     fontSize: 18,
-    ...theme.fonts.Bold,
-    color: theme.colors.textGray,
+    fontWeight: 'bold',
+    color: 'black',
     textAlign: 'left',
     marginBottom: 5,
   },
   boxSubtitle: {
     fontSize: 14,
-    ...theme.fonts.Medium,
-    color: theme.colors.textGray,
+    fontWeight: 'bold',
+    color: 'black',
   },
   boxDate: {
     fontSize: 14,
-    color: theme.colors.textGray,
+    color: 'black',
   },
   image: {
     width: 120,
@@ -193,24 +194,19 @@ const styles = StyleSheet.create({
     transform: [{ translateY: 15 }],
   },
   sectionHeader: {
+    marginTop: -15,
     paddingHorizontal: 20,
     paddingVertical: 10,
     backgroundColor: 'white',
-    marginTop: -20,
   },
-  indicator: {
-    backgroundColor: '#7596FF',
-    height: 3,
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'black',
   },
-  labelStyle: {
-    ...theme.fonts.SemiBold,
-  },
-  tabStyle: {
-    width: 100,  // 탭의 너비 줄이기
-  },
-  tabLabel: {
-    fontSize: 14,
-    ...theme.fonts.SemiBold,
+  contentContainer: {
+    paddingHorizontal: 20,
+    flex: 1,
   },
 });
 
