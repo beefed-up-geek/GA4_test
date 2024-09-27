@@ -166,8 +166,8 @@ export default function HospitalScreen({navigation}) {
       );
 
       // 요청 후 응답 데이터 확인 로그
-      console.log('Response status:', response.status); // HTTP 상태 코드
-      console.log('Response data:', response.data); // 서버에서 반환된 데이터
+      //console.log('Response status:', response.status); // HTTP 상태 코드
+      //console.log('Response data:', response.data); // 서버에서 반환된 데이터
 
       const filteredData = response.data.results.filter(hospital => {
         const distanceInKm = parseFloat(hospital.distance);
