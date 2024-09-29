@@ -10,9 +10,40 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
+import analytics from '@react-native-firebase/analytics'; // Firebase Analytics import 추가
+import { useFocusEffect } from '@react-navigation/native';
+
 const Medicine = ({navigation}) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedOption, setSelectedOption] = useState('name');
+
+  const [startTime, setStartTime] = useState(null);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const start = new Date().getTime();
+      setStartTime(start);
+      //console.log("Im in homescreen");
+      return () => {
+        const end = new Date().getTime();
+        const timeSpent = (end - start) / 1000; // 시간을 초 단위로 계산
+        logScreenTime(timeSpent);
+        //console.log("Im out of homescreen");
+      };
+    }, [])
+  );
+
+  const logScreenTime = async (timeSpent) => {
+    try {
+      await analytics().logEvent('screen_time', {
+        screen_name: 'MedicineScreen',
+        time_spent: timeSpent, // 초 단위로 기록
+      });
+      console.log(`Logged time: ${timeSpent} seconds on MedicineScreen`);
+    } catch (error) {
+      console.error('Failed to log screen time:', error);
+    }
+  };
 
   const recentSearches =
     selectedOption === 'name'

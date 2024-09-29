@@ -5,7 +5,7 @@
  *
  * @format
  */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -19,8 +19,9 @@ import {
 import {BlurView} from '@react-native-community/blur';
 import LinearGradient from 'react-native-linear-gradient';
 import {Dimensions} from 'react-native';
-
+import { useFocusEffect } from '@react-navigation/native';
 const {width, height} = Dimensions.get('window');
+import analytics from '@react-native-firebase/analytics'; // Firebase Analytics import 추가
 
 const KitScreen = ({onPress, navigation}) => {
   const openLink = async () => {
@@ -33,6 +34,36 @@ const KitScreen = ({onPress, navigation}) => {
       console.log("Don't know how to open this URL:", url);
     }
   };
+
+  
+  useFocusEffect(
+    React.useCallback(() => {
+      const start = new Date().getTime();
+      setStartTime(start);
+      //console.log("Im in homescreen");
+      return () => {
+        const end = new Date().getTime();
+        const timeSpent = (end - start) / 1000; // 시간을 초 단위로 계산
+        logScreenTime(timeSpent);
+        //console.log("Im out of homescreen");
+      };
+    }, [])
+  );
+
+  const [startTime, setStartTime] = useState(null);
+
+  const logScreenTime = async (timeSpent) => {
+    try {
+      await analytics().logEvent('screen_time', {
+        screen_name: 'KitScreen',
+        time_spent: timeSpent, // 초 단위로 기록
+      });
+      console.log(`Logged time: ${timeSpent} seconds on KitScreen`);
+    } catch (error) {
+      console.error('Failed to log screen time:', error);
+    }
+  };
+
   return (
     <SafeAreaView>
       <ScrollView

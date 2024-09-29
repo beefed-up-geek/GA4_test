@@ -11,6 +11,7 @@ import {
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import analytics from '@react-native-firebase/analytics'; // Firebase Analytics import 추가
 
 // Importing the component from the tabs directory
 import KidneyScreen from './tabs/tab_kidney';
@@ -45,7 +46,32 @@ const HealthScreen = () => {
       console.error('데이터를 불러오는 데 실패했습니다:', error);
     }
   };
+  
+  const [startTime, setStartTime] = useState(null);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      const start = new Date().getTime();
+      setStartTime(start);
+      return () => {
+        const end = new Date().getTime();
+        const timeSpent = (end - start) / 1000; // 시간을 초 단위로 계산
+        logScreenTime(timeSpent);
+      };
+    }, [])
+  );
+
+  const logScreenTime = async (timeSpent) => {
+    try {
+      await analytics().logEvent('screen_time', {
+        screen_name: 'HealthScreen',
+        time_spent: timeSpent, // 초 단위로 기록
+      });
+      console.log(`Logged time: ${timeSpent} seconds on HealthScreen`);
+    } catch (error) {
+      console.error('Failed to log screen time:', error);
+    }
+  };
   useFocusEffect(
     React.useCallback(() => {
       fetchData();

@@ -12,6 +12,8 @@ import {
   Image,
 } from 'react-native';
 import axios from 'axios';
+import { useFocusEffect } from '@react-navigation/native';
+import analytics from '@react-native-firebase/analytics'; // Firebase Analytics import 추가
 import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -70,6 +72,33 @@ export default function HospitalScreen({navigation}) {
     }
   }, [searchQuery, hospitalStatus, valueNearby, valueDistance, loading]);
 
+  const [startTime, setStartTime] = useState(null);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const start = new Date().getTime();
+      setStartTime(start);
+      //console.log("Im in homescreen");
+      return () => {
+        const end = new Date().getTime();
+        const timeSpent = (end - start) / 1000; // 시간을 초 단위로 계산
+        logScreenTime(timeSpent);
+        //console.log("Im out of homescreen");
+      };
+    }, [])
+  );
+
+  const logScreenTime = async (timeSpent) => {
+    try {
+      await analytics().logEvent('screen_time', {
+        screen_name: 'HospitalScreen',
+        time_spent: timeSpent, // 초 단위로 기록
+      });
+      console.log(`Logged time: ${timeSpent} seconds on HospitalScreen`);
+    } catch (error) {
+      console.error('Failed to log screen time:', error);
+    }
+  };
   const requestLocationPermission = async () => {
     try {
       if (Platform.OS === 'android') {

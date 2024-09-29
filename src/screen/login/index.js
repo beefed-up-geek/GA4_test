@@ -1,7 +1,7 @@
 // src/screen/login/index.js
 import React, {useEffect} from 'react';
 import {View, Text, StyleSheet, ActivityIndicator} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Animated, {
   useSharedValue,

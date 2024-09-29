@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, Button, PermissionsAndroid, Platform, Text } from 'react-native';
 import notifee from '@notifee/react-native';
+import analytics from '@react-native-firebase/analytics'; // Firebase Analytics import 추가
 
 const checkAPPlicationPermission = async () => {
     if (Platform.OS === 'android') {
@@ -28,7 +29,10 @@ export async function onDisplayNotification() {
         id: 'default',
         name: 'Default Channel',
     });
-
+    await analytics().logEvent('push_alarm', {
+        time: new Date().getTime()
+      });
+      console.log('Event logged: push_alarm_executed');
     await notifee.displayNotification({
         title: '(테스트)키트 검사',
         body: '검사한지 5분이 지났어요. 다시 한번 검사해보는 건 어떨까요?',
