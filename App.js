@@ -12,10 +12,19 @@ import GetUserInfo from './src/screen/login/get_usr_info';
 import {initializeKakaoSDK} from '@react-native-kakao/core';
 import {LogBox} from 'react-native';
 import PushNotification from './src/pushnotification';
+import analytics from '@react-native-firebase/analytics';
+import firebase from '@react-native-firebase/app';
 
 const Stack = createStackNavigator();
 
 const App = () => {
+
+  // useEffect(() => {
+  //   if (!firebase.apps.length) {
+  //     firebase.initializeApp();
+  //   }
+  // }, []);
+
   useEffect(() => {
     initializeKakaoSDK('1f96718a8d259618eec427c10f31719c');
     LogBox.ignoreAllLogs();

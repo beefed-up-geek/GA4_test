@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "12162117693",
+    "project_id": "gatest-9127b",
+    "storage_bucket": "gatest-9127b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:12162117693:android:591747eac40b60da553a54",
+        "android_client_info": {
+          "package_name": "com.sanhak_2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpDZy738E38OPGFL-Hq7Z8sa9pH_4aEK0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

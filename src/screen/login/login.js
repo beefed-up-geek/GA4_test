@@ -1,3 +1,5 @@
+//src/screen/login/login.js
+
 import React, {useEffect, useState} from 'react';
 import {
   View,
@@ -10,21 +12,23 @@ import {
   Button,
   Dimensions,
 } from 'react-native';
-import theme from '../../theme';
 import LinearGradient from 'react-native-linear-gradient';
+
 import {useNavigation} from '@react-navigation/native';
+
+import analytics from '@react-native-firebase/analytics'; // Firebase Analytics import 추가
+
+import axios from 'axios'; // axios to handle HTTP requests
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import NaverLogin from '@react-native-seoul/naver-login';
+import {login as kakaoLogin, me} from '@react-native-kakao/user';
+
+import theme from '../../theme';
 import splashImage from '../../images/login/splash2.png';
 import naverIcon from '../../images/login/naver.png';
 import kakaoIcon from '../../images/login/kakao.png';
 import googleIcon from '../../images/login/google.png';
-import {login as kakaoLogin, me} from '@react-native-kakao/user';
-import {
-  GoogleSignin,
-  statusCodes,
-} from '@react-native-google-signin/google-signin';
-import NaverLogin from '@react-native-seoul/naver-login';
-import axios from 'axios'; // axios to handle HTTP requests
 
 const width_ratio = Dimensions.get('screen').width / 390;
 const height_ratio = Dimensions.get('screen').height / 844;
@@ -33,16 +37,6 @@ const consumerKey = 'fujiEAut2m84ybqDQOoq';
 const consumerSecret = 'yXEW6CuruC';
 const appName = 'HS바이오랩';
 const serviceUrlScheme = 'com.apple';
-
-GoogleSignin.configure({
-  webClientId:
-    '553674684367-g30th1q22jbqjs30jgad63i95vdntcmu.apps.googleusercontent.com',
-  androidClientId:
-    '553674684367-emj97ff7kjitq1qbn03ok9hebps9ijsg.apps.googleusercontent.com',
-  iosClientId:
-    '553674684367-sr2m1jems5sai07qgq710dvhdoqm6npv.apps.googleusercontent.com',
-  scopes: ['profile', 'email'],
-});
 
 const Gap = () => <View style={{marginTop: 24 * height_ratio}} />;
 const ResponseJsonText = ({json = {}, name}) => (
@@ -116,87 +110,12 @@ const Login2 = () => {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    setLoading(true);
-    try {
-      const response = await GoogleSignin.signIn();
-      const {user} = response;
-      if (user) {
-        const {id, name} = user; // 구글 사용자 정보 추출
-        await AsyncStorage.setItem('loginMethod', 'google');
-        await AsyncStorage.setItem('userId', id.toString());
-        await AsyncStorage.setItem('username', name);
-        const userExists = await ifExistUser(providerId, provider); // Check if user exists
-
-        if (userExists === 1) {
-          console.log('Existing user found, logging in...');
-          const loginResponse = await loginExist(providerId, provider);
-          console.log('Login successful:', loginResponse); // Print login result to console
-
-          // Extracting the user information from the response
-          const {user} = loginResponse;
-
-          // Storing the healthCheckup data in AsyncStorage
-
-          if (user.healthCheckup) {
-            await AsyncStorage.setItem(
-              'healthscreen_data',
-              JSON.stringify(user.healthCheckup),
-            );
-            // Storing the last update date in YYYY-MM-DD format using Date
-            const today = new Date();
-            const formattedDate = `${today.getFullYear()}-${String(
-              today.getMonth() + 1,
-            ).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-            await AsyncStorage.setItem(
-              'healthscreen_last_update',
-              formattedDate,
-            );
-          }
-
-          // Formatting the user info for AsyncStorage
-          const formattedUserInfo = {
-            name: user.name,
-            nickname: user.nickname,
-            birthdate: user.birthdate,
-            height: user.height,
-            weight: user.weight,
-            gender: user.gender,
-            kidneyDisease: user.kidneyInfo, // Assuming this is a placeholder value
-          };
-          await AsyncStorage.setItem(
-            'userInfo',
-            JSON.stringify(formattedUserInfo),
-          );
-
-          console.log(
-            'User data and health information stored successfully in AsyncStorage.',
-          );
-          navigation.replace('BottomNavigation');
-        } else {
-          console.log(
-            'No existing user found. Additional registration required.',
-          );
-        }
-        handlePostLoginNavigation(); // 로그인 후 화면 전환
-      }
-      setUser(user);
-    } catch (apiError) {
-      setError(
-        apiError?.response?.data?.error?.message || 'Something went wrong',
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleNaverLogin = async () => {
     try {
       const {failureResponse, successResponse} = await NaverLogin.login();
       if (successResponse) {
         // Get the access token
         const accessToken = successResponse.accessToken;
-
         // Fetch user profile
         const profileResult = await NaverLogin.getProfile(accessToken);
         if (profileResult) {
@@ -204,6 +123,11 @@ const Login2 = () => {
           await AsyncStorage.setItem('loginMethod', 'naver');
           await AsyncStorage.setItem('userId', id.toString());
           await AsyncStorage.setItem('username', name);
+
+          // Define providerId and provider
+          const providerId = id.toString(); // Naver의 providerId는 id
+          const provider = 1; // Naver의 provider identifier (임의로 1로 설정)
+
           const userExists = await ifExistUser(providerId, provider); // Check if user exists
 
           if (userExists === 1) {
@@ -214,8 +138,14 @@ const Login2 = () => {
             // Extracting the user information from the response
             const {user} = loginResponse;
 
-            // Storing the healthCheckup data in AsyncStorage
+            // Firebase Analytics에 로그인 이벤트 로깅
+            console.log('Logging login event to Firebase Analytics');
+            await analytics().logEvent('login', {
+              method: 'naver',
+            });
+            console.log('Login event logged');
 
+            // Storing the healthCheckup data in AsyncStorage
             if (user.healthCheckup) {
               await AsyncStorage.setItem(
                 'healthscreen_data',
@@ -294,8 +224,14 @@ const Login2 = () => {
           // Extracting the user information from the response
           const {user} = loginResponse;
 
-          // Storing the healthCheckup data in AsyncStorage
+          // Firebase Analytics에 로그인 이벤트 로깅
+          console.log('Logging login event to Firebase Analytics');
+          await analytics().logEvent('login', {
+            method: 'kakao',
+          });
+          console.log('Login event logged');
 
+          // Storing the healthCheckup data in AsyncStorage
           if (user.healthCheckup) {
             await AsyncStorage.setItem(
               'healthscreen_data',
@@ -330,6 +266,7 @@ const Login2 = () => {
           console.log(
             'User data and health information stored successfully in AsyncStorage.',
           );
+          navigation.replace('BottomNavigation');
         } else {
           console.log(
             'No existing user found. Additional registration required.',
@@ -379,19 +316,6 @@ const Login2 = () => {
             <Text style={styles.welcomeText2}>혹시 처음이신가요?</Text>
           </View>
           <View style={styles.content}>
-            <TouchableOpacity
-              style={[
-                styles.loginButton,
-                {
-                  backgroundColor: '#FFFDF8',
-                },
-              ]}
-              onPress={handleGoogleLogin}>
-              <Image source={googleIcon} style={styles.icon} />
-              <Text style={[styles.buttonText, {color: '#222322'}]}>
-                구글로 로그인
-              </Text>
-            </TouchableOpacity>
             <TouchableOpacity
               style={[styles.loginButton, {backgroundColor: '#03C75A'}]}
               onPress={handleNaverLogin}>
