@@ -1,6 +1,6 @@
 // /src/screen/home/index.js
 import React, { useEffect, useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation,useFocusEffect  } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -24,6 +24,7 @@ import LottieView from 'lottie-react-native';
 import animationData from '../../images/home/click.json';
 import theme from '../../theme';
 import KitScreen from '../kit';
+import analytics from '@react-native-firebase/analytics'; // Firebase Analytics import 추가
 
 const { width } = Dimensions.get('screen');
 const width_ratio = Dimensions.get('screen').width / 390;
@@ -61,8 +62,45 @@ const HomeScreen = () => {
     }
   };
 
-  const handleKitPurchase = () => {
-    Linking.openURL('https://smartstore.naver.com/cym702');
+  const [startTime, setStartTime] = useState(null);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const start = new Date().getTime();
+      setStartTime(start);
+      //console.log("Im in homescreen");
+      return () => {
+        const end = new Date().getTime();
+        const timeSpent = (end - start) / 1000; // 시간을 초 단위로 계산
+        logScreenTime(timeSpent);
+        //console.log("Im out of homescreen");
+      };
+    }, [])
+  );
+
+  const logScreenTime = async (timeSpent) => {
+    try {
+      await analytics().logEvent('screen_time', {
+        screen_name: 'HomeScreen',
+        time_spent: timeSpent, // 초 단위로 기록
+      });
+      console.log(`Logged time: ${timeSpent} seconds on HomeScreen`);
+    } catch (error) {
+      console.error('Failed to log screen time:', error);
+    }
+  };
+
+  const handleKitPurchase = async () => {
+    try {
+      await analytics().logEvent('kit_purchase_clicked', {
+        screen: 'HomeScreen',
+        purpose: 'User clicked to purchase kidney test kit',
+      });
+      console.log('Event logged: kit_purchase_clicked');
+      Linking.openURL('https://smartstore.naver.com/cym702');
+    } catch (error) {
+      console.error('Failed to log event or open URL:', error);
+    }
   };
 
   useEffect(() => {
