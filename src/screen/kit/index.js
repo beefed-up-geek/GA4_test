@@ -51,12 +51,16 @@ const KitScreen = ({onPress, navigation}) => {
   );
 
   const [startTime, setStartTime] = useState(null);
-
+  const GA_CKD = 'safe';//============================================================================
   const logScreenTime = async (timeSpent) => {
     try {
       await analytics().logEvent('screen_time', {
         screen_name: 'KitScreen',
         time_spent: timeSpent, // 초 단위로 기록
+      });
+      await analytics().logEvent('screen_view', {
+        screen_name: 'KitScreen',
+        CKD: GA_CKD, 
       });
       console.log(`Logged time: ${timeSpent} seconds on KitScreen`);
     } catch (error) {

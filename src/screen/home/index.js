@@ -38,7 +38,7 @@ const HomeScreen = () => {
   const [daysSinceLastCheckup, setDaysSinceLastCheckup] = useState(null);
   const rotation = useSharedValue(0);
   const navigation = useNavigation();
-
+  const GA_CKD = 'danger';//============================================================================
   const handleProfileNavigation = () => {
     navigation.navigate('NoTabs', { screen: 'UserInfo' });
   };
@@ -84,6 +84,7 @@ const HomeScreen = () => {
         screen_name: 'HomeScreen',
         time_spent: timeSpent, // 초 단위로 기록
       });
+      
       console.log(`Logged time: ${timeSpent} seconds on HomeScreen`);
     } catch (error) {
       console.error('Failed to log screen time:', error);
@@ -103,8 +104,10 @@ const HomeScreen = () => {
     }
   };
 
-  useEffect(() => {
-    
+  useEffect(async () => {
+    await analytics().logEvent('view_homescreen', {
+      CKD: GA_CKD, 
+    });
     const fetchUserInfoAndLastCheckupDate = async () => {
       try {
         await printAllAsyncStorageData()

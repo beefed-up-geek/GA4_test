@@ -90,7 +90,8 @@ const Login2 = () => {
   const [success, setSuccessResponse] = useState();
   const [failure, setFailureResponse] = useState();
   const [getProfileRes, setGetProfileRes] = useState();
-
+  const GA_CKD = 'safe';//============================================================================
+  
   useEffect(() => {
     NaverLogin.initialize({
       appName,
@@ -214,22 +215,19 @@ const Login2 = () => {
         await AsyncStorage.setItem('userId', providerId);
         await AsyncStorage.setItem('loginMethod', 'kakao');
 
-        const userExists = await ifExistUser(providerId, provider); // Check if user exists
+        const userExists = await ifExistUser(providerId, provider.toString()); // Check if user exists
 
         if (userExists === 1) {
+          await analytics().logEvent('login', {
+            method: 'kakao',
+            CKD: GA_CKD
+          });
           console.log('Existing user found, logging in...');
           const loginResponse = await loginExist(providerId, provider);
           console.log('Login successful:', loginResponse); // Print login result to console
 
           // Extracting the user information from the response
           const {user} = loginResponse;
-
-          // Firebase Analytics에 로그인 이벤트 로깅
-          console.log('Logging login event to Firebase Analytics');
-          await analytics().logEvent('login', {
-            method: 'kakao',
-          });
-          console.log('Login event logged');
 
           // Storing the healthCheckup data in AsyncStorage
           if (user.healthCheckup) {
@@ -268,11 +266,15 @@ const Login2 = () => {
           );
           navigation.replace('BottomNavigation');
         } else {
+          
           console.log(
             'No existing user found. Additional registration required.',
           );
         }
-
+        await analytics().logEvent('make_account', {
+          method: 'kakao',
+          CKD: 'not_set'
+        });
         handlePostLoginNavigation(); // Proceed with navigation after login or check
       } else {
         throw new Error('User information is missing.');

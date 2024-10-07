@@ -17,6 +17,8 @@ import firebase from '@react-native-firebase/app';
 
 const Stack = createStackNavigator();
 
+
+
 const App = () => {
 
   // useEffect(() => {
@@ -24,10 +26,12 @@ const App = () => {
   //     firebase.initializeApp();
   //   }
   // }, []);
-
-  useEffect(() => {
+  
+  useEffect(async () => {
     initializeKakaoSDK('1f96718a8d259618eec427c10f31719c');
     LogBox.ignoreAllLogs();
+    await analytics().logEvent('app_start', {
+    });
   }, []);
 
   return (
