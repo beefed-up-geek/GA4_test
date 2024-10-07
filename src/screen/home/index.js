@@ -38,7 +38,7 @@ const HomeScreen = () => {
   const [daysSinceLastCheckup, setDaysSinceLastCheckup] = useState(null);
   const rotation = useSharedValue(0);
   const navigation = useNavigation();
-  const GA_CKD = 'danger';//============================================================================
+  const GA_CKD = 'safe';//============================================================================
   const handleProfileNavigation = () => {
     navigation.navigate('NoTabs', { screen: 'UserInfo' });
   };
