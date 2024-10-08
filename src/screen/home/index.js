@@ -38,7 +38,7 @@ const HomeScreen = () => {
   const [daysSinceLastCheckup, setDaysSinceLastCheckup] = useState(null);
   const rotation = useSharedValue(0);
   const navigation = useNavigation();
-  const GA_CKD = 'safe';//============================================================================
+  const GA_CKD = 'danger';//============================================================================
   const handleProfileNavigation = () => {
     navigation.navigate('NoTabs', { screen: 'UserInfo' });
   };
@@ -95,7 +95,7 @@ const HomeScreen = () => {
     try {
       await analytics().logEvent('kit_purchase_clicked', {
         screen: 'HomeScreen',
-        purpose: 'User clicked to purchase kidney test kit',
+        CKD: GA_CKD,
       });
       console.log('Event logged: kit_purchase_clicked');
       Linking.openURL('https://smartstore.naver.com/cym702');
@@ -229,7 +229,13 @@ const HomeScreen = () => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.testButton}
-            onPress={() => navigation.navigate('KitStack')}
+            onPress={async () => {
+              await analytics().logEvent('kit_test', {
+                screen: 'HomeScreen',
+                CKD: GA_CKD,
+              });
+              console.log("검사하러가기");
+              navigation.navigate('KitStack');}}
           >
             <Text style={styles.buttonText}>검사하러 가기</Text>
             <Image
