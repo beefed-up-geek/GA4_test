@@ -30,7 +30,7 @@ const App = () => {
   useEffect(async () => {
     initializeKakaoSDK('1f96718a8d259618eec427c10f31719c');
     LogBox.ignoreAllLogs();
-    await analytics().logEvent('app_start', {
+    await analytics().logEvent('app_start_', {
     });
   }, []);
 

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -20,14 +20,17 @@ const GetKidneyInfo = () => {
   const navigation = useNavigation();
   useEffect(() => {
     const fetchUserData = async () => {
-      await analytics().logEvent('screen_view', {
-        screen_name: 'getUserInfo',
-        CKD: 'not set',
-      });
-      
+      try {
+        await analytics().logEvent('screen_view_', {
+          screen_name: 'getKidneyInfo',
+          CKD: 'not set',
+        });
+      } catch (error) {
+        console.error('Error logging screen view event:', error);
+      }
     };
-
-    fetchUserData();
+  
+    fetchUserData(); // 비동기 함수 호출
   }, []);
   
 

@@ -100,7 +100,7 @@ const Login2 = () => {
       serviceUrlSchemeIOS: serviceUrlScheme,
       disableNaverAppAuthIOS: true,
     });
-    await analytics().logEvent('screen_view', {
+    await analytics().logEvent('screen_view_', {
       screen_name: 'loginScreen',
       CKD: 'not set',
     });
@@ -145,9 +145,7 @@ const Login2 = () => {
 
             // Firebase Analytics에 로그인 이벤트 로깅
             console.log('Logging login event to Firebase Analytics');
-            await analytics().logEvent('login', {
-              method: 'naver',
-            });
+            
             console.log('Login event logged');
 
             // Storing the healthCheckup data in AsyncStorage
@@ -222,10 +220,7 @@ const Login2 = () => {
         const userExists = await ifExistUser(providerId, provider.toString()); // Check if user exists
 
         if (userExists === 1) {
-          await analytics().logEvent('login', {
-            method: 'kakao',
-            CKD: GA_CKD
-          });
+          
           console.log('Existing user found, logging in...');
           const loginResponse = await loginExist(providerId, provider);
           console.log('Login successful:', loginResponse); // Print login result to console
@@ -275,10 +270,7 @@ const Login2 = () => {
             'No existing user found. Additional registration required.',
           );
         }
-        await analytics().logEvent('make_account', {
-          method: 'kakao',
-          CKD: 'not_set'
-        });
+        
         handlePostLoginNavigation(); // Proceed with navigation after login or check
       } else {
         throw new Error('User information is missing.');

@@ -80,11 +80,11 @@ const HomeScreen = () => {
 
   const logScreenTime = async (timeSpent) => {
     try {
-      await analytics().logEvent('screen_time', {
-        screen_name: 'HomeScreen',
-        time_spent: timeSpent, // 초 단위로 기록
-        CKD: GA_CKD,
-      });
+      // await analytics().logEvent('screen_time', {
+      //   screen_name: 'HomeScreen',
+      //   time_spent: timeSpent, // 초 단위로 기록
+      //   CKD: GA_CKD,
+      // });
       
       console.log(`Logged time: ${timeSpent} seconds on HomeScreen`);
     } catch (error) {
@@ -106,7 +106,8 @@ const HomeScreen = () => {
   };
 
   useEffect(async () => {
-    await analytics().logEvent('view_homescreen', {
+    await analytics().logEvent('view_screen_', {
+      screen: 'HomeScreen',
       CKD: GA_CKD, 
     });
     const fetchUserInfoAndLastCheckupDate = async () => {

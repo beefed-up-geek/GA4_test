@@ -15,6 +15,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import theme from '../../theme';
+import analytics from '@react-native-firebase/analytics'; // Firebase Analytics import 추가
 
 const width_ratio = Dimensions.get('screen').width / 390;
 const height_ratio = Dimensions.get('screen').height / 844;
@@ -39,6 +40,10 @@ const Get_User_Info = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
+      await analytics().logEvent('screen_view_', {
+        screen_name: 'getUserInfo',
+        CKD: 'not set',
+      });
       try {
         const storedUserInfo = await AsyncStorage.getItem('userInfo');
         if (storedUserInfo !== null) {
@@ -57,8 +62,8 @@ const Get_User_Info = () => {
         console.error('Failed to load user info', error);
       }
     };
-
-    fetchUserData();
+  
+    fetchUserData(); // Async 함수 호출
   }, []);
 
   useEffect(() => {
