@@ -23,7 +23,7 @@ const HealthScreen = () => {
   const [lastUpdate, setLastUpdate] = useState(null);
   const [lastCheckupDate, setLastCheckupDate] = useState(null);
   const [healthData, setHealthData] = useState([]);
-  const GA_CKD = 'safe';//============================================================================
+  const GA_CKD = 'severe';//============================================================================
   const fetchData = async () => {
     try {
       const storedDate = await AsyncStorage.getItem('healthscreen_last_update');
@@ -66,6 +66,7 @@ const HealthScreen = () => {
       await analytics().logEvent('screen_time', {
         screen_name: 'HealthScreen',
         time_spent: timeSpent, // 초 단위로 기록
+        CKD: GA_CKD,
       });
       await analytics().logEvent('screen_view', {
         screen_name: 'HealthScreen',

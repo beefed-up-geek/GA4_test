@@ -55,7 +55,7 @@ export default function HospitalScreen({navigation}) {
 
   const [hospitalData, setHospitalData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const GA_CKD = 'safe';//============================================================================
+  const GA_CKD = 'severe';//============================================================================
   useEffect(() => {
     requestLocationPermission();
   }, []);
@@ -93,6 +93,7 @@ export default function HospitalScreen({navigation}) {
       await analytics().logEvent('screen_time', {
         screen_name: 'HospitalScreen',
         time_spent: timeSpent, // 초 단위로 기록
+        CKD: GA_CKD,
       });
       await analytics().logEvent('screen_view', {
         screen_name: 'HospitalScreen',

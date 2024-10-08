@@ -38,7 +38,7 @@ const HomeScreen = () => {
   const [daysSinceLastCheckup, setDaysSinceLastCheckup] = useState(null);
   const rotation = useSharedValue(0);
   const navigation = useNavigation();
-  const GA_CKD = 'safe';//============================================================================
+  const GA_CKD = 'severe';//============================================================================
   const handleProfileNavigation = () => {
     navigation.navigate('NoTabs', { screen: 'UserInfo' });
   };
@@ -83,6 +83,7 @@ const HomeScreen = () => {
       await analytics().logEvent('screen_time', {
         screen_name: 'HomeScreen',
         time_spent: timeSpent, // 초 단위로 기록
+        CKD: GA_CKD,
       });
       
       console.log(`Logged time: ${timeSpent} seconds on HomeScreen`);

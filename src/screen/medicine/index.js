@@ -16,6 +16,7 @@ import { useFocusEffect } from '@react-navigation/native';
 const Medicine = ({navigation}) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedOption, setSelectedOption] = useState('name');
+  const GA_CKD = 'severe';//============================================================================
 
   const [startTime, setStartTime] = useState(null);
 
@@ -38,6 +39,11 @@ const Medicine = ({navigation}) => {
       await analytics().logEvent('screen_time', {
         screen_name: 'MedicineScreen',
         time_spent: timeSpent, // 초 단위로 기록
+        CKD: GA_CKD,
+      });
+      await analytics().logEvent('screen_view', {
+        screen_name: 'MedicineScreen',
+        CKD: GA_CKD,
       });
       console.log(`Logged time: ${timeSpent} seconds on MedicineScreen`);
     } catch (error) {

@@ -10,6 +10,7 @@ import {
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios'; // axios to handle HTTP requests
+import analytics from '@react-native-firebase/analytics'; // Firebase Analytics import 추가
 
 const width_ratio = Dimensions.get('screen').width / 390;
 const height_ratio = Dimensions.get('screen').height / 844;
@@ -17,14 +18,18 @@ const height_ratio = Dimensions.get('screen').height / 844;
 const GetKidneyInfo = () => {
   const [selectedOption, setSelectedOption] = useState(null);
   const navigation = useNavigation();
+  useEffect(() => {
+    const fetchUserData = async () => {
+      await analytics().logEvent('screen_view', {
+        screen_name: 'getUserInfo',
+        CKD: 'not set',
+      });
+      
+    };
 
-  const options = [
-    '해당사항 없음',
-    '만성콩팥병 (투석 전)',
-    '혈액투석 중',
-    '복막투석 중',
-    '신장 이식 받음',
-  ];
+    fetchUserData();
+  }, []);
+  
 
   const handleOptionSelect = optionIndex => {
     setSelectedOption(optionIndex);

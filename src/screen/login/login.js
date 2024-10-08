@@ -92,13 +92,17 @@ const Login2 = () => {
   const [getProfileRes, setGetProfileRes] = useState();
   const GA_CKD = 'safe';//============================================================================
   
-  useEffect(() => {
+  useEffect(async () => {
     NaverLogin.initialize({
       appName,
       consumerKey,
       consumerSecret,
       serviceUrlSchemeIOS: serviceUrlScheme,
       disableNaverAppAuthIOS: true,
+    });
+    await analytics().logEvent('screen_view', {
+      screen_name: 'loginScreen',
+      CKD: 'not set',
     });
   }, []);
 
